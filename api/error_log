@@ -1,0 +1,19 @@
+[14-Aug-2022 19:00:26 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:00:27 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:00:28 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:00:28 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:10 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:11 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:12 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:12 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:12 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:49 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:49 Asia/Ho_Chi_Minh] PHP Notice:  Trying to access array offset on value of type null in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 6
+[14-Aug-2022 19:01:50 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 5
+[14-Aug-2022 19:01:50 Asia/Ho_Chi_Minh] PHP Notice:  Trying to access array offset on value of type null in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 6
+[14-Aug-2022 19:03:02 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 9
+[14-Aug-2022 19:03:02 Asia/Ho_Chi_Minh] PHP Notice:  Trying to access array offset on value of type null in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 10
+[14-Aug-2022 19:03:02 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 9
+[14-Aug-2022 19:03:02 Asia/Ho_Chi_Minh] PHP Notice:  Trying to access array offset on value of type null in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 10
+[14-Aug-2022 19:03:03 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, bool given in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 9
+[14-Aug-2022 19:03:03 Asia/Ho_Chi_Minh] PHP Notice:  Trying to access array offset on value of type null in /home/maihuyba/dichvu.maihuybao.live/api/genlickey.php on line 10

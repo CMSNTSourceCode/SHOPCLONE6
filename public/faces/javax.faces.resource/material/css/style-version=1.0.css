@@ -1,0 +1,55 @@
+.login-page .form-holder .info, .login-page .form-holder .form{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.login-page::before{
+  background: #fff;
+}
+.receipt .content{
+    /*padding: 20px*/
+    padding: 0px;
+}
+#order-info{
+    padding: 20px 20px 0px 20px;
+    font-size: 14pt;
+    font-weight: bolder;
+}
+.btn-momo{
+    background-color: #af206f;
+    color: #fff
+}
+.btn-momo:hover{
+    background-color: #8e255f;
+    color: #fff
+}
+.login-page .form-holder .info{
+    background: #af206f;
+}
+.btn-momo-white{
+    font-weight: 500;
+    border-color: #9c1c63;
+    background-color: #ffffff;
+}
+.btn-momo-white:hover{
+    color: #ffffff;
+    background-color: #af206f;
+    border-color: #9c1c63;
+}
+.trans-date{
+    top: 50%;
+    right: 0;
+    position: absolute;
+}
+.login-page .form-holder{
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px 0px, rgba(0, 0, 0, 0.19) 0px 6px 20px 0px;
+}
+.row-pci{
+    text-align: center;
+    padding-top: 10px;
+    right: 0;
+    left: 0;
+}
+
+.logo-pci{
+    width: 190px;
+}

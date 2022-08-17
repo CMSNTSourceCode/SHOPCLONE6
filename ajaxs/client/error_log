@@ -1,0 +1,62 @@
+[30-Jun-2022 18:36:15 Asia/Ho_Chi_Minh] PHP Warning:  mt_rand(): max(0) is smaller than min(1) in /home/maihuyba/dichvu.maihuybao.live/libs/helper.php on line 53
+[30-Jun-2022 18:36:15 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:36:15 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:36:15 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 44
+[30-Jun-2022 18:36:15 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 52
+[30-Jun-2022 18:36:23 Asia/Ho_Chi_Minh] PHP Warning:  mt_rand(): max(0) is smaller than min(1) in /home/maihuyba/dichvu.maihuybao.live/libs/helper.php on line 53
+[30-Jun-2022 18:36:23 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:36:23 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:36:23 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 44
+[30-Jun-2022 18:36:23 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 52
+[30-Jun-2022 18:36:35 Asia/Ho_Chi_Minh] PHP Warning:  mt_rand(): max(0) is smaller than min(1) in /home/maihuyba/dichvu.maihuybao.live/libs/helper.php on line 53
+[30-Jun-2022 18:36:35 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:36:35 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:36:35 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 44
+[30-Jun-2022 18:36:35 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 52
+[30-Jun-2022 18:37:26 Asia/Ho_Chi_Minh] PHP Warning:  mt_rand(): max(0) is smaller than min(1) in /home/maihuyba/dichvu.maihuybao.live/libs/helper.php on line 53
+[30-Jun-2022 18:37:26 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:37:26 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:37:26 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 44
+[30-Jun-2022 18:37:26 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 52
+[30-Jun-2022 18:37:32 Asia/Ho_Chi_Minh] PHP Warning:  mt_rand(): max(0) is smaller than min(1) in /home/maihuyba/dichvu.maihuybao.live/libs/helper.php on line 53
+[30-Jun-2022 18:37:32 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:37:32 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:37:32 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 44
+[30-Jun-2022 18:37:32 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 52
+[30-Jun-2022 18:38:01 Asia/Ho_Chi_Minh] PHP Warning:  mt_rand(): max(0) is smaller than min(1) in /home/maihuyba/dichvu.maihuybao.live/libs/helper.php on line 53
+[30-Jun-2022 18:38:01 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:38:01 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 41
+[30-Jun-2022 18:38:01 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 44
+[30-Jun-2022 18:38:01 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index:  in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/spin.php on line 52
+[30-Jun-2022 19:56:26 Asia/Ho_Chi_Minh] PHP Warning:  mysqli_connect(): (HY000/1226): User 'maihuyba' has exceeded the 'max_user_connections' resource (current value: 30) in /home/maihuyba/dichvu.maihuybao.live/libs/db.php on line 17
+[18-Jul-2022 11:39:27 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[18-Jul-2022 12:09:16 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[21-Jul-2022 14:27:00 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[21-Jul-2022 14:30:06 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/login.php on line 30
+[21-Jul-2022 14:30:19 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/login.php on line 30
+[21-Jul-2022 14:30:34 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/login.php on line 30
+[21-Jul-2022 14:31:24 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[23-Jul-2022 17:31:08 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[23-Jul-2022 17:31:35 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[23-Jul-2022 21:37:08 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[24-Jul-2022 17:19:01 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96
+[25-Jul-2022 21:51:59 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/login.php on line 29
+[25-Jul-2022 21:52:06 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/login.php on line 29
+[25-Jul-2022 21:52:19 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/login.php on line 29
+[25-Jul-2022 21:52:21 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/login.php on line 29
+[25-Jul-2022 21:52:43 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:52:45 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:40 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:48 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:49 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:49 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:49 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:49 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:49 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:53:50 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:54:03 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:54:04 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:54:05 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:54:09 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[25-Jul-2022 21:54:10 Asia/Ho_Chi_Minh] PHP Notice:  Undefined index: phrase in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/register.php on line 42
+[26-Jul-2022 16:09:23 Asia/Ho_Chi_Minh] PHP Warning:  Division by zero in /home/maihuyba/dichvu.maihuybao.live/ajaxs/client/rating.php on line 96

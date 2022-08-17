@@ -1,0 +1,54 @@
+RewriteEngine On
+
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+#Xử lý Route CTV
+RewriteRule ^ctv/verify/([A-Za-z0-9-]+) index.php?module=ctv&action=verify&token=$1 [L]
+RewriteRule ^ctv/accounts/([A-Za-z0-9-]+) index.php?module=ctv&action=accounts&id=$1 [L]
+RewriteRule ^ctv/product-edit/([A-Za-z0-9-]+) index.php?module=ctv&action=product-edit&id=$1 [L]
+RewriteRule ^ctv/([A-Za-z0-9-]+) index.php?module=ctv&action=$1 [L]
+RewriteRule ^ctv index.php?module=ctv&action= [L]
+#Xử lý Route ADMIN
+RewriteRule ^admin/login-user/([A-Za-z0-9-]+) index.php?module=admin&action=login-user&id=$1 [L]
+RewriteRule ^admin/account-view/([A-Za-z0-9-]+) index.php?module=admin&action=account-view&id=$1 [L]
+RewriteRule ^admin/store-fanpage-edit/([A-Za-z0-9-]+) index.php?module=admin&action=store-fanpage-edit&id=$1 [L]
+RewriteRule ^admin/promotion-edit/([A-Za-z0-9-]+) index.php?module=admin&action=promotion-edit&id=$1 [L]
+RewriteRule ^admin/category-document-edit/([A-Za-z0-9-]+) index.php?module=admin&action=category-document-edit&id=$1 [L]
+RewriteRule ^admin/document-edit/([A-Za-z0-9-]+) index.php?module=admin&action=document-edit&id=$1 [L]
+RewriteRule ^admin/account-sold/([A-Za-z0-9-]+) index.php?module=admin&action=account-sold&id=$1 [L]
+RewriteRule ^admin/spin-edit/([A-Za-z0-9-]+) index.php?module=admin&action=spin-edit&id=$1 [L]
+RewriteRule ^admin/menu-edit/([A-Za-z0-9-]+) index.php?module=admin&action=menu-edit&id=$1 [L]
+RewriteRule ^admin/verify/([A-Za-z0-9-]+) index.php?module=admin&action=verify&token=$1 [L]
+RewriteRule ^admin/question-edit/([A-Za-z0-9-]+) index.php?module=admin&action=question-edit&id=$1 [L]
+RewriteRule ^admin/coupon-log/([A-Za-z0-9-]+) index.php?module=admin&action=coupon-log&id=$1 [L]
+RewriteRule ^admin/coupon-edit/([A-Za-z0-9-]+) index.php?module=admin&action=coupon-edit&id=$1 [L]
+RewriteRule ^admin/translate-list/([A-Za-z0-9-]+) index.php?module=admin&action=translate-list&id=$1 [L]
+RewriteRule ^admin/language-edit/([A-Za-z0-9-]+) index.php?module=admin&action=language-edit&id=$1 [L]
+RewriteRule ^admin/service-order-edit/([A-Za-z0-9-]+) index.php?module=admin&action=service-order-edit&id=$1 [L]
+RewriteRule ^admin/service-edit/([A-Za-z0-9-]+) index.php?module=admin&action=service-edit&id=$1 [L]
+RewriteRule ^admin/invoice-edit/([A-Za-z0-9-]+) index.php?module=admin&action=invoice-edit&id=$1 [L]
+RewriteRule ^admin/accounts/([A-Za-z0-9-]+) index.php?module=admin&action=accounts&id=$1 [L]
+RewriteRule ^admin/product-edit/([A-Za-z0-9-]+) index.php?module=admin&action=product-edit&id=$1 [L]
+RewriteRule ^admin/category-edit/([A-Za-z0-9-]+) index.php?module=admin&action=category-edit&id=$1 [L]
+RewriteRule ^admin/blog-edit/([A-Za-z0-9-]+) index.php?module=admin&action=blog-edit&id=$1 [L]
+RewriteRule ^admin/bank-edit/([A-Za-z0-9-]+) index.php?module=admin&action=bank-edit&id=$1 [L]
+RewriteRule ^admin/user-edit/([A-Za-z0-9-]+) index.php?module=admin&action=user-edit&id=$1 [L]
+RewriteRule ^admin/([A-Za-z0-9-]+) index.php?module=admin&action=$1 [L]
+RewriteRule ^admin index.php?module=admin&action= [L]
+#Xử lý Route CLIENT
+RewriteRule ^join/([A-Za-z0-9-]+) index.php?module=client&action=join&ref=$1 [L]
+RewriteRule ^client/home/([A-Za-z0-9-]+) index.php?module=client&action=home&shop=$1 [L]
+RewriteRule ^client/blog/([A-Za-z0-9-]+) index.php?module=client&action=blog&id=$1 [L]
+RewriteRule ^client/giftbox/([A-Za-z0-9-]+) index.php?module=client&action=giftbox&id=$1 [L]
+RewriteRule ^client/verify/([A-Za-z0-9-]+) index.php?module=client&action=verify&token=$1 [L]
+RewriteRule ^client/notification/view/([A-Za-z0-9-]+) index.php?module=client&action=notification-view&id=$1 [L]
+RewriteRule ^client/profile-ctv/([A-Za-z0-9-]+) index.php?module=client&action=profile-ctv&username=$1 [L]
+RewriteRule ^client/order/([A-Za-z0-9-]+) index.php?module=client&action=order&trans_id=$1 [L]
+RewriteRule ^client/payment/([A-Za-z0-9-]+) index.php?module=client&action=payment&invoice=$1 [L]
+RewriteRule ^client/([A-Za-z0-9-]+) index.php?module=client&action=$1 [L]
+RewriteRule ^client index.php?module=client&action= [L]
+#Xử lý Route COMMON
+RewriteRule ^common/([A-Za-z0-9-]+) index.php?module=common&action=$1 [L]
