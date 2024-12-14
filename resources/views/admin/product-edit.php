@@ -7,9 +7,21 @@ $body = [
     'keyword' => 'cmsnt, CMSNT, cmsnt.co,'
 ];
 $body['header'] = '
-
+<!-- Select2 -->
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 ';
 $body['footer'] = '
+<!-- Select2 -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/select2/js/select2.full.min.js"></script>
+<script>
+$(function () {
+    $(".select2").select2()
+    $(".select2bs4").select2({
+        theme: "bootstrap4"
+    });
+});
+</script>
 <!-- bs-custom-file-input -->
 <script src="'.BASE_URL('public/AdminLTE3/').'plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 <!-- Page specific script -->
@@ -61,6 +73,7 @@ if (isset($_POST['SaveProduct'])) {
         'filter_time_checklive' => isset($_POST['filter_time_checklive']) ? check_string($_POST['filter_time_checklive']) : 0,
         'time_delete_account' => isset($_POST['time_delete_account']) ? check_string($_POST['time_delete_account']) : 0,
         'status' => check_string($_POST['status']),
+        'allow_api' => isset($_POST['allow_api']) ? check_string($_POST['allow_api']) : 1,
         'minimum'   => isset($_POST['minimum']) ? $_POST['minimum'] : 1,
         'maximum'   => isset($_POST['maximum']) ? $_POST['maximum'] : 10000
     ], " `id` = '".$row['id']."' ");
@@ -140,7 +153,7 @@ if (isset($_POST['SaveProduct'])) {
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Loại sản phẩm</label>
-                                    <select class="form-control" name="category_id" required>
+                                    <select class="form-control select2bs4" name="category_id" required>
                                         <option value="">Chọn loại sản phẩm</option>
                                         <?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ") as $list) {?>
                                         <option value="<?=$list['id'];?>"
@@ -151,21 +164,28 @@ if (isset($_POST['SaveProduct'])) {
                                     <i>Thêm chuyên mục <a href="<?=BASE_URL('admin/category-list');?>" target="_blank">tại đây</a></i>
                                 </div>
                                 <div class="form-group">
+                                    <label for="exampleInputEmail1">Quốc gia</label>
+                                    <input type="text" class="form-control" name="flag" value="<?=$row['flag'];?>"
+                                        placeholder="Nếu là Việt Nam thì ghi vn">
+                                    <i>Xem ISO CODE Quốc Gia tại đây: <a target="_blank"
+                                            href="https://countrycode.org/">https://countrycode.org/</a></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Trạng thái</label>
+                                    <select class="form-control" name="status" required>
+                                        <option <?=$row['status'] == 1 ? 'selected' : '';?> value="1">Hiển thị</option>
+                                        <option <?=$row['status'] == 0 ? 'selected' : '';?> value="0">Ẩn</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="exampleInputEmail1">Giá sản phẩm</label>
-                                    <input type="number" class="form-control" name="price" value="<?=$row['price'];?>"
+                                    <input type="text" class="form-control" name="price" value="<?=$row['price'];?>"
                                         placeholder="Nhập giá sản phẩm" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Chi tiết sản phẩm</label>
                                     <textarea class="form-control" name="content"
                                         placeholder="Nhập chi tiết sản phẩm"><?=$row['content'];?></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Quốc gia</label>
-                                    <input type="text" class="form-control" name="flag" value="<?=$row['flag'];?>"
-                                        placeholder="Nếu là Việt Nam thì ghi vn">
-                                    <i>Xem ISO CODE Quốc Gia tại đây: <a target="_blank"
-                                            href="https://countrycode.org/">https://countrycode.org/</a></i>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputFile">Ảnh xem trước sản phẩm</label>
@@ -183,13 +203,6 @@ if (isset($_POST['SaveProduct'])) {
                                 </div>
                                 <div class="form-group">
                                     <?=$row['preview'] != null ? '<img src="'.BASE_URL($row["preview"]).'" width="200px">' : '';?>
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Trạng thái</label>
-                                    <select class="form-control" name="status" required>
-                                        <option <?=$row['status'] == 1 ? 'selected' : '';?> value="1">Hiển thị</option>
-                                        <option <?=$row['status'] == 0 ? 'selected' : '';?> value="0">Ẩn</option>
-                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
@@ -223,6 +236,14 @@ if (isset($_POST['SaveProduct'])) {
                                     <select class="form-control" name="filter_time_checklive" required>
                                         <option <?=$row['filter_time_checklive'] == 1 ? 'selected' : '';?> value="1">Check live gần nhất sẽ ưu tiên bán trước</option>
                                         <option <?=$row['filter_time_checklive'] == 0 ? 'selected' : '';?> value="0">Acc nào up lên web trước bán trước</option>
+                                        <option <?=$row['filter_time_checklive'] == 2 ? 'selected' : '';?> value="2">Acc nào up lên web sau bán trước</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Cho phép đấu API</label>
+                                    <select class="form-control" name="allow_api" required>
+                                        <option <?=$row['allow_api'] == 1 ? 'selected' : '';?> value="1">ON</option>
+                                        <option <?=$row['allow_api'] == 0 ? 'selected' : '';?> value="0">OFF</option>
                                     </select>
                                 </div>
                                 <div class="form-group">

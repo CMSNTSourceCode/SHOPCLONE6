@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ], " `id` = '".$row['id']."' ");
             if ($isUpdate) {
                 $total_money = $CMSNT->site('rate_pm') * $amount;
-                $User->AddCredits($row['user_id'], $total_money, "Nạp tiền tự động qua Perfect Money #".$invoice_id);
+                $User->AddCredits($row['user_id'], $total_money, "Nạp tiền tự động qua Perfect Money #".$invoice_id, 'TOPUP_PM_'.$invoice_id);
                 /** SEND NOTI CHO ADMIN */
                 $my_text = $CMSNT->site('naptien_notification');
                 $my_text = str_replace('{domain}', $_SERVER['SERVER_NAME'], $my_text);

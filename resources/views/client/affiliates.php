@@ -120,7 +120,13 @@ require_once(__DIR__.'/sidebar.php');
                                             <label class="control-label col-sm-4 align-self-center"
                                                 for="email"><?=__('Mức hoa hồng:');?></label>
                                             <div class="col-sm-8">
-                                                <b style="color: red;"><?=$CMSNT->site('ck_ref');?>%</b>
+                                                <?php
+                                                    $ck = $CMSNT->site('ck_ref');
+                                                    if($getUser['ref_ck'] != 0){
+                                                        $ck = $getUser['ref_ck'];
+                                                    }
+                                                ?>
+                                                <b style="color: red;"><?=$ck;?>%</b>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -343,11 +349,11 @@ require_once(__DIR__.'/sidebar.php');
                                     <thead>
                                         <tr>
                                             <th width="5%">#</th>
-                                            <th>Số tiền trước</th>
-                                            <th>Số tiền thay đổi</th>
-                                            <th>Số tiền hiện tại</th>
-                                            <th>Thời gian</th>
-                                            <th>Nội dung</th>
+                                            <th><?=__('Số tiền trước');?></th>
+                                            <th><?=__('Số tiền thay đổi');?></th>
+                                            <th><?=__('Số tiền hiện tại');?></th>
+                                            <th><?=__('Thời gian');?></th>
+                                            <th><?=__('Nội dung');?></th>
                                         </tr>
                                     </thead>
                                     <tbody>

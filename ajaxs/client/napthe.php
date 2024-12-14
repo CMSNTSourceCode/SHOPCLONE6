@@ -49,6 +49,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (checkFormatCard($telco, $serial, $pin)['status'] != true) {
         die(json_encode(['status' => 'error', 'msg' => checkFormatCard($telco, $serial, $pin)['msg']]));
     }
+    if($CMSNT->num_rows(" SELECT * FROM `cards` WHERE `user_id` = '".$getUser['id']."' AND `status` = 0  ") > 5){
+        die(json_encode(['status' => 'error', 'msg' => __('Vui lòng không spam!')]));
+    }
+    if(
+        $CMSNT->num_rows("SELECT * FROM `cards` WHERE `status` = 2 AND `user_id` = '".$getUser['id']."' AND `create_date` >= DATE(NOW()) AND `create_date` < DATE(NOW()) + INTERVAL 1 DAY  ") - 
+        $CMSNT->num_rows("SELECT * FROM `cards` WHERE `status` = 1 AND `user_id` = '".$getUser['id']."' AND `create_date` >= DATE(NOW()) AND `create_date` < DATE(NOW()) + INTERVAL 1 DAY  ") >= 5)
+    {
+        die(json_encode(['status' => 'error', 'msg' => __('Bạn đã bị chặn sử dụng chức năng nạp thẻ trong 1 ngày')]));
+    }
     $trans_id = random('QWERTYUIOPASDFGHJKLZXCVBNM', 6).time();
     $data = card24h($telco, $amount, $serial, $pin, $trans_id);
     if($data['status'] == 99){
@@ -78,6 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'action'        => "Thực hiện nạp thẻ Serial: $serial - Pin: $pin"
             ]);
             die(json_encode(['status' => 'success', 'msg' => __('Nạp thẻ thành công')]));
+        }else{
+            die(json_encode(['status' => 'error', 'msg' => __('Nạp thẻ thất bại, vui lòng liên hệ Admin')]));
         }
     }else{
         die(json_encode(['status' => 'error', 'msg' => $data['data']['msg']]));

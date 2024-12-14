@@ -2,7 +2,7 @@
     die('The Request Not Found');
 }
 $body = [
-    'title' => __('Nạp tiền qua PayPal').' | '.$CMSNT->site('title'),
+    'title' => __('Nạp tiền qua Perfect Money').' | '.$CMSNT->site('title'),
     'desc'   => $CMSNT->site('description'),
     'keyword' => $CMSNT->site('keywords')
 ];

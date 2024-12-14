@@ -8,6 +8,17 @@
     require_once(__DIR__.'/../libs/database/invoices.php');
     $CMSNT = new DB();
     $user = new users();
+
+    if($CMSNT->site('pin_cron') != ''){
+        if(empty($_GET['pin'])){
+            die('Vui lòng nhập mã PIN');
+        }
+        if($_GET['pin'] != $CMSNT->site('pin_cron')){
+            die('Mã PIN không chính xác');
+        }
+    }
+
+    
     queryCancelInvoices();
 
 
@@ -26,7 +37,7 @@
     if ($CMSNT->site('token_zalopay') == '') {
         die('Thiếu Token Zalo Pay');
     }
-    $result = curl_get("https://api.web2m.com/historyapizalopay/".$CMSNT->site('token_zalopay'));
+    $result = curl_get2("https://api.web2m.com/historyapizalopay/".$CMSNT->site('token_zalopay'));
     $result = json_decode($result, true);
     foreach ($result['data'] as $data) {
         $comment        = $data['description'];             // NỘI DUNG CHUYỂN TIỀN
@@ -90,6 +101,15 @@
                             ], " `id` = '".$row['id']."' ");
                         }
                     }
+                    /** SEND NOTI CHO ADMIN */
+                    $my_text = $CMSNT->site('naptien_notification');
+                    $my_text = str_replace('{domain}', $_SERVER['SERVER_NAME'], $my_text);
+                    $my_text = str_replace('{username}', getRowRealtime('users', $row['user_id'], 'username'), $my_text);
+                    $my_text = str_replace('{method}', 'THESIEURE server1', $my_text);
+                    $my_text = str_replace('{amount}', format_cash($amount), $my_text);
+                    $my_text = str_replace('{price}', format_currency($amount), $my_text);
+                    $my_text = str_replace('{time}', gettime(), $my_text);
+                    sendMessAdmin($my_text);
                     echo '[<b style="color:green">-</b>] Xử lý thành công 1 hoá đơn.'.PHP_EOL;
                     break;
                 }

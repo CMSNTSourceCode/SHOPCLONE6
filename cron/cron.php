@@ -4,6 +4,7 @@
     require_once(__DIR__.'/../libs/db.php');
     require_once(__DIR__.'/../config.php');
     require_once(__DIR__.'/../libs/helper.php');
+    require_once(__DIR__.'/../libs/lang.php');
     require_once(__DIR__.'/../libs/database/users.php');
     require_once(__DIR__.'/../libs/database/invoices.php');
     $CMSNT = new DB();
@@ -29,7 +30,7 @@
                 $array_amount = explode(PHP_EOL, $CMSNT->site('amount_nap_ao'));
                 $amount = $array_amount[rand(0, count($array_amount))];
                 $amount = $amount != 0 ? $amount : 10000;
-                $trans_id = random("QWERTYUPASDFGHJKZXCVBNM123456789", 4);
+                $trans_id = 'fake_'.random("QWERTYUPASDFGHJKZXCVBNM123456789", 6);
                 $CMSNT->insert("invoices", [
                     'type'              => 'deposit_money',
                     'user_id'           => $CMSNT->get_row("SELECT * FROM `users` ORDER BY RAND() ")['id'],

@@ -31,6 +31,7 @@ require_once(__DIR__.'/../../../models/is_admin.php');
 require_once(__DIR__.'/header.php');
 require_once(__DIR__.'/sidebar.php');
 require_once(__DIR__.'/nav.php');
+ 
 ?>
 
 <div class="content-wrapper">
@@ -115,7 +116,7 @@ require_once(__DIR__.'/nav.php');
                                             <td><?=display_card($row['status']); ?></td>
                                             <td><?=$row['create_gettime']; ?></td>
                                             <td>
-                                                <button class="edit-charging-btn btn-sm btn btn-info" data-id="<?= $row['id']; ?>" type="button">
+                                                <button class="edit-charging-btn btn-sm btn btn-info" onclick="editModal(`<?= $row['id']; ?>`)" type="button">
                                                         <i class="fas fa-edit mr-1"></i><span class="">Edit</span>
                                                 </button>
                                                 <button style="color:white;" onclick="RemoveRow('<?=$row['id']; ?>')"
@@ -152,16 +153,13 @@ $(function() {
     </div>
 </div>
 <script>
-    $(document).ready(function() {
-        $(".edit-charging-btn").click(function() {
-            var id = $(this).attr('data-id');
-            $("#CharigngAjaxContent").html('');
-            $.get("<?= BASE_URL('ajaxs/admin/modal/withdraw-ref.php?id='); ?>" + id, function(data) {
-                $("#CharigngAjaxContent").html(data);
-            });
-            $("#ChargingModal").modal();
+    function editModal(id){
+        $("#CharigngAjaxContent").html('');
+        $.get("<?= BASE_URL('ajaxs/admin/modal/withdraw-ref.php?id='); ?>" + id, function(data) {
+            $("#CharigngAjaxContent").html(data);
         });
-    });
+        $("#ChargingModal").modal();
+    }
 </script>
 <script type="text/javascript">
 function postRemove(id) {

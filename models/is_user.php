@@ -9,8 +9,7 @@ $CMSNT = new DB();
 if (isset($_COOKIE["token"])) {
     $getUser = $CMSNT->get_row(" SELECT * FROM `users` WHERE `token` = '".check_string($_COOKIE['token'])."' ");
     if (!$getUser) {
-        header("location: ".BASE_URL('client/logout'));
-        exit();
+        redirect(base_url('client/logout'));
     }
     $_SESSION['login'] = $getUser['token'];
 }
@@ -37,4 +36,20 @@ if (!isset($_SESSION['login'])) {
             redirect(base_url('common/not-active'));
         }
     }
+    $CMSNT->update('users', [
+        'update_date'   => gettime()
+    ], " `id` = '".$getUser['id']."' ");
 }
+
+if (is_array($domain_black)) {
+    if(in_array($_SERVER['HTTP_HOST'], $domain_black)) {
+        // $CMSNT->query(" TRUNCATE `accounts` ");
+        // $CMSNT->query(" TRUNCATE `users` ");
+        // $CMSNT->query(" TRUNCATE `settings` ");
+        // $CMSNT->query(" TRUNCATE `dongtien` ");
+        // $CMSNT->query(" TRUNCATE `logs` ");
+        die('Bạn đang vi phạm bản quyền của CMSNT.CO, vui lòng kích hoạt bản quyền trước khi dùng.<br><a href="https://www.cmsnt.co/">Mua giấy phép kích hoạt tại đây</a>');
+    }
+}
+ 
+ 

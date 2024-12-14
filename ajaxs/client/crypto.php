@@ -5,11 +5,12 @@ require_once(__DIR__."/../../libs/db.php");
 require_once(__DIR__.'/../../config.php');
 require_once(__DIR__."/../../libs/lang.php");
 require_once(__DIR__."/../../libs/helper.php");
-require_once(__DIR__."/../../libs/nowpayments.php");
+ 
 $CMSNT = new DB();
-
+$Mobile_Detect = new Mobile_Detect();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+ 
     if ($CMSNT->site('status_demo') != 0) {
         die(json_encode(['status' => 'error', 'msg' => 'Bạn không được dùng chức năng này vì đây là trang web demo']));
     }
@@ -20,76 +21,77 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die(json_encode(['status' => 'error', 'msg' => __('Chức năng này đang được bảo trì')]));
     }
     if (empty($_POST['token'])) {
-        die(json_encode(['status' => 'error', 'msg' => __('Vui lòng đăng nhập')]));
+        die(json_encode(['status' => 'error', 'msg' => __('Please log in')]));
     }
     if (!$getUser = $CMSNT->get_row("SELECT * FROM `users` WHERE `token` = '".check_string($_POST['token'])."' AND `banned` = 0 ")) {
-        die(json_encode(['status' => 'error', 'msg' => __('Vui lòng đăng nhập')]));
-    }
-    if (time() - $getUser['time_request'] < $config['max_time_load']) {
-        die(json_encode(['status' => 'error', 'msg' => __('Bạn đang thao tác quá nhanh, vui lòng chờ')]));
+        die(json_encode(['status' => 'error', 'msg' => __('Please log in')]));
     }
     if (empty($_POST['amount'])) {
-        die(json_encode(['status' => 'error', 'msg' => __('Vui lòng nhập số tiền nạp')]));
+        die(json_encode(['status' => 'error', 'msg' => __('Please enter the amount to deposit')]));
     }
-    if ($_POST['amount'] <= 0) {
-        die(json_encode(['status' => 'error', 'msg' => __('Số tiền nạp không khả dụng')]));
-    }
-    if($_POST['amount'] < $CMSNT->site('min_crypto')){
-        die(json_encode(['status' => 'error', 'msg' => __('Số tiền nạp tối thiểu là '.'$'.$CMSNT->site('min_crypto'))]));
-    }
-    if($CMSNT->get_row(" SELECT COUNT(id) FROM `nowpayments` WHERE `user_id` = '".$getUser['id']."' AND `payment_status` = 'waiting' AND `created_at` >= DATE(NOW()) AND `created_at` < DATE(NOW()) + INTERVAL 1 DAY ")['COUNT(id)'] > 5){
-        die(json_encode(['status' => 'error', 'msg' => __('Bạn đang có nhiều đơn nạp tiền trong hôm nay chưa được xử lý')]));
-    }
-
     $amount = check_string($_POST['amount']);
-    $trans_id = random('QWERTYUIOPASDFGHJKLZXCVBNM', 4).time();
-
-    $NowPaymentsAPI = new NowPaymentsAPI($CMSNT->site('apikey_nowpayments'));
-    $result = $NowPaymentsAPI->createInvoice([
-        'price_amount'      => $amount,
-        'price_currency'    => 'usd',
-        'ipn_callback_url'  => base_url('api/callback_nowpayments.php'),
-        'order_id'          => $trans_id,
-        'order_description' => __('Hoá đơn nạp tiền').' #'.$trans_id,
-        'success_url'       => base_url('client/crypto'),
-        'cancel_url'        => base_url('client/crypto')
-    ]);
+    if($amount < $CMSNT->site('crypto_min')){
+        die(json_encode(['status' => 'error', 'msg' => __('The minimum deposit amount is:').' $'.$CMSNT->site('crypto_min')]));
+    }
+    if($amount > $CMSNT->site('crypto_max')){
+        die(json_encode(['status' => 'error', 'msg' => __('The maximum deposit amount is:').' $'.format_cash($CMSNT->site('crypto_max'))]));
+    }
+    if($CMSNT->num_rows(" SELECT * FROM `crypto_invoice` WHERE `user_id` = '".$getUser['id']."' AND `status` = 'waiting' AND ROUND(`amount`) = '$amount'  ") >= 3){
+        die(json_encode(['status' => 'error', 'msg' => __('Vui lòng không SPAM')]));
+    }
+    $name = 'Recharge '.check_string($_SERVER['HTTP_HOST']);
+    $description = 'Recharge invoice to '.$getUser['username'];
+    $callback = base_url('api/callback_crypto.php');
+    $return_url = base_url('client/crypto');
+    $request_id = md5(time().random('qwertyuiopasdfghjklzxcvbnm0123456789', 4));
+        $arrContextOptions=array(
+        "ssl"=>array(
+            "verify_peer"=>false,
+            "verify_peer_name"=>false,
+        ),
+    ); 
+    $result = file_get_contents('https://fpayment.co/api/AddInvoice.php?token_wallet='.$CMSNT->site('crypto_token').
+        '&address_wallet='.trim($CMSNT->site('crypto_address')).
+        '&name='.urlencode($name).
+        '&description='.urlencode($description).
+        '&amount='.$amount.
+        '&request_id='.$request_id.
+        '&callback='.urlencode($callback).
+        '&return_url='.urlencode($return_url), false, stream_context_create($arrContextOptions)
+    );
     $result = json_decode($result, true);
-    $isInsert = $CMSNT->insert('nowpayments', array(
+    if(!isset($result['status'])){
+        die(json_encode(['status' => 'error', 'msg' => __('Invoice could not be generated due to API error, please try again later')]));
+    }
+    if($result['status'] == 'error'){
+        die(json_encode(['status' => 'error', 'msg' => __($result['msg'])]));
+    }
+    $trans_id = check_string($result['data']['trans_id']);
+    $isInsert = $CMSNT->insert('crypto_invoice', [
+        'trans_id'          => $trans_id,
         'user_id'           => $getUser['id'],
-        'invoice_id'        => $result['id'],
-        'payment_id'        => NULL,
-        'payment_status'    => 'waiting',
-        'pay_address'       => NULL,
-        'price_amount'      => $result['price_amount'],
-        'price_currency'    => $result['price_currency'],
-        'pay_amount'        => 0,
-        'actually_paid'     => 0,
-        'pay_currency'      => $result['pay_currency'],
-        'order_id'          => $trans_id,
-        'order_description' => __('Hoá đơn nạp tiền').' #'.$trans_id,
-        'purchase_id'       => NULL,
-        'created_at'        => gettime(),
-        'updated_at'        => gettime(),
-        'outcome_amount'    => 0,
-        'outcome_currency'  => NULL
-    ));
-
-    if ($isInsert) {
-        $CMSNT->update("users", [
-            'time_request' => time()
-        ], " `id` = '".$getUser['id']."' ");
-
-        $Mobile_Detect = new Mobile_Detect();
+        'request_id'        => check_string($result['data']['request_id']),
+        'amount'            => check_string($result['data']['amount']),
+        'create_gettime'    => gettime(),
+        'update_gettime'    => gettime(),
+        'status'            => check_string($result['data']['status']),
+        'url_payment'       => check_string($result['data']['url_payment']),
+        'msg'               => NULL
+    ]);
+    if($isInsert){
         $CMSNT->insert("logs", [
             'user_id'       => $getUser['id'],
             'ip'            => myip(),
             'device'        => $Mobile_Detect->getUserAgent(),
             'createdate'    => gettime(),
-            'action'        => __('Tạo hoá đơn nạp tiền qua Crypto')." $trans_id"
+            'action'        => __('Generate Crypto Recharge Invoice').' #'.$trans_id
         ]);
-        die(json_encode(['invoice_url'  => $result['invoice_url'], 'status' => 'success', 'msg' => __('Tạo đơn nạp tiền thành công !')]));
-    }else{
+        die(json_encode([
+            'url'  => check_string($result['data']['url_payment']),
+            'status' => 'success', 
+            'msg' => __('Hoá đơn nạp tiền đã được tạo thành công!')
+        ]));
+    } else{
         die(json_encode(['status' => 'error', 'msg' => __('Không thể tạo hoá đơn')]));
     }
 }

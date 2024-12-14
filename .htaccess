@@ -5,13 +5,21 @@ RewriteEngine On
     Deny from all
 </Files>
 
+<FilesMatch "\.DS_Store$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+
 #Xử lý Route CTV
+RewriteRule ^ctv/account-view/([A-Za-z0-9-]+) index.php?module=ctv&action=account-view&id=$1 [L]
 RewriteRule ^ctv/verify/([A-Za-z0-9-]+) index.php?module=ctv&action=verify&token=$1 [L]
 RewriteRule ^ctv/accounts/([A-Za-z0-9-]+) index.php?module=ctv&action=accounts&id=$1 [L]
 RewriteRule ^ctv/product-edit/([A-Za-z0-9-]+) index.php?module=ctv&action=product-edit&id=$1 [L]
 RewriteRule ^ctv/([A-Za-z0-9-]+) index.php?module=ctv&action=$1 [L]
 RewriteRule ^ctv index.php?module=ctv&action= [L]
 #Xử lý Route ADMIN
+RewriteRule ^admin/currency-edit/([A-Za-z0-9-]+) index.php?module=admin&action=currency-edit&id=$1 [L]
 RewriteRule ^admin/login-user/([A-Za-z0-9-]+) index.php?module=admin&action=login-user&id=$1 [L]
 RewriteRule ^admin/account-view/([A-Za-z0-9-]+) index.php?module=admin&action=account-view&id=$1 [L]
 RewriteRule ^admin/store-fanpage-edit/([A-Za-z0-9-]+) index.php?module=admin&action=store-fanpage-edit&id=$1 [L]
@@ -36,9 +44,12 @@ RewriteRule ^admin/category-edit/([A-Za-z0-9-]+) index.php?module=admin&action=c
 RewriteRule ^admin/blog-edit/([A-Za-z0-9-]+) index.php?module=admin&action=blog-edit&id=$1 [L]
 RewriteRule ^admin/bank-edit/([A-Za-z0-9-]+) index.php?module=admin&action=bank-edit&id=$1 [L]
 RewriteRule ^admin/user-edit/([A-Za-z0-9-]+) index.php?module=admin&action=user-edit&id=$1 [L]
+RewriteRule ^admin/login index.php?module=admin&action=home [L]
 RewriteRule ^admin/([A-Za-z0-9-]+) index.php?module=admin&action=$1 [L]
 RewriteRule ^admin index.php?module=admin&action= [L]
 #Xử lý Route CLIENT
+RewriteRule ^client/verify-otp-mail/([A-Za-z0-9-]+) index.php?module=client&action=verify-otp-mail&token=$1 [L]
+RewriteRule ^page/([A-Za-z0-9-]+) index.php?module=client&action=page&slug=$1 [L]
 RewriteRule ^join/([A-Za-z0-9-]+) index.php?module=client&action=join&ref=$1 [L]
 RewriteRule ^client/home/([A-Za-z0-9-]+) index.php?module=client&action=home&shop=$1 [L]
 RewriteRule ^client/blog/([A-Za-z0-9-]+) index.php?module=client&action=blog&id=$1 [L]
@@ -48,6 +59,11 @@ RewriteRule ^client/notification/view/([A-Za-z0-9-]+) index.php?module=client&ac
 RewriteRule ^client/profile-ctv/([A-Za-z0-9-]+) index.php?module=client&action=profile-ctv&username=$1 [L]
 RewriteRule ^client/order/([A-Za-z0-9-]+) index.php?module=client&action=order&trans_id=$1 [L]
 RewriteRule ^client/payment/([A-Za-z0-9-]+) index.php?module=client&action=payment&invoice=$1 [L]
+RewriteRule ^Dashboard index.php?module=client&action=home [L]
+RewriteRule ^Dashbroad index.php?module=client&action=home [L]
+RewriteRule ^dashboard index.php?module=client&action=home [L]
+RewriteRule ^client/home/shop-document index.php?module=client&action=shop-document [L]
+RewriteRule ^client/home/shop-account index.php?module=client&action=shop-account [L]
 RewriteRule ^client/([A-Za-z0-9-]+) index.php?module=client&action=$1 [L]
 RewriteRule ^client index.php?module=client&action= [L]
 #Xử lý Route COMMON

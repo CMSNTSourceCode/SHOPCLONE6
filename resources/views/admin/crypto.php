@@ -85,6 +85,7 @@ require_once(__DIR__.'/nav.php');
                                         <th><?=__('Order Id');?></th>
                                         <th><?=__('Description');?></th>
                                         <th><?=__('Amount');?></th>
+                                        <th><?=__('Price');?></th>
                                         <th><?=__('Status');?></th>
                                         <th><?=__('Create date');?></th>
                                         <th><?=__('Update date');?></th>
@@ -100,6 +101,7 @@ require_once(__DIR__.'/nav.php');
                                         <td><b><?=$row['order_id'];?></b></td>
                                         <td><b><?=$row['order_description'];?></b></td>
                                         <td><b style="color: red;">$<?=format_cash($row['price_amount']);?></b></td>
+                                        <td><b style="color: blue;"><?=format_currency($row['price']);?></b></td>
                                         <td>
                                             <?=display_status_crypto($row['payment_status']);?>
                                         </td>

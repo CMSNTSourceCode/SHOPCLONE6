@@ -36,7 +36,7 @@ require_once(__DIR__.'/sidebar.php');
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <iframe src="https://www.thispersondoesnotexist.com/" width="100%" height="700"
+                <iframe src="https://thispersondoesnotexist.com/" width="100%" height="700"
                     frameborder="0" scrolling="auto"><span data-mce-type="bookmark"
                         style="display: inline-block; width: 0px; overflow: hidden; line-height: 0;"
                         class="mce_SELRES_start">&#xFEFF;</span><span data-mce-type="bookmark"

@@ -30,7 +30,7 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
 <head id="CMSNTCO">
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>Thanh toán hoá đơn</title>
+    <title><?=__('Thanh toán hoá đơn');?></title>
     <meta name="description" content="Cổng thanh toán CMSNT.CO" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="format-detection" content="telephone=no" />
@@ -117,7 +117,7 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
                         </div>
                         <div class="entry">
                             <p><i class="fa fa-university" aria-hidden="true"></i>
-                                <span style="padding-left: 5px;">Ngân hàng</span>
+                                <span style="padding-left: 5px;"><?=__('Ngân hàng');?></span>
                                 <br />
                                 <span
                                     style="padding-left: 25px;word-break: keep-all;"><?=$info_payment['short_name'];?></span>
@@ -125,7 +125,7 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
                         </div>
                         <div class="entry">
                             <p><i class="fa fa-credit-card" aria-hidden="true"></i>
-                                <span style="padding-left: 5px;">Số tài khoản</span>
+                                <span style="padding-left: 5px;"><?=__('Số tài khoản');?></span>
                                 <br />
                                 <b id="copyStk"
                                     style="padding-left: 25px;word-break: keep-all;color:greenyellow;"><?=$info_payment['accountNumber'];?></b>
@@ -134,7 +134,7 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
                         </div>
                         <div class="entry">
                             <p><i class="fa fa-user" aria-hidden="true"></i>
-                                <span style="padding-left: 5px;">Chủ tài khoản</span>
+                                <span style="padding-left: 5px;"><?=__('Chủ tài khoản');?></span>
                                 <br />
                                 <span
                                     style="padding-left: 25px;word-break: keep-all;"><?=$info_payment['accountName'];?></span>
@@ -142,14 +142,14 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
                         </div>
                         <div class="entry">
                             <p><i class="fa fa-money" aria-hidden="true"></i>
-                                <span style="padding-left: 5px;">Số tiền cần thanh toán</span>
+                                <span style="padding-left: 5px;"><?=__('Số tiền cần thanh toán');?></span>
                                 <br />
                                 <b style="padding-left: 25px;color:aqua;"><?=format_currency($row['pay']);?></b>
                             </p>
                         </div>
                         <div class="entry">
                             <p><i class="fa fa-comment" aria-hidden="true"></i>
-                                <span style="padding-left: 5px;">Nội dung chuyển khoản</span>
+                                <span style="padding-left: 5px;"><?=__('Nội dung chuyển khoản');?></span>
                                 <br />
                                 <b id="copyNoiDung"
                                     style="padding-left: 25px;word-break: keep-all;color:yellow;"><?=$row['trans_id'];?></b>
@@ -158,10 +158,10 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
                         </div>
                         <div class="entry">
                             <p><i class="fa fa-barcode" aria-hidden="true"></i>
-                                <span style="padding-left: 5px;">Trạng thái <i class="fa fa-spinner fa-spin"></i>
+                                <span style="padding-left: 5px;"><?=__('Trạng thái');?> 
                                 </span>
                                 <br />
-                                <span id="status_payment" style="padding-left: 25px;word-break: break-all;"></span>
+                                <i class="fa fa-spinner fa-spin"></i><span id="status_payment" style="padding-left: 25px;word-break: break-all;"><?=__('Đang tìm dữ liệu...');?></span>
                             </p>
                         </div>
                     </div>
@@ -178,53 +178,67 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
                                                 if ($row['payment_method'] == 'MOMO') { ?>
                                                 <div class="payment-cta">
                                                     <div>
-                                                        <h1>Quét mã QR để thanh toán</h1>
+                                                        <h1><?=__('Quét mã QR để thanh toán');?></h1>
                                                     </div>
-                                                    <a>Sử dụng <b> App MoMo </b> hoặc ứng dụng camera hỗ trợ QR code để
-                                                        quét mã</a>
+                                                    <a><?=__('Sử dụng <b> App MoMo </b> hoặc ứng dụng camera hỗ trợ QR code để quét mã');?></a>
                                                 </div>
-                                                <?=file_get_contents("https://api.web2m.com/momoqrcodeapi/".$info_payment['accountNumber']."/".$row['pay']);?>
-                                                <h3 class="text-center">Nội dung chuyển tiền <b
+                                                <?=file_get_contents("https://api.web2m.com/api/qrmomo.php?amount=".$row['pay']."&phone=".$info_payment['accountNumber']."&noidung=".$row['trans_id']);?>
+                                                <h3 class="text-center"><?=__('Nội dung chuyển tiền');?> <b
                                                         style="color: blue;"><?=$row['trans_id'];?></b></h3>
-                                                <h4>Vui lòng nhập đúng nội dung chuyển tiền</h4>
+                                                <h4><?=__('Vui lòng nhập đúng nội dung chuyển tiền');?></h4>
 
                                                 <?php } elseif ($row['payment_method'] == 'THESIEURE') { ?>
+
                                                 <img src="https://thesieure.com/storage/userfiles/images/logo_thesieurecom.png"
                                                     class="mb-5">
                                                 <h3 class="text-center">Thực hiện chuyển quỹ vào ví có số điện thoại là
                                                     <b><?=$info_payment['accountNumber'];?></b>
                                                 </h3>
-                                                <h3 class="text-center">Số tiền cần chuyển là <b
+                                                <h3 class="text-center"><?=__('Số tiền cần chuyển là');?> <b
                                                         style="color: red;"><?=format_currency($row['pay']);?></b></h3>
-                                                <h3 class="text-center">Nội dung chuyển tiền <b
+                                                <h3 class="text-center"><?=__('Nội dung chuyển tiền');?> <b
                                                         style="color: blue;"><?=$row['trans_id'];?></b></h3>
-                                                <h4 class="text-center">Hệ thống tự động xử lý giao dịch khi thực hiện
-                                                    chuyển tiền thành công</h4>
-                                                <?php } elseif ($row['payment_method'] == 'Zalo Pay') { ?>
-                                                <div class="payment-cta">
-                                                    <div>
-                                                        <h1>Quét mã QR để thanh toán</h1>
-                                                    </div>
-                                                    <a>Sử dụng <b> App Zalo Pay </b> hoặc ứng dụng camera hỗ trợ
-                                                        QR code để
-                                                        quét mã</a>
-                                                </div>
-                                                <?php
-                                                    $img_zalopay = curl_get('https://api.web2m.com/zaloqrcodeapi/'.$CMSNT->site('token_zalopay').'/'.$row['pay'].'/'.$row['trans_id']);
-                                                    $img_zalopay = json_decode($img_zalopay, true);
-                                                    ?>
-                                                <img src="<?=$img_zalopay['data_image'];?>" width="100%">
-                                                <h3 class="text-center">Nội dung chuyển tiền <b
+                                                <h4 class="text-center"><?=__('Hệ thống tự động xử lý giao dịch khi thực hiện chuyển tiền thành công');?></h4>
+
+
+                                                <?php } elseif ($row['payment_method'] == 'Zalo Pay' ||
+                                                $row['payment_method'] == 'Kasikorn Bank' || 
+                                                $row['payment_method'] == 'Siam Commercial Bank' || 
+                                                $row['payment_method'] == 'MOMO' || 
+                                                $row['payment_method'] == 'THESIEURE' || 
+                                                $row['payment_method'] == 'Zalo Pay' || 
+                                                $row['payment_method'] == 'Bank of Ayudthya' || 
+                                                $row['payment_method'] == 'Krungthai Bank' || 
+                                                $row['payment_method'] == 'Bangkok Bank' ||
+                                                $row['payment_method'] == 'Wing Bank' ||
+                                                $row['payment_method'] == 'ABA Bank' ||
+                                                $row['payment_method'] == 'State Bank of India' ||
+                                                $row['payment_method'] == 'HDFC Bank' ||
+                                                $row['payment_method'] == 'ICICI Bank' ||
+                                                $row['payment_method'] == 'Thanachart Bank' ||
+                                                $row['payment_method'] == 'Maybank' ||
+                                                $row['payment_method'] == 'CIMB Clicks Malaysia' ||
+                                                $row['payment_method'] == 'United Bank for Africa (UBA)' ||
+                                                $row['payment_method'] == 'Wise.com' ||
+                                                $row['payment_method'] == 'Binance' ||
+                                                $row['payment_method'] == 'Bitcoin' ||
+                                                $row['payment_method'] == 'USDT' ||
+                                                $row['payment_method'] == 'Payoneer'
+                                                ) { ?>
+                                                <h3 class="text-center"><?=__('Số tiền cần chuyển là');?> <b
+                                                        style="color: red;"><?=format_currency($row['pay']);?></b></h3>
+
+                                                <h3 class="text-center"><?=__('Nội dung chuyển tiền');?> <b
                                                         style="color: blue;"><?=$row['trans_id'];?></b></h3>
-                                                <h4>Vui lòng nhập đúng nội dung chuyển tiền</h4>
+                                                <h4><?=__('Vui lòng nhập đúng nội dung chuyển tiền');?></h4>
                                                 <?php } else { ?>
+
+                                                    
                                                 <div class="payment-cta">
                                                     <div>
-                                                        <h1>Quét mã QR để thanh toán</h1>
+                                                        <h1><?=__('Quét mã QR để thanh toán');?></h1>
                                                     </div>
-                                                    <a>Sử dụng <b> App Internet Banking </b> hoặc ứng dụng camera hỗ trợ
-                                                        QR code để
-                                                        quét mã</a>
+                                                    <a><?=__('Sử dụng <b> App Internet Banking </b> hoặc ứng dụng camera hỗ trợ QR code để quét mã');?></a>
                                                 </div>
                                                 <img src="https://api.vietqr.io/<?=$row['payment_method'];?>/<?=$info_payment['accountNumber'];?>/<?=$row['pay'];?>/<?=$row['trans_id'];?>/vietqr_net_2.jpg?accountName=<?=$info_payment['accountName'];?>"
                                                     width="100%" />
@@ -246,11 +260,11 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
                     <div class="copyrights text-center">
                         <p style="color: #737373;   font-size: 11pt; font-weight: bold;">
                             <br />
-                            Vui lòng thanh toán vào thông tin tài khoản trên để hệ thống xử lý hoá đơn tự động.
+                            <?=__('Vui lòng thanh toán vào thông tin tài khoản trên để hệ thống xử lý hoá đơn tự động.');?>
                         </p>
                         <a href="<?=base_url('client/invoices');?>">
                             <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                            <span>Quay lại</span></a>
+                            <span><?=__('Quay lại');?></span></a>
                     </div>
                 </div>
             </div>
@@ -276,12 +290,15 @@ $info_payment = $CMSNT->get_row("SELECT * FROM `banks` WHERE `short_name` = '".$
         $.ajax({
             url: "<?=BASE_URL('ajaxs/client/status-invoice.php');?>",
             type: "GET",
-            dateType: "text",
+            dataType: "JSON",
             data: {
                 trans_id: "<?=$row['trans_id'];?>"
             },
             success: function(result) {
-                $('#status_payment').html(result);
+                if (result.return == 1) {
+                    setTimeout("location.href = '<?=BASE_URL('client/invoices');?>';", 1000);
+                }
+                $('#status_payment').html(result.status);
             }
         });
     }

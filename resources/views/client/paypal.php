@@ -24,15 +24,7 @@ require_once(__DIR__.'/sidebar.php');
 <div class="content-page">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12">
-                <div class="alert bg-white alert-primary" role="alert">
-                    <div class="iq-alert-icon">
-                        <i class="ri-alert-line"></i>
-                    </div> 
-                    <div class="iq-alert-text"><?=$CMSNT->site('paypal_notice');?></div>
-                </div>
-            </div>
-            <div class="col-lg-12">
+            <div class="col-lg-6">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between pb-0">
                         <div class="header-title">
@@ -53,7 +45,23 @@ require_once(__DIR__.'/sidebar.php');
                         </div>
                     </div>
                     <div class="card-footer text-center">
+                        <script
+                            src="https://www.paypal.com/sdk/js?client-id=<?=$CMSNT->site('clientId_paypal');?>&currency=USD">
+                        </script>
+
                         <div id="paypal-button-container"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <b><?=mb_strtoupper(__('NOTIFICATION'), 'UTF-8');?></b>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <?=$CMSNT->site('paypal_notice');?>
                     </div>
                 </div>
             </div>
@@ -84,7 +92,11 @@ require_once(__DIR__.'/sidebar.php');
                                         <td><b><?=$row['trans_id'];?></b></td>
                                         <td><b style="color: red;">$<?=format_cash($row['amount']);?></b></td>
                                         <td><b style="color: green;"><?=format_currency($row['price']);?></b></td>
-                                        <td><p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center"><?=__('Thành công');?></p></td>
+                                        <td>
+                                            <p
+                                                class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
+                                                <?=__('Thành công');?></p>
+                                        </td>
                                         <td><?=$row['create_date'];?></td>
                                     </tr>
                                     <?php }?>
@@ -99,8 +111,6 @@ require_once(__DIR__.'/sidebar.php');
 </div>
 
 
-<script src="https://www.paypal.com/sdk/js?client-id=<?=$CMSNT->site('clientId_paypal');?>&currency=USD"></script>
-
 <script>
 (function($) {
     paypal.Buttons({
@@ -111,7 +121,7 @@ require_once(__DIR__.'/sidebar.php');
                 purchase_units: [{
                     amount: {
                         value: $('#amount')
-                        .val() // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+                            .val() // Can reference variables or functions. Example: `value: document.getElementById('...').value`
                     }
                 }]
             });

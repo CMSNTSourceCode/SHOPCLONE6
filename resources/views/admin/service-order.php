@@ -2,7 +2,7 @@
     die('The Request Not Found');
 }
 $body = [
-    'title' => 'Đơn hàng dịch vụ',
+    'title' => 'Lịch sử đơn hàng',
     'desc'   => 'CMSNT Panel',
     'keyword' => 'cmsnt, CMSNT, cmsnt.co,'
 ];
@@ -38,12 +38,12 @@ require_once(__DIR__.'/nav.php');
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Đơn hàng dịch vụ</h1>
+                    <h1 class="m-0">Lịch sử đơn hàng</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="<?=BASE_URL('admin/home');?>">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Đơn hàng dịch vụ</li>
+                        <li class="breadcrumb-item active">Lịch sử đơn hàng</li>
                     </ol>
                 </div>
             </div>
@@ -57,7 +57,7 @@ require_once(__DIR__.'/nav.php');
                         <div class="card-header ">
                             <h3 class="card-title">
                                 <i class="fas fa-history mr-1"></i>
-                                DANH SÁCH ĐƠN HÀNG DỊCH VỤ
+                                LỊCH SỬ ĐƠN HÀNG
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn bg-success btn-sm" data-card-widget="collapse">
@@ -73,21 +73,41 @@ require_once(__DIR__.'/nav.php');
                         </div>
                         <div class="card-body">
                             <div class="table-responsive p-0">
-                                <table id="datatable2" class="table table-bordered table-striped table-hover">
+                                <table id="order" class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th width="5%">#</th>
-                                            <th>Username</th>
-                                            <th>Service</th>
-                                            <th>Amount</th>
-                                            <th>Pay</th>
-                                            <th>Url</th>
-                                            <th>Createdate</th>
-                                            <th>Updatedate</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
+                                            <th width="5%"><?=__('STT');?></th>
+                                            <th width="10%"><?=__('TRANSID');?> / ID API</th>
+                                            <th><?=__('USER');?></th>
+                                            <th><?=__('DỊCH VỤ');?></th>
+                                            <th><?=__('SỐ LƯỢNG / CÒN LẠI');?></th>
+                                            <th><?=__('THANH TOÁN');?></th>
+                                            <th><?=__('URL/ID');?></th>
+                                            <th><?=__('THỜI GIAN');?></th>
+                                            <th><?=__('TRẠNG THÁI');?></th>
+
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `order_service` ORDER BY id DESC  ") as $row) {?>
+                                        <tr>
+                                            <td><?=$i++;?></td>
+                                            <td><?=$row['trans_id'];?> / <?=$row['id_api'];?></td>
+                                            <td><a
+                                                    href="<?=base_url('admin/user-edit/'.$row['buyer']);?>"><?=getRowRealtime("users", $row['buyer'], "username");?></a>
+                                            </td>
+                                            <td>
+                                                <?=getRowRealtime('services', $row['service_id'], 'name');?>
+                                            </td>
+                                            <td><b style="color: red;"><?=format_cash($row['amount']);?></b> / <b style="color: green;"><?=format_cash($row['remains']);?></b></td>
+                                            <td><b style="color: blue;"><?=format_currency($row['price']);?></b></td>
+                                            <td><textarea class="form-control" rows="1"
+                                                    readonly><?=$row['url'];?></textarea></td>
+                                            <td><?=$row['create_gettime'];?></td>
+                                            <td><?=display_service_client($row['status']);?></td>
+                                        </tr>
+                                        <?php }?>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -97,26 +117,15 @@ require_once(__DIR__.'/nav.php');
         </div>
     </div>
 </div>
+<script>
+$(function() {
+    $('#order').DataTable({
+        order: [
+            [7, "desc"]
+        ]
+    });
+});
+</script>
 <?php
 require_once(__DIR__.'/footer.php');
 ?>
-<script>
-$(function() {
-    $('#datatable2').DataTable( {
-        ajax: '<?=base_url('ajaxs/admin/services.php');?>',
-        dataSrc: 'data',
-        columns: [
-            { data: 'stt' },
-            { data: 'buyer' },
-            { data: 'service_id' },
-            { data: 'amount' },
-            { data: 'pay' },
-            { data: 'url' },
-            { data: 'create_date' },
-            { data: 'update_date' },
-            { data: 'status' },
-            { data: 'action' }
-        ]
-    } );
-});
-</script>

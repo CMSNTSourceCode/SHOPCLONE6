@@ -17,7 +17,7 @@ function whereInvoicePending($payment_method, $amount)
         `pay` <= '$amount' AND 
         `fake` = 0 AND
         ".time()." - `create_time` < ".$CMSNT->site('invoice_expiration')."
-        ORDER BY id DESC"
+        ORDER BY id DESC "
     );
 }
 function queryCancelInvoices()

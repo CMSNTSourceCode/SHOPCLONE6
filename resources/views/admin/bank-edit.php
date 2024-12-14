@@ -100,6 +100,14 @@ if (isset($_POST['LuuNganHang'])) {
     </div>
     <div class="content">
         <div class="container-fluid">
+            <?php if(time() - $CMSNT->site('check_time_cron_bank') >= 120):?>
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h5><i class="icon fas fa-exclamation-triangle"></i> Alert!</h5>
+                Vui lòng thực hiện <b>CRON JOB</b> liên kết: <a href=" <?=base_url('cron/bank.php');?>"
+                    target="_blank"><?=base_url('cron/bank.php');?></a>
+            </div>
+            <?php endif?>
             <div class="row">
                 <section class="col-lg-7 connectedSortable">
                     <div class="card card-primary card-outline">
@@ -180,9 +188,9 @@ if (isset($_POST['LuuNganHang'])) {
                                     <label for="exampleInputEmail1">Ngân hàng</label>
                                     <select class="form-control select2bs4" name="short_name" required>
                                         <option value="">Chọn ngân hàng</option>
-                                        <?php foreach ($config_listbank as $list) {?>
-                                        <option <?=$row['short_name'] == $list ? 'selected' : '';?> value="<?=$list;?>">
-                                            <?=$list;?></option>
+                                        <?php foreach ($config_listbank as $key => $value) {?>
+                                        <option <?=$row['short_name'] == $key ? 'selected' : '';?> value="<?=$key;?>">
+                                            <?=$value;?></option>
                                         <?php }?>
                                     </select>
                                 </div>

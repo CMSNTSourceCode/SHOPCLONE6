@@ -91,6 +91,10 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                         aria-selected="true">THÔNG TIN CHUNG</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" id="google-reCAPTCHA-tab" data-toggle="pill" href="#google-reCAPTCHA"
+                                        role="tab" aria-controls="google-reCAPTCHA" aria-selected="false">Google reCAPTCHA</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" id="bot-telegram-tab" data-toggle="pill" href="#bot-telegram"
                                         role="tab" aria-controls="bot-telegram" aria-selected="false">BOT TELEGRAM</a>
                                 </li>
@@ -107,7 +111,8 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill"
                                         href="#custom-tabs-three-profile" role="tab"
-                                        aria-controls="custom-tabs-three-profile" aria-selected="false">NGÂN HÀNG AUTO</a>
+                                        aria-controls="custom-tabs-three-profile" aria-selected="false">NGÂN HÀNG VN
+                                        AUTO</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill"
@@ -144,6 +149,21 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                         href="#tab9" role="tab" aria-controls="custom-tabs-three-profile"
                                         aria-selected="false">CRYPTO AUTO</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill"
+                                        href="#toyyibpay" role="tab" aria-controls="custom-tabs-three-profile"
+                                        aria-selected="false">TOYYIBPAY Malaysia Bank Recharge</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill"
+                                        href="#flutterwave" role="tab" aria-controls="custom-tabs-three-profile"
+                                        aria-selected="false">Flutterwave Nigeria Recharge</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill"
+                                        href="#squadco" role="tab" aria-controls="custom-tabs-three-profile"
+                                        aria-selected="false">Squadco Nigeria Recharge</a>
+                                </li>
                             </ul>
                         </div>
                         <div class="card-body">
@@ -156,12 +176,14 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1">Title Sidebar</label>
                                                     <input type="text" class="form-control" name="menu_title"
-                                                        value="<?=$CMSNT->site('menu_title');?>" placeholder="VD: CMSNT.CO">
+                                                        value="<?=$CMSNT->site('menu_title');?>"
+                                                        placeholder="VD: CMSNT.CO">
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="exampleInputEmail1">Title (tiêu đề khi share lên mạng xã hội)</label>
+                                                    <label for="exampleInputEmail1">Title (tiêu đề khi share lên mạng xã
+                                                        hội)</label>
                                                     <input type="text" class="form-control" name="title"
                                                         value="<?=$CMSNT->site('title');?>" placeholder="VD: CMSNT.CO">
                                                 </div>
@@ -289,7 +311,7 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                         value="<?=$CMSNT->site('email_smtp');?>"
                                                         placeholder="Nhập địa chỉ Email SMTP">
                                                     <i>Hướng dẫn cấu hình SMTP <a target="_blank"
-                                                            href="https://youtu.be/oIEeWStR8XI">tại
+                                                            href="https://www.cmsnt.co/2022/12/huong-dan-cach-cau-hinh-smtp-e-gui.html">tại
                                                             đây</a></i>
                                                 </div>
                                             </div>
@@ -367,7 +389,11 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                             <?=$CMSNT->site('currency') == 'THB' ? 'selected' : '';?>
                                                             value="THB"><?=__('THB');?></option>
                                                     </select>
+                                                    <i>Vui lòng cấu hình <a
+                                                            href="<?=base_url_admin('currency-list');?>">tại
+                                                            đây</a>.</i>
                                                 </div>
+
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="form-group">
@@ -585,7 +611,8 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                             <div class="col-lg-4">
                                                 <div class="form-group">
                                                     <label>ON/OFF Change password định kỳ</label>
-                                                    <select class="form-control select2bs4" name="status_is_change_password">
+                                                    <select class="form-control select2bs4"
+                                                        name="status_is_change_password">
                                                         <option
                                                             <?=$CMSNT->site('status_is_change_password') == 1 ? 'selected' : '';?>
                                                             value="1">ON</option>
@@ -593,6 +620,136 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                             <?=$CMSNT->site('status_is_change_password') == 0 ? 'selected' : '';?>
                                                             value="0">OFF</option>
                                                     </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Timezone</label>
+                                                    <input type="text" class="form-control" name="timezone"
+                                                        value="<?=$CMSNT->site('timezone');?>"
+                                                        placeholder="VD: Asia/Ho_Chi_Minh">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>ON/OFF Cộng tiền cho người bán</label>
+                                                    <select class="form-control select2bs4" name="status_addfun_seller">
+                                                        <option
+                                                            <?=$CMSNT->site('status_addfun_seller') == 1 ? 'selected' : '';?>
+                                                            value="1">ON</option>
+                                                        <option
+                                                            <?=$CMSNT->site('status_addfun_seller') == 0 ? 'selected' : '';?>
+                                                            value="0">OFF</option>
+                                                    </select>
+                                                    <i>Nếu OFF, hệ thống sẽ tắt chức năng cộng tiền cho người bán.</i>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>ON/OFF Menu Mua Tài Liệu</label>
+                                                    <select class="form-control select2bs4"
+                                                        name="status_store_document">
+                                                        <option
+                                                            <?=$CMSNT->site('status_store_document') == 1 ? 'selected' : '';?>
+                                                            value="1">ON</option>
+                                                        <option
+                                                            <?=$CMSNT->site('status_store_document') == 0 ? 'selected' : '';?>
+                                                            value="0">OFF</option>
+                                                    </select>
+                                                    <i>Nếu OFF, hệ thống sẽ ẩn menu Mua Tài Liệu.</i>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Giới hạn số tài khoản đăng ký trên 1
+                                                        IP</label>
+                                                    <input type="number" class="form-control" name="max_register_ip"
+                                                        value="<?=$CMSNT->site('max_register_ip');?>">
+                                                    <i>VD: <?=$CMSNT->site('max_register_ip');?> => mỗi IP chỉ được tạo
+                                                        tối đa <?=$CMSNT->site('max_register_ip');?> tài khoản</i>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Mã PIN Cron Job</label>
+                                                    <input type="number" class="form-control" name="pin_cron"
+                                                        value="<?=$CMSNT->site('pin_cron');?>">
+                                                    <p>Nếu bạn đặt mã PIN, các liên kết CRON sẽ phải chèn thêm đoạn
+                                                        <b>in đậm</b> <?=base_url('cron/');?>...php<b
+                                                            style="font-size: 15px;">?pin=<?=$CMSNT->site('pin_cron');?></b>
+                                                        vào liên kết để tránh spam, để trống nếu không dùng chức năng
+                                                        này.</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>ON/OFF API mua tài khoản</label>
+                                                    <select class="form-control select2bs4"
+                                                        name="status_api_buyproduct">
+                                                        <option
+                                                            <?=$CMSNT->site('status_api_buyproduct') == 1 ? 'selected' : '';?>
+                                                            value="1">ON</option>
+                                                        <option
+                                                            <?=$CMSNT->site('status_api_buyproduct') == 0 ? 'selected' : '';?>
+                                                            value="0">OFF</option>
+                                                    </select>
+                                                    <i>Nếu OFF, hệ thống sẽ chặn các website khác kết nối API để mua
+                                                        hàng.</i>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>ON/OFF Bắt buộc user phải cập nhật số điện thoại</label>
+                                                    <select class="form-control select2bs4"
+                                                        name="is_update_phone">
+                                                        <option
+                                                            <?=$CMSNT->site('is_update_phone') == 1 ? 'selected' : '';?>
+                                                            value="1">ON</option>
+                                                        <option
+                                                            <?=$CMSNT->site('is_update_phone') == 0 ? 'selected' : '';?>
+                                                            value="0">OFF</option>
+                                                    </select>
+                                                    <i>Nếu chọn ON, hệ thống sẽ bắt user cập nhật số điện thoại mới có thể sử dụng website tiếp tục.</i>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>ON/OFF Xác thực OTP khi đăng nhập Admin</label>
+                                                    <select class="form-control select2bs4"
+                                                        name="status_otp_login_admin">
+                                                        <option
+                                                            <?=$CMSNT->site('status_otp_login_admin') == 1 ? 'selected' : '';?>
+                                                            value="1">ON</option>
+                                                        <option
+                                                            <?=$CMSNT->site('status_otp_login_admin') == 0 ? 'selected' : '';?>
+                                                            value="0">OFF</option>
+                                                    </select>
+                                                    <i>Vui lòng cấu hình <a target="_blank" href="https://www.cmsnt.co/2022/12/huong-dan-cach-cau-hinh-smtp-e-gui.html">SMTP</a> trước khi bật chức năng này.</i>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>ON/OFF Tính năng tự động đăng xuất Admin khi thay đổi địa chỉ IP</label>
+                                                    <select class="form-control select2bs4"
+                                                        name="status_only_ip_login_admin">
+                                                        <option
+                                                            <?=$CMSNT->site('status_only_ip_login_admin') == 1 ? 'selected' : '';?>
+                                                            value="1">ON</option>
+                                                        <option
+                                                            <?=$CMSNT->site('status_only_ip_login_admin') == 0 ? 'selected' : '';?>
+                                                            value="0">OFF</option>
+                                                    </select>
+                                                    <i>Chức năng bảo mật, khuyên dùng.</i>
+                                                </div>
+                                            </div>
+
+                                             
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>Thông báo chạy MUA TÀI KHOẢN</label>
+                                                    <textarea class="form-control"
+                                                        placeholder="Nhập nội dung thông báo chạy, có thể dùng thẻ HTML"
+                                                        name="marquee_notication_shopacc"><?=$CMSNT->site('marquee_notication_shopacc');?></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
@@ -613,6 +770,31 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                         name="javascript"><?=$CMSNT->site('javascript');?></textarea>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>HTML trên danh sách sản phẩm</label>
+                                                    <textarea id="html_top_product"
+                                                        placeholder="Dùng để chèn đoạn code hiển thị quảng cáo"
+                                                        name="html_top_product"><?=$CMSNT->site('html_top_product');?></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>HTML trang Banned</label>
+                                                    <textarea id="html_banned"
+                                                        placeholder="Nội dung hiển thị trong trang khoá tài khoản"
+                                                        name="html_banned"><?=$CMSNT->site('html_banned');?></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>HTML trang chặn IP</label>
+                                                    <textarea id="html_block_ip"
+                                                        placeholder="Nội dung hiển thị trong trang chặn địa chỉ IP"
+                                                        name="html_block_ip"><?=$CMSNT->site('html_block_ip');?></textarea>
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <button name="SaveSettings" class="btn btn-info btn-block btn-icon-left m-b-10"
                                             type="submit"><i class="fas fa-save mr-1"></i>Lưu Ngay</button>
@@ -656,8 +838,32 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                 value="<?=$CMSNT->site('chat_id_telegram');?>" placeholder="-788267800">
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">Nội dung thông báo mua hàng</label>
-                                            <textarea name="buy_notification"
+                                            <label for="exampleInputEmail1">Nội dung thông báo khi import tài
+                                                nguyên</label>
+                                            <textarea name="noti_import_telegram"
+                                                placeholder="Để trống để ẩn thông báo này"
+                                                class="form-control"><?=$CMSNT->site('noti_import_telegram');?></textarea>
+                                            <ul>
+                                                <li><b>{domain}</b> => Tên website của quý khách.</li>
+                                                <li><b>{amount}</b> => Số lượng tài nguyên đưa lên.</li>
+                                                <li><b>{name}</b> => Tên sản phẩm.</li>
+                                                <li><b>{time}</b> => Thời gian.</li>
+                                            </ul>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Chat ID Group thông báo import tài nguyên
+                                                (<a target="_blank"
+                                                    href="https://cmsnt.vn/2022/05/huong-dan-cau-hinh-bot-thong-bao-qua-telegram/">Xem
+                                                    hướng dẫn</a>)</label>
+                                            <input type="text" class="form-control" name="group_id_import_telegram"
+                                                value="<?=$CMSNT->site('group_id_import_telegram');?>"
+                                                placeholder="-788267800">
+                                            <i>Nhập ID group cần gửi thông báo khi Admin import tài nguyên</i>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Nội dung thông báo mua tài khoản</label>
+                                            <textarea name="buy_notification" placeholder="Để trống để ẩn thông báo này"
                                                 class="form-control"><?=$CMSNT->site('buy_notification');?></textarea>
                                             <ul>
                                                 <li><b>{domain}</b> => Tên website của quý khách.</li>
@@ -665,6 +871,7 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                 <li><b>{product_name}</b> => Tên sản phẩm khách hàng mua.</li>
                                                 <li><b>{method}</b> => Phương thức mua Website hoặc API.</li>
                                                 <li><b>{amount}</b> => Số lượng khách hàng mua.</li>
+                                                <li><b>{available}</b> => Số lượng còn lại.</li>
                                                 <li><b>{price}</b> => Số tiền khách hàng thanh toán.</li>
                                                 <li><b>{trans_id}</b> => Mã đơn hàng.</li>
                                                 <li><b>{time}</b> => Thời gian.</li>
@@ -674,6 +881,7 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                             <label for="exampleInputEmail1">Nội dung thông báo khi đăng ký tài
                                                 khoản</label>
                                             <textarea name="register_notification"
+                                                placeholder="Để trống để ẩn thông báo này"
                                                 class="form-control"><?=$CMSNT->site('register_notification');?></textarea>
                                             <ul>
                                                 <li><b>{domain}</b> => Tên website của quý khách.</li>
@@ -687,6 +895,7 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Nội dung thông báo nạp tiền</label>
                                             <textarea name="naptien_notification"
+                                                placeholder="Để trống để ẩn thông báo này"
                                                 class="form-control"><?=$CMSNT->site('naptien_notification');?></textarea>
                                             <ul>
                                                 <li><b>{domain}</b> => Tên website của quý khách.</li>
@@ -696,6 +905,82 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                 <li><b>{price}</b> => Thực nhận.</li>
                                                 <li><b>{time}</b> => Thời gian.</li>
                                             </ul>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Nội dung thông báo khi khách tạo hoá đơn nạp
+                                                tiền</label>
+                                            <textarea name="taohoadonnaptien_notification"
+                                                placeholder="Để trống để ẩn thông báo này"
+                                                class="form-control"><?=$CMSNT->site('taohoadonnaptien_notification');?></textarea>
+                                            <ul>
+                                                <li><b>{domain}</b> => Tên website của quý khách.</li>
+                                                <li><b>{username}</b> => Tên khách hàng nạp.</li>
+                                                <li><b>{method}</b> => Phương thức nạp.</li>
+                                                <li><b>{trans_id}</b> => Mã giao dịch.</li>
+                                                <li><b>{amount}</b> => Số tiền nạp.</li>
+                                                <li><b>{price}</b> => Thực nhận.</li>
+                                                <li><b>{time}</b> => Thời gian.</li>
+                                            </ul>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Nội dung thông báo khi khách yêu cầu tạo
+                                                website con</label>
+                                            <textarea name="create_website_notification"
+                                                placeholder="Để trống để ẩn thông báo này"
+                                                class="form-control"><?=$CMSNT->site('create_website_notification');?></textarea>
+                                            <ul>
+                                                <li><b>{domain}</b> => Tên website của quý khách.</li>
+                                                <li><b>{username}</b> => Tên khách hàng yêu cầu.</li>
+                                                <li><b>{url}</b> => Tên miền khách hàng yêu cầu.</li>
+                                                <li><b>{time}</b> => Thời gian.</li>
+                                            </ul>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Nội dung thông báo mua Fanapge</label>
+                                            <textarea name="buy_fanpage_notification" placeholder="Để trống để ẩn thông báo này"
+                                                class="form-control"><?=$CMSNT->site('buy_fanpage_notification');?></textarea>
+                                            <ul>
+                                                <li><b>{domain}</b> => Tên website của quý khách.</li>
+                                                <li><b>{username}</b> => Tên khách hàng mua.</li>
+                                                <li><b>{product_name}</b> => Tên sản phẩm khách hàng mua.</li>
+                                                <li><b>{method}</b> => Phương thức mua Website hoặc API.</li>
+                                                <li><b>{url}</b> => Link Facebook.</li>
+                                                <li><b>{price}</b> => Số tiền khách hàng thanh toán.</li>
+                                                <li><b>{time}</b> => Thời gian.</li>
+                                            </ul>
+                                        </div>
+                                        <button name="SaveSettings" class="btn btn-info btn-icon-left btn-block m-b-10"
+                                            type="submit"><i class="fas fa-save mr-1"></i>Lưu Ngay</button>
+                                    </form>
+                                </div>
+                                <div class="tab-pane fade" id="google-reCAPTCHA" role="tabpanel"
+                                    aria-labelledby="google-reCAPTCHA-tab">
+                                    <form action="" method="POST">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select class="form-control select2bs4" name="reCAPTCHA_status">
+                                                <option <?=$CMSNT->site('reCAPTCHA_status') == 0 ? 'selected' : '';?>
+                                                    value="0">OFF
+                                                </option>
+                                                <option <?=$CMSNT->site('reCAPTCHA_status') == 1 ? 'selected' : '';?>
+                                                    value="1">ON
+                                                </option>
+                                            </select>
+                                            <i>Vui lòng cấu hình thông tin phía dưới trước khi kích hoạt ON reCAPTCHA.</i>
+                                        </div>            
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">reCAPTCHA Site Key (<a target="_blank"
+                                                    href="https://www.cmsnt.co/2023/05/huong-dan-cau-hinh-recaptcha-vao-ma.html">Xem
+                                                    hướng dẫn</a>)</label>
+                                            <input type="text" class="form-control" name="reCAPTCHA_site_key"
+                                                value="<?=$CMSNT->site('reCAPTCHA_site_key');?>">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">reCAPTCHA Secret Key (<a target="_blank"
+                                                    href="https://www.cmsnt.co/2023/05/huong-dan-cau-hinh-recaptcha-vao-ma.html">Xem
+                                                    hướng dẫn</a>)</label>
+                                            <input type="text" class="form-control" name="reCAPTCHA_secret_key"
+                                                value="<?=$CMSNT->site('reCAPTCHA_secret_key');?>">
                                         </div>
                                         <button name="SaveSettings" class="btn btn-info btn-icon-left btn-block m-b-10"
                                             type="submit"><i class="fas fa-save mr-1"></i>Lưu Ngay</button>
@@ -726,13 +1011,10 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                     value="1">ON
                                                 </option>
                                             </select>
-                                            <i>Nạp tiền theo hoá đơn, quét QR code...</i><br>
-                                            <i>Ưu điểm: dễ dàng quản lý và cộng tay - Nhược điểm: xử lý chậm hơn vài
-                                                chục giây.</i>
+                                            <i>Nạp tiền bằng hoá đơn, quét QR code...</i><br>
                                         </div>
                                         <div class="form-group">
                                             <label>Server 2</label>
-                                            <?php if(checkAddon(24) == true):?>
                                             <select class="form-control select2bs4" name="sv2_autobank">
                                                 <option <?=$CMSNT->site('sv2_autobank') == 0 ? 'selected' : '';?>
                                                     value="0">OFF
@@ -741,22 +1023,14 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                     value="1">ON
                                                 </option>
                                             </select>
-                                            <?php else:?>
-                                            <div class="alert alert-danger" role="alert">
-                                                <div class="iq-alert-text">Bạn chưa kích hoạt Addon này!</div>
-                                            </div>
-                                            <?php endif?>
-                                            <i>Nạp tiền theo nội dung + id ví dụ:
-                                                <?=$CMSNT->site('prefix_autobank').$getUser['id'];?></i><br>
-                                            <i>Ưu điểm: xử lý nhanh - Nhược điểm: Khó cộng thủ công khi ngân hàng bảo
-                                                trì.</i>
+                                            <i>Nạp tiền theo nội dung + id, quét QR code...</i><br>
                                         </div>
                                         <div class="form-group">
                                             <label>Ngân hàng</label>
                                             <select class="form-control select2bs4" name="type_bank">
-                                                <?php foreach ($config_listbank as $bank) {?>
-                                                <option <?=$CMSNT->site('type_bank') == $bank ? 'selected' : '';?>
-                                                    value="<?=$bank;?>"><?=$bank;?>
+                                                <?php foreach ($config_listbank_auto as $key => $value) {?>
+                                                <option <?=$CMSNT->site('type_bank') == $key ? 'selected' : '';?>
+                                                    value="<?=$key;?>"><?=$value;?>
                                                 </option>
                                                 <?php }?>
                                             </select>
@@ -1047,38 +1321,30 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                             <i>Chọn OFF hệ thống sẽ ẩn nạp crypto.</i>
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">Email Nowpayment (<a type="button" data-toggle="modal"
-                                                    data-target="#modal-hd-crypto" href="#">Xem hướng dẫn</a>)</label>
-                                            <input type="text" class="form-control" name="email_nowpayments"
-                                                value="<?=$CMSNT->site('email_nowpayments');?>"
-                                                placeholder="">
+                                            <label for="exampleInputEmail1">Address (<a type="button"
+                                                    data-toggle="modal" data-target="#modal-hd-crypto" href="#">Xem
+                                                    hướng dẫn</a>)</label>
+                                            <input type="text" class="form-control" name="crypto_address"
+                                                value="<?=$CMSNT->site('crypto_address');?>" placeholder="">
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">Password Nowpayment (<a type="button" data-toggle="modal"
-                                                    data-target="#modal-hd-crypto" href="#">Xem hướng dẫn</a>)</label>
-                                            <input type="text" class="form-control" name="password_nowpayments"
-                                                value="<?=$CMSNT->site('password_nowpayments');?>"
-                                                placeholder="">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">API Key (<a type="button" data-toggle="modal"
-                                                    data-target="#modal-hd-crypto" href="#">Xem hướng dẫn</a>)</label>
-                                            <input type="text" class="form-control" name="apikey_nowpayments"
-                                                value="<?=$CMSNT->site('apikey_nowpayments');?>"
-                                                placeholder="">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">IPN (<a type="button" data-toggle="modal"
-                                                    data-target="#modal-hd-crypto" href="#">Xem hướng dẫn</a>)</label>
-                                            <input type="text" class="form-control" name="ipn_nowpayments"
-                                                value="<?=$CMSNT->site('ipn_nowpayments');?>"
-                                                placeholder="">
+                                            <label for="exampleInputEmail1">Token (<a type="button" data-toggle="modal"
+                                                    data-target="#modal-hd-crypto" href="#">Xem
+                                                    hướng dẫn</a>)</label>
+                                            <input type="text" class="form-control" name="crypto_token"
+                                                value="<?=$CMSNT->site('crypto_token');?>" placeholder="">
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Số tiền nạp tối thiểu</label>
-                                            <input type="number" class="form-control" name="min_crypto"
-                                                value="<?=$CMSNT->site('min_crypto');?>"
+                                            <input type="number" class="form-control" name="crypto_min"
+                                                value="<?=$CMSNT->site('crypto_min');?>"
                                                 placeholder="Số tiền nạp tối thiểu (nhập USD)">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Số tiền nạp tối đa</label>
+                                            <input type="number" class="form-control" name="crypto_max"
+                                                value="<?=$CMSNT->site('crypto_max');?>"
+                                                placeholder="Số tiền nạp tối đa (nhập USD)">
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Rate quy đổi USD sang VNĐ</label>
@@ -1156,7 +1422,8 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                     <select class="form-control select2bs4" name="display_show_product">
                                                         <option
                                                             <?=$CMSNT->site('display_show_product') == 1 ? 'selected' : '';?>
-                                                            value="1">Template 1 (LIST, BOX)</option>
+                                                            value="1">Template 1 (LIST, BOX, BOX 2, BOX 3, BOX 4)
+                                                        </option>
                                                         <option
                                                             <?=$CMSNT->site('display_show_product') == 2 ? 'selected' : '';?>
                                                             value="2">Template 2 (LIST, BOX)</option>
@@ -1170,6 +1437,10 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                             <?=$CMSNT->site('display_show_product') == 4 ? 'selected' : '';?>
                                                             value="4">Template 4 (BOX)</option>
                                                         <?php endif?>
+                                                        <option
+                                                            <?=$CMSNT->site('display_show_product') == 5 ? 'selected' : '';?>
+                                                            value="5">Template 5 (BOX)</option>
+
                                                     </select>
                                                     <i>Chọn kiểu sắp xếp sản phẩm</i>
                                                 </div>
@@ -1180,10 +1451,38 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                                     <select class="form-control select2bs4" name="type_showProduct">
                                                         <option
                                                             <?=$CMSNT->site('type_showProduct') == 1 ? 'selected' : '';?>
-                                                            value="1">Dạng BOX</option>
+                                                            value="1">Type BOX</option>
                                                         <option
                                                             <?=$CMSNT->site('type_showProduct') == 2 ? 'selected' : '';?>
-                                                            value="2">Dạng LIST</option>
+                                                            value="2">Type LIST</option>
+                                                        <option
+                                                            <?=$CMSNT->site('type_showProduct') == 'BOX2' ? 'selected' : '';?>
+                                                            value="BOX2">Type BOX 2</option>
+                                                        <option
+                                                            <?=$CMSNT->site('type_showProduct') == 'BOX3' ? 'selected' : '';?>
+                                                            value="BOX3">Type BOX 3</option>
+                                                        <option
+                                                            <?=$CMSNT->site('type_showProduct') == 'BOX4' ? 'selected' : '';?>
+                                                            value="BOX4">Type BOX 4</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label>Hiển thị chuyên mục</label>
+                                                    <select class="form-control select2bs4" name="show_category">
+                                                        <option
+                                                            <?=$CMSNT->site('show_category') == 'head' ? 'selected' : '';?>
+                                                            value="head">Trên cùng</option>
+                                                        <option
+                                                            <?=$CMSNT->site('show_category') == 'hide' ? 'selected' : '';?>
+                                                            value="hide">Không hiển thị</option>
+                                                        <option disabled
+                                                            <?=$CMSNT->site('show_category') == 'right' ? 'selected' : '';?>
+                                                            value="right">Bên phải (sắp ra mắt)</option>
+                                                            <option disabled
+                                                            <?=$CMSNT->site('show_category') == 'foot' ? 'selected' : '';?>
+                                                            value="foot">Bên dưới màn hình (sắp ra mắt)</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -1222,20 +1521,16 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                     <form action="" method="POST">
                                         <div class="form-group">
                                             <label>Vị trí hiện giao dịch gần đây</label>
-                                            <select class="form-control select2bs4"
-                                                name="position_gd_gan_day">
-                                                <option
-                                                    <?=$CMSNT->site('position_gd_gan_day') == 1 ? 'selected' : '';?>
+                                            <select class="form-control select2bs4" name="position_gd_gan_day">
+                                                <option <?=$CMSNT->site('position_gd_gan_day') == 1 ? 'selected' : '';?>
                                                     value="1">TRÊN SẢN PHẨM ĐANG BÁN</option>
-                                                <option
-                                                    <?=$CMSNT->site('position_gd_gan_day') == 2 ? 'selected' : '';?>
+                                                <option <?=$CMSNT->site('position_gd_gan_day') == 2 ? 'selected' : '';?>
                                                     value="2">DƯỚI SẢN PHẨM ĐANG BÁN</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label>ON/OFF Giao dịch gần đây</label>
-                                            <select class="form-control select2bs4"
-                                                name="status_giao_dich_gan_day">
+                                            <select class="form-control select2bs4" name="status_giao_dich_gan_day">
                                                 <option
                                                     <?=$CMSNT->site('status_giao_dich_gan_day') == 1 ? 'selected' : '';?>
                                                     value="1">ON</option>
@@ -1249,11 +1544,9 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                             <label>ON/OFF Tạo giao dịch ảo</label>
                                             <?php if(checkAddon(2) == true):?>
                                             <select class="form-control select2bs4" name="stt_giaodichao">
-                                                <option
-                                                    <?=$CMSNT->site('stt_giaodichao') == 1 ? 'selected' : '';?>
+                                                <option <?=$CMSNT->site('stt_giaodichao') == 1 ? 'selected' : '';?>
                                                     value="1">Bật</option>
-                                                <option
-                                                    <?=$CMSNT->site('stt_giaodichao') == 0 ? 'selected' : '';?>
+                                                <option <?=$CMSNT->site('stt_giaodichao') == 0 ? 'selected' : '';?>
                                                     value="0">Tắt</option>
                                             </select>
                                             <?php else:?>
@@ -1266,53 +1559,201 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                         </div>
                                         <div class="form-group">
                                             <label>Không tạo giao dịch ảo khi sản phẩm hết hàng</label>
-                                            <select class="form-control select2bs4"
-                                                name="is_account_buy_fake">
-                                                <option
-                                                    <?=$CMSNT->site('is_account_buy_fake') == 1 ? 'selected' : '';?>
+                                            <select class="form-control select2bs4" name="is_account_buy_fake">
+                                                <option <?=$CMSNT->site('is_account_buy_fake') == 1 ? 'selected' : '';?>
                                                     value="1">ON</option>
-                                                <option
-                                                    <?=$CMSNT->site('is_account_buy_fake') == 0 ? 'selected' : '';?>
+                                                <option <?=$CMSNT->site('is_account_buy_fake') == 0 ? 'selected' : '';?>
                                                     value="0">OFF</option>
                                             </select>
-                                            <i>Chọn ON để ngưng tạo giao dịch ảo khi sản phẩm hết tài khoản (chỉ áp dụng cho sản phẩm up lên web, không áp dụng cho sản phẩm API).</i>
+                                            <i>Chọn ON để ngưng tạo giao dịch ảo khi sản phẩm hết tài khoản (chỉ áp dụng
+                                                cho sản phẩm up lên web, không áp dụng cho sản phẩm API).</i>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Số lượng mua tối thiểu</label>
                                             <input type="number" class="form-control" name="min_gd_ao"
                                                 value="<?=$CMSNT->site('min_gd_ao');?>"
                                                 placeholder="Nhập số lượng mua tối thiểu ảo">
-                                                <i>Số lượng mua ảo tối thiểu cho 1 đơn hàng.</i>
+                                            <i>Số lượng mua ảo tối thiểu cho 1 đơn hàng.</i>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Số lượng mua tối đa</label>
                                             <input type="number" class="form-control" name="max_gd_ao"
                                                 value="<?=$CMSNT->site('max_gd_ao');?>"
                                                 placeholder="Nhập số lượng mua tối đa ảo">
-                                                <i>Số lượng mua ảo tối đa cho 1 đơn hàng.</i>
+                                            <i>Số lượng mua ảo tối đa cho 1 đơn hàng.</i>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Tốc độ tạo giao dịch mua ảo</label>
                                             <input type="number" class="form-control" name="speed_buy_gd_ao"
                                                 value="<?=$CMSNT->site('speed_buy_gd_ao');?>"
                                                 placeholder="Mặc định: 10">
-                                                <i>Tốc độ tạo giao dịch mua ảo, số càng bé giao dịch tạo ra càng nhanh.</i>
+                                            <i>Tốc độ tạo giao dịch mua ảo, số càng bé giao dịch tạo ra càng nhanh.</i>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Mệnh giá nạp ảo ngẫu nhiên</label>
-                                            <textarea class="form-control" rows="4" placeholder="Nhập số tiền nạp ngẫu nhiên, 1 dòng 1 mệnh giá " name="amount_nap_ao"><?=$CMSNT->site('amount_nap_ao');?></textarea>
+                                            <textarea class="form-control" rows="4"
+                                                placeholder="Nhập số tiền nạp ngẫu nhiên, 1 dòng 1 mệnh giá "
+                                                name="amount_nap_ao"><?=$CMSNT->site('amount_nap_ao');?></textarea>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Tốc độ tạo giao dịch nạp ảo</label>
                                             <input type="number" class="form-control" name="speed_nap_gd_ao"
                                                 value="<?=$CMSNT->site('speed_nap_gd_ao');?>"
                                                 placeholder="Mặc định: 10">
-                                                <i>Tốc độ tạo giao dịch nạp ảo, số càng bé giao dịch tạo ra càng nhanh.</i>
+                                            <i>Tốc độ tạo giao dịch nạp ảo, số càng bé giao dịch tạo ra càng nhanh.</i>
                                         </div>
                                         <button name="SaveSettings" class="btn btn-info btn-block btn-icon-left m-b-10"
                                             type="submit"><i class="fas fa-save mr-1"></i>Lưu Ngay</button>
                                     </form>
                                 </div>
+                                <div class="tab-pane fade" id="toyyibpay" role="tabpanel" aria-labelledby="tab9">
+                                    <h4 class="text-center">Bank Malaysia's automatic top-up system</h4>
+                                    <form action="" method="POST">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select class="form-control select2bs4" name="status_toyyibpay">
+                                                <option <?=$CMSNT->site('status_toyyibpay') == 0 ? 'selected' : '';?>
+                                                    value="0">OFF
+                                                </option>
+                                                <option <?=$CMSNT->site('status_toyyibpay') == 1 ? 'selected' : '';?>
+                                                    value="1">ON
+                                                </option>
+                                            </select>
+                                            <i>Select OFF, the system will hide recharge via Toyyibpay</i>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">User Secret Key</label>
+                                            <input type="text" class="form-control" name="userSecretKey_toyyibpay"
+                                                value="<?=$CMSNT->site('userSecretKey_toyyibpay');?>" placeholder="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Category Code</label>
+                                            <input type="text" class="form-control" name="categoryCode_toyyibpay"
+                                                value="<?=$CMSNT->site('categoryCode_toyyibpay');?>" placeholder="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Minimum deposit amount</label>
+                                            <input type="text" class="form-control" name="min_toyyibpay"
+                                                value="<?=$CMSNT->site('min_toyyibpay');?>" placeholder="">
+                                            <i>1 = RM1</i>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>FPX fee option</label>
+                                            <select class="form-control select2bs4" name="billChargeToCustomer">
+                                                <option
+                                                    <?=$CMSNT->site('billChargeToCustomer') == '0' ? 'selected' : '';?>
+                                                    value="0">Your customers pay a fee
+                                                </option>
+                                                <option
+                                                    <?=$CMSNT->site('billChargeToCustomer') == '' ? 'selected' : '';?>
+                                                    value="">You pay fees
+                                                </option>
+                                            </select>
+                                            <i>Select OFF, the system will hide recharge via Toyyibpay</i>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">1 VND is equal to how many RM</label>
+                                            <input type="text" class="form-control" name="rate_toyyibpay"
+                                                value="<?=$CMSNT->site('rate_toyyibpay');?>" placeholder="">
+
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Note when depositing with Toyyibpay</label>
+                                            <textarea id="notice_toyyibpay"
+                                                name="notice_toyyibpay"><?=$CMSNT->site('notice_toyyibpay');?></textarea>
+                                        </div>
+                                        <button name="SaveSettings" class="btn btn-info btn-block btn-icon-left m-b-10"
+                                            type="submit"><i class="fas fa-save mr-1"></i>Lưu Ngay</button>
+                                    </form>
+                                </div>
+
+                                <div class="tab-pane fade" id="flutterwave" role="tabpanel" aria-labelledby="tab9">
+                                    <h4 class="text-center">Flutterwave Nigeria Recharge</h4>
+                                    <form action="" method="POST">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select class="form-control select2bs4" name="flutterwave_status">
+                                                <option <?=$CMSNT->site('flutterwave_status') == 0 ? 'selected' : '';?>
+                                                    value="0">OFF
+                                                </option>
+                                                <option <?=$CMSNT->site('flutterwave_status') == 1 ? 'selected' : '';?>
+                                                    value="1">ON
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Public Key</label>
+                                            <input type="text" class="form-control" name="flutterwave_publicKey"
+                                                value="<?=$CMSNT->site('flutterwave_publicKey');?>" placeholder="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Secret Key</label>
+                                            <input type="text" class="form-control" name="flutterwave_secretKey"
+                                                value="<?=$CMSNT->site('flutterwave_secretKey');?>" placeholder="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">1 NGN is equal to how many VND</label>
+                                            <input type="text" class="form-control" name="flutterwave_rate"
+                                                value="<?=$CMSNT->site('flutterwave_rate');?>" placeholder="">
+
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Notice</label>
+                                            <textarea id="flutterwave_notice"
+                                                name="flutterwave_notice"><?=$CMSNT->site('flutterwave_notice');?></textarea>
+                                        </div>
+                                        <button name="SaveSettings" class="btn btn-info btn-block btn-icon-left m-b-10"
+                                            type="submit"><i class="fas fa-save mr-1"></i>Lưu Ngay</button>
+                                    </form>
+                                </div>
+
+                                <div class="tab-pane fade" id="squadco" role="tabpanel" aria-labelledby="tab9">
+                                    <h4 class="text-center">Squadco Nigeria Recharge</h4>
+                                    <form action="" method="POST">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select class="form-control select2bs4" name="squadco_status">
+                                                <option <?=$CMSNT->site('squadco_status') == 0 ? 'selected' : '';?>
+                                                    value="0">OFF
+                                                </option>
+                                                <option <?=$CMSNT->site('squadco_status') == 1 ? 'selected' : '';?>
+                                                    value="1">ON
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Public Key</label>
+                                            <input type="text" class="form-control" name="squadco_Public_Key"
+                                                value="<?=$CMSNT->site('squadco_Public_Key');?>" placeholder="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Secret Key</label>
+                                            <input type="text" class="form-control" name="squadco_Secret_Key"
+                                                value="<?=$CMSNT->site('squadco_Secret_Key');?>" placeholder="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Currency</label>
+                                            <input type="text" class="form-control" name="squadco_currency_code"
+                                                value="<?=$CMSNT->site('squadco_currency_code');?>" placeholder="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">1 <?=$CMSNT->site('squadco_currency_code');?> is equal to how many VND</label>
+                                            <input type="text" class="form-control" name="squadco_rate"
+                                                value="<?=$CMSNT->site('squadco_rate');?>" placeholder="">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Notice</label>
+                                            <textarea id="squadco_notice"
+                                                name="squadco_notice"><?=$CMSNT->site('squadco_notice');?></textarea>
+                                        </div>
+                                        <button name="SaveSettings" class="btn btn-info btn-block btn-icon-left m-b-10"
+                                            type="submit"><i class="fas fa-save mr-1"></i>Lưu Ngay</button>
+                                    </form>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -1378,6 +1819,11 @@ require_once(__DIR__.'/../../../models/is_license.php');
                                     <label for="exampleInputEmail1">Trang liên hệ</label>
                                     <textarea id="contact_page"
                                         name="contact_page"><?=$CMSNT->site('contact_page');?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Thông báo nổi</label>
+                                    <textarea id="notice_popup"
+                                        name="notice_popup"><?=$CMSNT->site('notice_popup');?></textarea>
                                 </div>
                             </div>
                             <div class="card-footer clearfix">
@@ -1486,18 +1932,20 @@ require_once(__DIR__.'/../../../models/is_license.php');
             </div>
             <div class="modal-body">
                 <ul>
-                    <li>Bước 1: Truy cập vào <a target="_blank"
-                            href="https://nowpayments.io/?link_id=4106129067">đây</a> để <b>đăng ký</b> tài khoản và
+                    <li>Bước 1: Truy cập vào <a target="_blank" href="https://fpayment.co/client/register">đây</a> để
+                        <b>đăng ký</b> tài khoản và
                         <b>đăng nhập</b>.
                     </li>
-                    <li>Bước 2: Nhìn vào menu bên trái, nhấn vào <b>Store Settings</b>.</li>
-                    <li>Bước 3: Nhìn vào <b>Payout Wallet</b>, bạn nhấn vào <b>Add another wallet</b>, sau đó bạn chọn tên ví <b>Currency</b> và nhập địa chỉ ví của bạn vào.</li>
-                    <li>Bước 4: Nhấn vào <b>API Keys</b>, bạn nhấn vào <b>Add new key</b> sau đó copy đoạn key được tạo ra, truy cập trang quản trị của bạn, dán đoạn key vừa copy vào ô API Key.</li>
-                    <li>Bước 5: Nhìn vào <b>Instant Payment Notifications</b>, bạn thực hiện tạo <b>IPN secret key</b> bằng cách nhấn vào <b>Generate</b>, sau đó bạn copy đoạn mã vừa tạo dán vào ô IPN trong trang quản trị (vui lòng bảo mật thông tin này tránh hacker fake giao dịch).  </li>
-                    <li>Bước 6: Đên đây quý khách có thể sử dụng hệ thống, sau khi user nạp tiền vào hệ thống thông qua Crypto, số dư coin của quý khách sẽ được chuyển thẳng vào ví mà quý khách thêm ở bước 3.</li>
+                    <li>Bước 2: Truy cập vào <a target="_blank" href="https://fpayment.co/client/wallets">đây</a> để
+                        thêm ví Tron vào hệ thống.
+                    </li>
+                    <li>Bước 3: Sau khi thêm ví Tron thành công, quý khách Copy <b>Token</b> và <b>Address</b> vào
+                        Admin.</li>
+                    <li>Bước 4: Vui lòng nạp số dư duy trì vào FPAYMENT.CO trước để giao dịch được tự động.</li>
                 </ul>
-                <!-- <p>Hướng dẫn bằng Video xem tại <a target="_blank"
-                        href="https://www.youtube.com/watch?v=N8CuOJTD6l8">đây</a>.</p> -->
+                </ul>
+                <p>Hướng dẫn chi tiết tại <a target="_blank"
+                        href="https://www.cmsnt.co/2023/02/huong-dan-tich-hop-nap-tien-tu-ong-bang.html">đây</a>.</p>
                 <h4 class="text-center">Chúc quý khách thành công <img
                         src="https://i.pinimg.com/736x/c4/2c/98/c42c983e8908fdbd6574c2135212f7e4.jpg" width="45px;">
                 </h4>
@@ -1611,6 +2059,21 @@ $(function() {
         $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
     })
     // CodeMirror
+    CodeMirror.fromTextArea(document.getElementById("html_block_ip"), {
+        mode: "htmlmixed",
+        theme: "monokai"
+    });
+    // CodeMirror
+    CodeMirror.fromTextArea(document.getElementById("html_banned"), {
+        mode: "htmlmixed",
+        theme: "monokai"
+    });
+    // CodeMirror
+    CodeMirror.fromTextArea(document.getElementById("html_top_product"), {
+        mode: "htmlmixed",
+        theme: "monokai"
+    });
+    // CodeMirror
     CodeMirror.fromTextArea(document.getElementById("codeMirrorDemo"), {
         mode: "htmlmixed",
         theme: "monokai"
@@ -1620,10 +2083,20 @@ $(function() {
         mode: "htmlmixed",
         theme: "monokai"
     });
+    // CodeMirror
+    CodeMirror.fromTextArea(document.getElementById("marquee_notication_shopacc"), {
+        mode: "htmlmixed",
+        theme: "monokai"
+    });
+
 })
 </script>
 <!-- ckeditor -->
 <script>
+CKEDITOR.replace("squadco_notice");
+CKEDITOR.replace("flutterwave_notice");
+CKEDITOR.replace("notice_toyyibpay");
+CKEDITOR.replace("notice_popup");
 CKEDITOR.replace("notice_ref");
 CKEDITOR.replace("perfectmoney_notice");
 CKEDITOR.replace("notice_spin");

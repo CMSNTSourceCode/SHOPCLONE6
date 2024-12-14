@@ -32,7 +32,7 @@ if(isset($_GET['request_id']) && isset($_GET['callback_sign'])){
     if($callback_sign != md5($CMSNT->site('partner_key_card').$code.$serial)){
         die('callback_sign_error');
     }
-    $code = check_string($_GET['content']);
+    //$code = check_string($_GET['content']);
     if (!$row = $CMSNT->get_row(" SELECT * FROM `cards` WHERE `trans_id` = '$request_id' AND `status` = 0 ")) {
         die('request_id_error');
     }
@@ -48,7 +48,7 @@ if(isset($_GET['request_id']) && isset($_GET['callback_sign'])){
             'price'         => $price,
             'update_date'    => gettime()
         ), " `id` = '".$row['id']."' ");
-        $User->AddCredits($row['user_id'], $price, "Nạp thẻ cào Seri ".$row['serial']." - Pin ".$row['pin']." ");
+        $User->AddCredits($row['user_id'], $price, "Nạp thẻ cào Seri ".$row['serial']." - Pin ".$row['pin']." ", 'TOPUP_CARD_'.$row['pin']);
 
         /** SEND NOTI CHO ADMIN */
         $my_text = $CMSNT->site('naptien_notification');

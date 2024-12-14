@@ -135,7 +135,7 @@ require_once(__DIR__.'/nav.php');
                                             OFF
                                         </option>
                                     </select>
-                                    <p>Hệ thống sẽ bật tính năng xác minh IP khi truy cập Admin nếu bạn chọn ON (lưu ý: bạn phải nhập IP của bạn vào danh sách phía dưới trước khi chọn ON chức năng này.)</p>
+                                    <h5>Hệ thống sẽ bật tính năng xác minh IP khi truy cập Admin nếu bạn chọn ON (lưu ý: bạn phải nhập IP của bạn vào danh sách phía dưới trước khi chọn ON chức năng này.)</h5>
                                     <p>CMSNT xin lấy phí 100.000đ của quý khách nếu quý khách cần CMSNT vào Hosting format lại dữ liệu IP (trường hợp này sẽ sãy ra khi quý khách chưa cấu hình IP mà đã chọn ON hoặc IP của quý khách bị thay đổi do nhà mạng v.v).</p>
                                 </div>
                             </div>

@@ -6,18 +6,20 @@
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-                <span class="badge border border-primary text-primary"><i class="fas fa-wallet mr-1"></i><?=__('Ví');?>:
+                <span class="badge badge2 border border-primary text-primary"><i class="fas fa-wallet mr-1"></i><?=__('Ví');?>:
                     <b><?=format_currency(isset($getUser['money']) ? $getUser['money'] : 0);?></b></span>
-                    <?php if (isset($getUser)):?>
-                        <?php if ($getUser['admin'] == 1):?>
-                        <a href="<?=base_url_admin();?>" class="badge border border-danger text-danger"><i class="fas fa-cog mr-1"></i><b>Admin Panel</b></a>
-                        <?php endif?>
-                        <!-- <?php if ($getUser['ctv'] == 1):?>
+                <?php if (isset($getUser)):?>
+                <?php if ($getUser['admin'] == 1):?>
+                <a href="<?=base_url_admin();?>" class="badge border badge2 border-danger text-danger"><i
+                        class="fas fa-cog mr-1"></i><b>Admin Panel</b></a>
+                <?php endif?>
+                <!-- <?php if ($getUser['ctv'] == 1):?>
                         <a href="<?=base_url('ctv/');?>" class="badge border border-info text-info"><i class="fas fa-cog mr-1"></i><b>Staff Panel</b></a>
                         <?php endif?> -->
-                    <?php else:?>
-                        <a href="<?=base_url('client/login');?>" class="badge border border-danger text-danger"><i class="fas fa-sign-in-alt mr-1"></i><b><?=__('Đăng Nhập');?></b></a>
-                    <?php endif?>
+                <?php else:?>
+                <a href="<?=base_url('client/login');?>" class="badge border badge2 border-danger text-danger"><i
+                        class="fas fa-sign-in-alt mr-1"></i><b><?=__('Đăng Nhập');?></b></a>
+                <?php endif?>
             </div>
             <div class="d-flex align-items-center">
                 <div class="change-mode">
@@ -114,31 +116,7 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item nav-icon dropdown">
-                            <a href="#" class="search-toggle dropdown-toggle" id="dropdownMenuButton2"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img src="<?=BASE_URL($CMSNT->get_row("SELECT * FROM `languages` WHERE `lang` = '".getLanguage()."' ")['icon']);?>"
-                                    class="img-fluid rounded-circle" alt="user"
-                                    style="height: 30px; min-width: 30px; width: 30px;">
-                                <span class="bg-primary"></span>
-                            </a>
-                            <div class="iq-sub-dropdown dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                <div class="card shadow-none m-0 border-0">
-                                    <div class=" p-0 ">
-                                        <ul class="dropdown-menu-1 list-group list-group-flush">
-                                            <?php foreach ($CMSNT->get_list("SELECT * FROM `languages` WHERE `status` = 1 ") as $lang) {?>
-                                            <li onclick="changeLanguage(<?=$lang['id'];?>)"
-                                                class="dropdown-item-1 list-group-item px-2"><a class="p-0"
-                                                    href="#"><img src="<?=BASE_URL($lang['icon']);?>" alt="img-flaf"
-                                                        class="img-fluid mr-2"
-                                                        style="width: 30px;height: 20px;min-width: 15px;" /><?=$lang['lang'];?></a>
-                                            </li>
-                                            <?php }?>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+ 
                         <li class="nav-item nav-icon dropdown">
                             <a href="#" class="nav-item nav-icon dropdown-toggle pr-0 search-toggle"
                                 id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
@@ -283,3 +261,37 @@ function changeLanguage(id) {
     });
 }
 </script>
+<script>
+function changeCurrency(id) {
+    $.ajax({
+        url: "<?=BASE_URL("ajaxs/client/changeCurrency.php");?>",
+        method: "POST",
+        dataType: "JSON",
+        data: {
+            id: id
+        },
+        success: function(respone) {
+            if (respone.status == 'success') {
+                cuteToast({
+                    type: "success",
+                    message: respone.msg,
+                    timer: 5000
+                });
+                location.reload();
+            } else {
+                cuteAlert({
+                    type: "error",
+                    title: "Error",
+                    message: respone.msg,
+                    buttonText: "Okay"
+                });
+            }
+        },
+        error: function() {
+            alert(html(response));
+            history.back();
+        }
+    });
+}
+</script>
+<div style="padding-top:90px">

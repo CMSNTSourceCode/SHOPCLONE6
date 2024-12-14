@@ -523,7 +523,7 @@ require_once(__DIR__.'/sidebar.php');
             </button>
          </div>
          <div class="modal-body">
-            Thanh toán 1 đơn hàng có giá lớn hơn hoặc bằng <b style="color:red;"><?=format_currency($CMSNT->site('condition_spin'));?></b> sẽ nhận được thêm 1 lượt quay.
+            <?=__('Thanh toán 1 đơn hàng có giá lớn hơn hoặc bằng');?> <b style="color:red;"><?=format_currency($CMSNT->site('condition_spin'));?></b> <?=__('sẽ nhận được thêm 1 lượt quay.');?>
          </div>
          <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=__('ĐÓNG');?></button>

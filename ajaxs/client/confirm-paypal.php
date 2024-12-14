@@ -30,9 +30,6 @@ if (isset($_POST['act']) && $_POST['act'] == 'confirm' && isset($_POST['order'])
     if (!$getUser = $CMSNT->get_row("SELECT * FROM `users` WHERE `token` = '".check_string($_POST['token'])."' AND `banned` = 0 ")) {
         die(json_encode(['status' => 'error', 'msg' => __('Vui lòng đăng nhập')]));
     }
-    if (time() - $getUser['time_request'] < 2) {
-        die(json_encode(['status' => 'error', 'msg' => __('Bạn đang thao tác quá nhanh, vui lòng chờ')]));
-    }
     // Uncomment nếu dùng trong môi trường production
     $environment = new ProductionEnvironment($clientId, $clientSecret);
     //$environment = new SandboxEnvironment($clientId, $clientSecret);

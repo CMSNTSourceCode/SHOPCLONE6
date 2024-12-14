@@ -15,6 +15,13 @@ if (isset($_POST['id'])) {
     if(empty($_POST['purchase_key'])){
         die(json_encode(['status' => 'error', 'msg' => 'Vui lòng nhập Purchase key!']));
     }
+    if ($CMSNT->site('status_demo') != 0) {
+        $data = json_encode([
+            'status'    => 'error',
+            'msg'       => 'Không được dùng chức năng này vì đây là trang web demo'
+        ]);
+        die($data);
+    }
     $purchase_key = check_string($_POST['purchase_key']);
     $domain = str_replace('www.', '', $_SERVER['HTTP_HOST']);
     if($purchase_key != md5($domain.'|'.$row['id'])){

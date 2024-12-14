@@ -3,12 +3,17 @@
 define("IN_SITE", true);
 
 require_once(__DIR__."/../../libs/db.php");
+require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/../../libs/lang.php");
 require_once(__DIR__."/../../libs/helper.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = check_string($_POST['email']);
-    $password = TypePassword(check_string($_POST['password']));
+    $password = check_string($_POST['password']);
+    die(json_encode([
+        'status'    => 'error',
+        'msg'       => 'Chức năng này đã bị đóng, vui lòng đăng nhập bằng trang khách'
+    ]));
     if (empty($email = check_string($_POST['email']))) {
         die(json_encode([
             'status'    => 'error',
@@ -28,12 +33,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             die(json_encode(['status' => 'error', 'msg' => __('Captcha không chính xác')]));
         }
     }
-    $getUser = $CMSNT->get_row("SELECT * FROM `users` WHERE `email` = '$email' AND `password` = '$password' AND `ctv` = 1  ");
+    $getUser = $CMSNT->get_row("SELECT * FROM `users` WHERE `email` = '$email' AND `ctv` = 1  ");
     if (!$getUser) {
         die(json_encode([
             'status'    => 'error',
             'msg'       => 'Thông tin đăng nhập không chính xác'
         ]));
+    }
+    if (time() > $getUser['time_request']) {
+        if (time() - $getUser['time_request'] < $config['max_time_load']) {
+            die(json_encode(['status' => 'error', 'msg' => __('Bạn đang thao tác quá nhanh, vui lòng chờ')]));
+        }
+    }
+    if ($CMSNT->site('type_password') == 'bcrypt') {
+        if (!password_verify($password, $getUser['password'])) {
+            die(json_encode([
+                'status'    => 'error',
+                'msg'       => __('Thông tin đăng nhập không chính xác')
+            ]));
+        }
+    } else {
+        if ($getUser['password'] != TypePassword($password)) {
+            die(json_encode([
+                'status'    => 'error',
+                'msg'       => __('Thông tin đăng nhập không chính xác')
+            ]));
+        }
     }
     if ($getUser['status_2fa'] == 1) {
         die(json_encode([

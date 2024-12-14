@@ -37,7 +37,7 @@ require_once(__DIR__ . '/../../../models/is_admin.php');
 require_once(__DIR__ . '/header.php');
 require_once(__DIR__ . '/sidebar.php');
 require_once(__DIR__ . '/nav.php');
-require_once(__DIR__ . '/../../../models/is_license.php');
+ 
 ?>
 <?php
 
@@ -72,44 +72,135 @@ if (isset($_POST['SaveSettings'])) {
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-success"><i class="far fa-money-bill-alt"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Lợi nhuận API toàn thời gian</span>
-                            <span class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 ")['SUM(`cost`)']);?></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-warning"><i class="far fa-money-bill-alt"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Lợi nhuận API tháng <?=date('m', time());?></span>
-                            <span class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND YEAR(create_date) = ".date('Y')." AND MONTH(create_date) = ".date('m')." ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND YEAR(create_date) = ".date('Y')." AND MONTH(create_date) = ".date('m')." ")['SUM(`cost`)']);?></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-info"><i class="far fa-money-bill-alt"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Lợi nhuận API trong tuần</span>
-                            <span class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND WEEK(create_date, 1) = WEEK(CURDATE(), 1) ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND WEEK(create_date, 1) = WEEK(CURDATE(), 1) ")['SUM(`cost`)']);?></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-danger"><i class="far fa-money-bill-alt"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Lợi nhuận API hôm nay</span>
-                            <span class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND `create_date` >= DATE(NOW()) AND `create_date` < DATE(NOW()) + INTERVAL 1 DAY ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND `create_date` >= DATE(NOW()) AND `create_date` < DATE(NOW()) + INTERVAL 1 DAY ")['SUM(`cost`)']);?></span>
-                        </div>
-                    </div>
-                </div>
                 <section class="col-lg-12">
+                    <div class="alert alert-info alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <h5><i class="icon fas fa-info"></i> Thật tuyệt vời!</h5>
+                        Từ giờ bạn có thể tuỳ chỉnh chiết khấu tự động và tự động đổi tên sản phẩm từng API
+                    </div>
                 </section>
+                <div class="col-md-6 col-sm-6 col-12">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-success"><i class="far fa-money-bill-alt"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Lợi nhuận API toàn thời gian</span>
+                                    <span
+                                        class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 ")['SUM(`cost`)']);?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-warning"><i class="far fa-money-bill-alt"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Lợi nhuận API tháng <?=date('m', time());?></span>
+                                    <span
+                                        class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND YEAR(create_date) = ".date('Y')." AND MONTH(create_date) = ".date('m')." ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND YEAR(create_date) = ".date('Y')." AND MONTH(create_date) = ".date('m')." ")['SUM(`cost`)']);?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-info"><i class="far fa-money-bill-alt"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Lợi nhuận API trong tuần</span>
+                                    <span
+                                        class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND WEEK(create_date, 1) = WEEK(CURDATE(), 1) ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND WEEK(create_date, 1) = WEEK(CURDATE(), 1) ")['SUM(`cost`)']);?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-danger"><i class="far fa-money-bill-alt"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Lợi nhuận API hôm nay</span>
+                                    <span
+                                        class="info-box-number"><?=format_currency($CMSNT->get_row(" SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND `create_date` >= DATE(NOW()) AND `create_date` < DATE(NOW()) + INTERVAL 1 DAY ")['SUM(`pay`)']-$CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND `create_date` >= DATE(NOW()) AND `create_date` < DATE(NOW()) + INTERVAL 1 DAY ")['SUM(`cost`)']);?></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-12">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <h3 class="card-title">Lợi nhuận API trong tháng <?=date('m', time());?></h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart"></canvas>
+                            <script>
+                            function formatCurrency(value) {
+                                return value.toLocaleString('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                });
+                            }
+                            var ctx = document.getElementById('myChart').getContext('2d');
+                            var myChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: [
+                                        <?php
+              $month = date('m');
+              $year = date('Y');
+              $numOfDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+              for ($day = 1; $day <= $numOfDays; $day++) {
+                  echo "\"$day/$month/$year\",";
+              }
+              ?>
+                                    ],
+                                    datasets: [{
+                                        label: '<?=__('LỢI NHUẬN KẾT NỐI API');?>',
+                                        data: [
+                                            <?php
+                  $data = [];
+                  for ($day = 1; $day <= $numOfDays; $day++) {
+                      $date = "$year-$month-$day";
+                      $loi_nhuan_ngay_chart = $CMSNT->get_row("SELECT SUM(`pay`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND DATE(create_date) = '$date'  ")['SUM(`pay`)'] - $CMSNT->get_row(" SELECT SUM(`cost`) FROM `orders` WHERE `id_connect_api` != 0  AND `fake` = 0 AND DATE(create_date) = '$date' ")['SUM(`cost`)'];
+                      $data[$day - 1] = $loi_nhuan_ngay_chart;
+                  }
+                  for ($i = 0; $i < $numOfDays; $i++) {
+                      echo "$data[$i],";
+                  }
+                  ?>
+                                        ],
+                                        backgroundColor: [
+                                            'rgb(255 239 201)'
+                                        ],
+                                        borderColor: [
+                                            'rgb(255 193 5)'
+                                        ],
+                                        borderWidth: 1
+                                    }, ]
+                                },
+                                options: {
+                                    tooltips: {
+                                        callbacks: {
+                                            label: function(tooltipItem, data) {
+                                                return formatCurrency(tooltipItem.yLabel);
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero: true,
+                                                callback: function(value, index, values) {
+                                                    return formatCurrency(value);
+                                                }
+                                            }
+                                        }]
+                                    }
+                                }
+                            });
+                            </script>
+                        </div>
+                    </div>
+                </div>
                 <section class="col-lg-6 connectedSortable">
                     <div class="card card-primary card-outline">
                         <div class="card-header ">
@@ -146,43 +237,21 @@ if (isset($_POST['SaveSettings'])) {
                                     <i>ON/OFF chức năng kết nối sản phẩm API.</i>
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Tự động cập nhật giá</label>
-                                    <input class="form-control" type="text"
-                                        placeholder="Vui lòng nhập chiết khấu cập nhật giá tự động, để số 0 để tắt chức năng này"
-                                        value="<?= $CMSNT->site('ck_connect_api'); ?>" name="ck_connect_api" />
-                                    <i>Hệ thống sẽ tự động tăng giá sản phẩm API lên
-                                        <?= $CMSNT->site('ck_connect_api'); ?>%, để 0 nếu muốn tắt chức năng cập nhật
-                                        giá tự động.</i>
-                                </div>
-                                <div class="form-group">
-                                    <label>Tự động cập nhật tên sản phẩm</label>
-                                    <select class="form-control select2bs4" name="auto_rename_api">
-                                        <option <?= $CMSNT->site('auto_rename_api') == 1 ? 'selected' : ''; ?>
-                                            value="1">
-                                            CÓ
-                                        </option>
-                                        <option <?= $CMSNT->site('auto_rename_api') == 0 ? 'selected' : ''; ?>
-                                            value="0">
-                                            KHÔNG
-                                        </option>
-                                    </select>
-                                    <i>Nếu bạn chọn có, hệ thống sẽ tự động cập nhật tên sản phẩm và mô tả
-                                            sản phẩm theo API (vui lòng tắt nếu bạn muốn rename tên sản phẩm theo yêu
-                                            cầu).</i>
-                                </div>
-                                <div class="form-group">
                                     <label>Trạng thái Chuyên Mục và Sản Phẩm mặc định khi kết nối API</label>
                                     <select class="form-control select2bs4" name="default_api_product_status">
-                                        <option <?= $CMSNT->site('default_api_product_status') == 1 ? 'selected' : ''; ?>
+                                        <option
+                                            <?= $CMSNT->site('default_api_product_status') == 1 ? 'selected' : ''; ?>
                                             value="1">
                                             Hiển thị
                                         </option>
-                                        <option <?= $CMSNT->site('default_api_product_status') == 0 ? 'selected' : ''; ?>
+                                        <option
+                                            <?= $CMSNT->site('default_api_product_status') == 0 ? 'selected' : ''; ?>
                                             value="0">
                                             Ẩn
                                         </option>
                                     </select>
-                                    <i>Nếu bạn chọn Ẩn, các sản phẩm khi bạn kết nối API mặc định sẽ được ẩn khỏi website.</i>
+                                    <i>Nếu bạn chọn Ẩn, các sản phẩm khi bạn kết nối API mặc định sẽ được ẩn khỏi
+                                        website.</i>
                                 </div>
                             </div>
                             <div class="card-footer clearfix">
@@ -213,6 +282,9 @@ if (isset($_POST['SaveSettings'])) {
                         </div>
                         <form action="" method="POST">
                             <div class="card-body">
+                                <p>Hướng dẫn sử dụng: <a target="_blank"
+                                        href="https://www.cmsnt.co/2022/12/shopclone6-huong-dan-su-dung-tinh-nang.html">https://www.cmsnt.co/2022/12/shopclone6-huong-dan-su-dung-tinh-nang.html</a>
+                                </p>
                                 Một số lưu ý khi dùng chức năng kết nối API của SHOPCLONE6<br>
                                 - Thông tin đăng nhập API phải là link web, tài khoản, mật khẩu.<br>
                                 - Phải nạp sẵn số dư vào web API để hệ thống thực hiện mua tài khoản tự động.<br>
@@ -297,10 +369,11 @@ if (isset($_POST['SaveSettings'])) {
                                                 <b><?= display_status_product($row['status']); ?></b>
                                             </td>
                                             <td>
-                                                <button class="edit-charging-btn btn-sm btn btn-info"
-                                                    data-id="<?= $row['id']; ?>" type="button">
+                                                <a class="btn-sm btn btn-info"
+                                                    href="<?=base_url('index.php?module=admin&action=connect-api-edit&id='.$row['id']);?>"
+                                                    type="button">
                                                     <i class="fas fa-edit mr-1"></i><span class="">Edit</span>
-                                                </button>
+                                                </a>
                                                 <button style="color:white;" onclick="RemoveRow('<?= $row['id']; ?>')"
                                                     class="btn btn-danger btn-sm btn-icon-left m-b-10" type="button">
                                                     <i class="fas fa-trash mr-1"></i><span class="">Delete</span>
@@ -315,6 +388,135 @@ if (isset($_POST['SaveSettings'])) {
                     </div>
                 </section>
             </div>
+      
+<style>
+    .brand-carousel {
+        width: 100%;
+        overflow: hidden;
+        animation: moveCards 25s linear infinite;
+        white-space: nowrap;
+    }
+        .brand-carousel-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .brand-carousel {
+        white-space: nowrap;
+        font-size: 0;
+        width: max-content; /* Đảm bảo rằng .brand-carousel có đủ rộng để chứa tất cả các .brand-card trên cùng một hàng */
+    }
+
+    .brand-card {
+        font-size: 16px;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 20px;
+    }
+
+/* Các phần còn lại giữ nguyên */
+
+    .brand-carousel:hover {
+        animation-play-state: paused;
+    }
+    @keyframes moveCards {
+        0% {
+            transform: translateX(0%);
+        }
+
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+    .brand-card {
+        position: relative;
+        display: inline-block;
+        margin: 10px;
+        vertical-align: middle;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .brand-card img {
+        width: 100px;
+    }
+    .connect-button,
+    .website-button {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .brand-card:hover .connect-button,
+    .brand-card:hover .website-button {
+        opacity: 1;
+    }
+    .website-button {
+        bottom: 40px;
+    }
+    </style>
+    <div class="row justify-content-center py-3">
+        <center>
+        <h5><i class="fa-solid fa-rss"></i> Nhà cung cấp gợi ý</h5>
+        </center>
+        <div class="brand-carousel-container">
+        <div class="brand-carousel animated-carousel">
+
+        </div>
+        </div>
+        <p id="notitcation_suppliers"></p>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('.brand-carousel').html('');
+            $.ajax({
+                url: 'https://api.cmsnt.co/suppliers.php',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    // Xử lý dữ liệu trả về từ server
+                    if (response && response.suppliers.length > 0) {
+                        var html = '';
+                        $.each(response.suppliers, function (index, brand) {
+                            html += '<div class="brand-card">';
+                            html += '<img src="' + brand.logo + '" alt="Logo">';
+                            html += '<a href="<?=base_url_admin("connect-api-add");?>&domain='+ brand.domain +'&type='+ brand.type +'" class="connect-button btn btn-sm btn-danger">Kết nối</a>';
+                            html += '<a href="' + brand.domain + '?utm_source=ads_cmsnt" target="_blank" class="website-button btn btn-sm btn-primary">Xem</a>';
+                            html += '</div>';
+                        });
+                        $('.brand-carousel').html(html);
+                        $('#notitcation_suppliers').html(response.notication);
+                        calculateAndSetAnimationDuration();
+                    } else {
+                        $('.brand-carousel').html('');
+                    }
+                },
+                error: function () {
+                    $('.brand-carousel').html('');
+                }
+            });
+        });
+        // Function to calculate carousel width and set animation duration
+        function calculateAndSetAnimationDuration() {
+            var carousel = $('.animated-carousel');
+            var carouselWidth = carousel[0].scrollWidth;
+            var cardWidth = carousel.children().first().outerWidth(true); // Including margin
+            var numberOfCards = carouselWidth / cardWidth;
+            var animationDuration = numberOfCards * 2; // Adjust this multiplier as needed
+            carousel.css('animation-duration', animationDuration + 's');
+        }
+    </script>
         </div>
     </div>
 </div>
@@ -330,18 +532,6 @@ require_once(__DIR__ . '/footer.php');
         </div>
     </div>
 </div>
-<script>
-$(document).ready(function() {
-    $(".edit-charging-btn").click(function() {
-        var id = $(this).attr('data-id');
-        $("#CharigngAjaxContent").html('');
-        $.get("<?= BASE_URL('ajaxs/admin/modal/connect-api-edit.php?id='); ?>" + id, function(data) {
-            $("#CharigngAjaxContent").html(data);
-        });
-        $("#ChargingModal").modal();
-    });
-});
-</script>
 
 
 <script type="text/javascript">

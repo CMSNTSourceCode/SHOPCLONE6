@@ -5,13 +5,40 @@
 
 <footer class="main-footer">
     <div class="float-right d-none d-sm-inline">
-        Phiên bản <b style="color:red;"><?=$config['version'];?></b>
+        
+        <div id="google_translate_element"></div>
+        <script type="text/javascript">
+        // <![CDATA[
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'vi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+        // ]]>
+        </script>
+        <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+            type="text/javascript"></script>
+
     </div>
-    <strong>Copyright &copy; 2020-2021 <a href="https://www.cmsnt.co/" target="_blank">CMSNT.CO</a>.</strong> All rights
-    reserved.
+    <b>Version</b> <b style="color:red;"><?=$config['version'];?></b> - <strong>Powered By <a
+            href="https://www.cmsnt.co/?domain=<?=base_url_admin('');?>" target="_blank">CMSNT.CO</a></strong>
 </footer>
 </div>
+<script type="text/javascript">
+ $(function() {
+    $('#datatable').DataTable({
+        "lengthMenu": [[10, 50, 100, 500, 1000, 2000, 5000, 10000 -1], [10, 50, 100, 500, 1000, 2000, 5000, 10000, "All"]]
+    });
+    $('#datatable1').DataTable({
+        "lengthMenu": [[10, 50, 100, 500, 1000, 2000, 5000, 10000 -1], [10, 50, 100, 500, 1000, 2000, 5000, 10000, "All"]]
+    });
+    $('#datatable2').DataTable({
+        "lengthMenu": [[10, 50, 100, 500, 1000, 2000, 5000, 10000 -1], [10, 50, 100, 500, 1000, 2000, 5000, 10000, "All"]]
+    });
 
+});
+</script>
 <!-- jQuery UI 1.11.4 -->
 <script src="<?=BASE_URL('public/AdminLTE3/');?>plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->

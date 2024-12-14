@@ -144,7 +144,7 @@ a {
             <div class="two spin-two"></div>
             <div class="three spin-one"></div>
         </div>
-        <h1>ĐANG BẢO TRÌ</h1>
-        <p>Hệ thống đang bảo trì, vui lòng quay lại sau.</p>
+        <h1><?=__('ĐANG BẢO TRÌ');?></h1>
+        <p><?=__('Hệ thống đang bảo trì, vui lòng quay lại sau.');?></p>
     </div>
 </div>

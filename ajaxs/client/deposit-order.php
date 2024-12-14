@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $received = $amount + $amount * $promotion['discount'] / 100;
         break;
     }
-    $trans_id = random("QWERTYUPASDFGHJKZXCVBNM123456789", 5);
+    $trans_id = random('QWERTYUIOPASDFGHJKLZXCVBNM', 4).random("0123456789", 2);
     $isInsert = $CMSNT->insert("invoices", [
         'type'              => 'deposit_money',
         'user_id'           => $getUser['id'],
@@ -77,13 +77,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ], " `id` = '".$getUser['id']."' ");
 
         $chu_de = "Bạn có hóa đơn cần thanh toán tại ".$CMSNT->site('title');
-        $content = file_get_contents(base_url('libs/mails/deposit-order.php'));
+        $content = curl_get2(base_url('libs/mails/deposit-order.php'));
         $content = str_replace('{payment_method}', $row['short_name'], $content);
         $content = str_replace('{amount}', format_cash($amount), $content);
         $content = str_replace('{trans_id}', $trans_id, $content);
         $content = str_replace('{price}', format_currency($amount), $content);
         $bcc = $CMSNT->site('title');
         sendCSM($getUser['email'], $getUser['username'], $chu_de, $content, $bcc);
+
+        /** SEND NOTI CHO ADMIN */
+        $my_text = $CMSNT->site('taohoadonnaptien_notification');
+        $my_text = str_replace('{domain}', $_SERVER['SERVER_NAME'], $my_text);
+        $my_text = str_replace('{username}', $getUser['username'], $my_text);
+        $my_text = str_replace('{method}', $row['short_name'], $my_text);
+        $my_text = str_replace('{trans_id}', $trans_id, $my_text);
+        $my_text = str_replace('{amount}', format_cash($amount), $my_text);
+        $my_text = str_replace('{price}', format_currency($received), $my_text);
+        $my_text = str_replace('{time}', gettime(), $my_text);
+        sendMessAdmin($my_text);
+
+
         die(json_encode(['status' => 'success', 'msg' => __('Tạo hoá đơn thành công'), 'trans_id' => $trans_id ]));
     } else {
         die(json_encode(['status' => 'error', 'msg' => __('Tạo hoá đơn thất bại, vui lòng thử lại')]));

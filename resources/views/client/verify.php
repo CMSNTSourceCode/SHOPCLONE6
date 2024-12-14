@@ -14,8 +14,11 @@ $body['header'] = '
 $body['footer'] = '
 
 ';
-if (isset($_GET['token'])) {
-    if (!$row = $CMSNT->get_row("SELECT * FROM `users` WHERE `token` = '".check_string(base64_decode($_GET['token']))."' ")) {
+if (!empty($_GET['token'])) {
+    if (!$row = $CMSNT->get_row("SELECT * FROM `users` WHERE `token_2fa` = '".check_string($_GET['token'])."' ")) {
+        redirect(base_url('client/login'));
+    }
+    if($row['token_2fa'] == '' || empty($row['token_2fa'])){
         redirect(base_url('client/login'));
     }
 } else {
@@ -50,7 +53,7 @@ require_once(__DIR__.'/header.php');
                                  <div class="form-group">
                                     <label class="text-secondary"><?=__('Mã xác minh');?></label>
                                     <input class="form-control" id="code" type="text" placeholder="<?=__('Nhập mã xác minh');?>">
-                                    <input class="form-control" id="token" type="hidden" value="<?=$row['token'];?>">
+                                    <input class="form-control" id="token" type="hidden" value="<?=$row['token_2fa'];?>">
                                  </div>
                               </div>
                            </div>

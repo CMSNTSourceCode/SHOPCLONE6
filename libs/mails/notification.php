@@ -86,10 +86,10 @@ $CMSNT = new DB();
                     <tr>
                         <td align="center" valign="top" style="font-size:0; padding: 35px;" bgcolor="<?=$CMSNT->site('theme_color');?>">
                             <div style="display:inline-block; max-width:50%; min-width:100px; vertical-align:top; width:100%;">
-                                <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
+                                <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
                                     <tr>
-                                        <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 800; line-height: 48px;" class="mobile-center">
-                                            <h1 style="font-size: 36px; font-weight: 800; margin: 0; color: #ffffff;"><?=$CMSNT->site('title');?></h1>
+                                        <td class="mobile-center" align="center">
+                                            <center><img src="<?=base_url($CMSNT->site('logo_light'));?>" width="100%"></center>
                                         </td>
                                     </tr>
                                 </table>
@@ -124,9 +124,13 @@ $CMSNT = new DB();
                         </td>
                     </tr>
                     <tr>
-                        <td align="center" style=" padding: 35px; background-color: <?=$CMSNT->site('theme_color');?>;" bgcolor="#1b9ba3">
+                        <td align="center" style=" padding: 20px; background-color: <?=$CMSNT->site('theme_color');?>;" bgcolor="#1b9ba3">
                             <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
-                                 
+                                <tr>
+                                    <td align="center" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 25px;">
+                                        <h3 style="font-size: 25px; font-weight: 800; line-height: 36px; color: white; margin: 0;"> <?=$CMSNT->site('title');?> </h2>
+                                    </td>
+                                </tr>
                             </table>
                         </td>
                     </tr>

@@ -1,7 +1,8 @@
 <?php
-/**
- * CMSNT.CO | THIẾT KẾ WEBSITE MMO
- */
+
+if (!defined('IN_SITE')) {
+    die('The Request Not Found');
+}
 
 // chọn ngôn ngữ
 function setLanguage($id)
@@ -17,6 +18,7 @@ function setLanguage($id)
     }
     return false;
 }
+
 // lấy ngôn ngữ mặc định
 function getLanguage()
 {
@@ -58,4 +60,3 @@ function __($name)
     return $name;
 }
 
- 

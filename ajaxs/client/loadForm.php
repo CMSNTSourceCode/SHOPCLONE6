@@ -4,70 +4,32 @@ define("IN_SITE", true);
 require_once(__DIR__."/../../libs/db.php");
 require_once(__DIR__."/../../libs/lang.php");
 require_once(__DIR__."/../../libs/helper.php");
-require_once(__DIR__."/../../libs/apiAutoFB.php");
+ 
 $CMSNT = new DB();
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    
-    if($_POST['type'] == 'getUIDFB'){
-        if(!empty($_POST['profile_user'])){
-            // kiểm tra có phải url không
-            if (!filter_var($_POST['profile_user'], FILTER_VALIDATE_URL) === false){
-                $data = getUID_AutoFB($_POST['profile_user']);
-                if($data['status'] == 200){
-                    die(json_encode([
-                        'status' => 'success',
-                        'msg' => __('Lấy UID Facebook thành công!'), 
-                        'uid' => $data['id']
-                    ]));
-                }
-                die(json_encode(['status' => 'error', 'msg' => $data['msg']]));
-            }
-        }
+ 
+if(isset($_POST['type']) && $_POST['type'] == 'loadService'){
+    $option = '<option value="">-- '.__('Chọn máy chủ').' --</option>';
+    foreach($CMSNT->get_list(" SELECT * FROM `services` WHERE `category_id` = '".check_string($_POST['category'])."'  AND `price` > 0 AND `status` = 1 ") as $row){
+        $option .= '<option value="'.$row['id'].'">'.__($row['name']).' | '.__('giá').' '.format_currency($row['price']).'</option>';
     }
-
-    if($_POST['type'] == 'getUIDFB_post'){
-        if(!empty($_POST['profile_user'])){
-            // kiểm tra có phải url không
-            if (!filter_var($_POST['profile_user'], FILTER_VALIDATE_URL) === false){
-                if (strpos($_POST['profile_user'], 'posts') != false) {
-                    $data = explode('posts/', $_POST['profile_user'])[1];
-                    $data = explode('/', $data)[0];
-                }
-                else if (strpos($_POST['profile_user'], 'videos') != false) {
-                    $data = explode('videos/', $_POST['profile_user'])[1];
-                    $data = explode('/', $data)[0];
-                }
-                if($data){
-                    die(json_encode([
-                        'status' => 'success',
-                        'msg' => __('Lấy ID Bài Viết thành công!'), 
-                        'uid' => $data
-                    ]));
-                }
-                die(json_encode(['status' => 'error', 'msg' => __('Lấy ID Bài Viết thất bại!')]));
-            }
-        }
-    }
-
-    if($_POST['type'] == 'getUIDFB_story'){
-        if(!empty($_POST['profile_user'])){
-            // kiểm tra có phải url không
-            if (!filter_var($_POST['profile_user'], FILTER_VALIDATE_URL) === false){
-                $data = explode('stories/', $_POST['profile_user'])[1];
-                $data = explode('/?', $data)[0];
-                if($data){
-                    die(json_encode([
-                        'status' => 'success',
-                        'msg' => __('Lấy ID Story thành công!'), 
-                        'uid' => $data
-                    ]));
-                }
-                die(json_encode(['status' => 'error', 'msg' => __('Lấy ID Story thất bại!')]));
-            }
-        }
-    }
-
-
+    die($option);
 }
+
+if(isset($_GET['type']) && $_GET['type'] == 'loadHotDeal'){
+    if(!$row = $CMSNT->get_row(" SELECT * FROM `discounts` WHERE `product_id` = '".check_string($_GET['id'])."'  ")){
+        die('');
+    }
+    $html = '<p>';
+    $html .= '  <span>📢 Hot Deal: </span><br>';
+    foreach($CMSNT->get_list(" SELECT * FROM `discounts` WHERE `product_id` = '".check_string($_GET['id'])."' ORDER BY `amount` ASC ") as $row){
+        $money = getRowRealtime('products', $row['product_id'], 'price') * $row['amount'];
+        $money = $money - $money * $row['discount'] / 100;
+        $html .= '  <span>🏷 '.__('Mua').' <b style="color:blue;">'.$row['amount'].'</b> '.__('nick').' '.__('giá').' <b style="color:red;">'.format_currency($money).'</b></span> <br>';
+    }
+    $html .= '</p>';
+    die($html);
+}
+
+ 
+
  

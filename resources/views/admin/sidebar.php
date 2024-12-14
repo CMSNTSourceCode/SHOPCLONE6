@@ -42,6 +42,15 @@
                             </a>
                         </li>
                         <li class="nav-item has-treeview">
+                            <a href="<?=BASE_URL('admin/ip-black');?>"
+                                class="nav-link <?=active_sidebar(['ip-black']);?>">
+                                <i class="nav-icon fa-solid fa-lock"></i> 
+                                <p>
+                                    IP Black
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item has-treeview">
                             <a href="<?=BASE_URL('admin/addons');?>"
                                 class="nav-link <?=active_sidebar(['addons']);?>">
                                 <i class="nav-icon fas fa-puzzle-piece"></i>
@@ -50,7 +59,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item <?=menuopen_sidebar(['product-add',
+                        <li class="nav-item <?=menuopen_sidebar(['product-add', 'account-view', 'connect-api-edit', 
                         'product-list', 'connect-api', 'connect-api-add', 'product-edit', 'accounts', 'product-order','category-list','category-edit','category-add', 'backup-list', 'account-sold'
                         ]);?>">
                             <a href="#" class="nav-link">
@@ -70,13 +79,13 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="<?=BASE_URL('admin/product-list');?>"
-                                        class="nav-link <?=active_sidebar(['product-list','product-edit','accounts','product-add', 'account-sold']);?>">
+                                        class="nav-link <?=active_sidebar(['product-list','product-edit','accounts','product-add', 'account-sold', 'account-view']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Sản phẩm</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="<?=BASE_URL('admin/product-order');?>"
+                                    <a href="<?=BASE_URL('index.php?module=admin&action=product-order');?>"
                                         class="nav-link <?=active_sidebar(['product-order']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Đơn hàng</p>
@@ -91,7 +100,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="<?=BASE_URL('admin/connect-api');?>"
-                                        class="nav-link <?=active_sidebar(['connect-api', 'connect-api-add']);?>">
+                                        class="nav-link <?=active_sidebar(['connect-api', 'connect-api-add', 'connect-api-edit']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Kết nối API</p>
                                     </a>
@@ -134,7 +143,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item <?=menuopen_sidebar(['config-rate-autofb', 'autofb-order']);?>">
+                        <li class="nav-item <?=menuopen_sidebar(['config-rate-service', 'service-order']);?>">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-thumbs-up"></i>
                                 <p>
@@ -144,15 +153,40 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?=BASE_URL('admin/autofb-order');?>"
-                                        class="nav-link <?=active_sidebar(['autofb-order']);?>">
+                                    <a href="<?=BASE_URL('admin/service-order');?>"
+                                        class="nav-link <?=active_sidebar(['service-order']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Đơn hàng</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="<?=base_url_admin('config-rate-autofb');?>"
-                                        class="nav-link <?=active_sidebar(['config-rate-autofb']);?>">
+                                    <a href="<?=base_url_admin('config-rate-service');?>"
+                                        class="nav-link <?=active_sidebar(['config-rate-service']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Cấu hình</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item <?=menuopen_sidebar(['otp-config', 'otp-history']);?>">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-sim-card"></i>
+                                <p>
+                                    Thuê SIM
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="<?=BASE_URL('admin/otp-history');?>"
+                                        class="nav-link <?=active_sidebar(['otp-history']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Đơn hàng</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?=base_url_admin('otp-config');?>"
+                                        class="nav-link <?=active_sidebar(['otp-config']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Cấu hình</p>
                                     </a>
@@ -185,6 +219,38 @@
                                 <li class="nav-item">
                                     <a href="<?=BASE_URL('admin/store-fanpage-config');?>"
                                         class="nav-link <?=active_sidebar(['store-fanpage-config']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Cấu hình</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item <?=menuopen_sidebar(['xu-add','xu-list', 'xu-edit', 'xu-config', 'xu-order']);?>">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-cart-plus"></i>
+                                <p>
+                                    Bán Xu
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="<?=base_url_admin('xu-list');?>"
+                                        class="nav-link <?=active_sidebar(['xu-list', 'xu-add', 'xu-edit']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Quản lý xu</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?=base_url_admin('xu-order');?>"
+                                        class="nav-link <?=active_sidebar(['xu-order']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Đơn hàng mua xu</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?=BASE_URL('admin/xu-config');?>"
+                                        class="nav-link <?=active_sidebar(['xu-config']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Cấu hình</p>
                                     </a>
@@ -225,7 +291,7 @@
                                 </li>
                             </ul>
                         </li>-->
-                        <li class="nav-item <?=menuopen_sidebar(['crypto','sv2-autobank', 'logs', 'dong-tien', 'nap-the', 'paypal', 'spin-history', 'perfectmoney']);?>">
+                        <li class="nav-item <?=menuopen_sidebar(['flutterwave','crypto','sv2-autobank', 'logs', 'dong-tien', 'nap-the', 'paypal', 'spin-history', 'perfectmoney']);?>">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-history"></i>
                                 <p>
@@ -235,14 +301,14 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?=BASE_URL('admin/logs');?>"
+                                    <a href="<?=BASE_URL('index.php?module=admin&action=logs');?>"
                                         class="nav-link <?=active_sidebar(['logs']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Nhật ký hoạt động</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="<?=BASE_URL('admin/dong-tien');?>"
+                                    <a href="<?=BASE_URL('index.php?module=admin&action=dong-tien');?>"
                                         class="nav-link <?=active_sidebar(['dong-tien']);?>">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Biến động số dư</p>
@@ -273,7 +339,7 @@
                                     <a href="<?=BASE_URL('admin/crypto');?>"
                                         class="nav-link <?=active_sidebar(['crypto']);?>">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Lịch sử Nạp Crypto</p>
+                                        <p>Lịch sử Nạp Crypto old</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -290,14 +356,44 @@
                                         <p>Lịch sử Vòng Quay</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="<?=BASE_URL('admin/toyyibpay');?>"
+                                        class="nav-link <?=active_sidebar(['toyyibpay']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Toyyibpay History</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?=BASE_URL('admin/flutterwave');?>"
+                                        class="nav-link <?=active_sidebar(['flutterwave']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Flutterwave History</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?=BASE_URL('admin/squadco');?>"
+                                        class="nav-link <?=active_sidebar(['squadco']);?>">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Squadco History</p>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="<?=BASE_URL('admin/users');?>"
-                                class="nav-link <?=active_sidebar(['users', 'user-edit']);?>">
+                            <a href="<?=BASE_URL('index.php?module=admin&action=users');?>"
+                                class="nav-link <?=active_sidebar(['users', 'user-edit', 'statistic']);?>">
                                 <i class="nav-icon fas fa-user-alt"></i>
                                 <p>
                                     Thành Viên
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?=BASE_URL('admin/email-campaigns');?>"
+                                class="nav-link <?=active_sidebar(['email-campaigns', 'email-campaign-add', 'email-campaign-edit', 'email-sending-view']);?>">
+                                <i class="nav-icon fa-solid fa-envelope"></i>
+                                <p>
+                                    <?=__('Email Campaigns');?>
                                 </p>
                             </a>
                         </li>
@@ -343,6 +439,15 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="<?=base_url_admin('recharge-crypto');?>"
+                                class="nav-link <?=active_sidebar(['recharge-crypto']);?>">
+                                <i class="nav-icon fas fa-coins"></i>
+                                <p>
+                                    Crypto
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?=BASE_URL('admin/blog-list');?>"
                                 class="nav-link <?=active_sidebar(['blog-list', 'blog-edit', 'blog-add']);?>">
                                 <i class="nav-icon fab fa-blogger-b"></i>
@@ -352,7 +457,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?=BASE_URL('admin/invoices');?>"
+                            <a href="<?=BASE_URL('index.php?module=admin&action=invoices');?>"
                                 class="nav-link <?=active_sidebar(['invoices', 'invoice-edit']);?>">
                                 <i class="nav-icon fas fa-file-invoice-dollar"></i>
                                 <p>
@@ -370,11 +475,29 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="<?=BASE_URL('admin/discount-list');?>"
+                                class="nav-link <?=active_sidebar(['discount-list', 'discount-edit', 'discount-add']);?>">
+                                <i class="nav-icon fa-solid fa-tag"></i>
+                                <p>
+                                    Giảm giá
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?=BASE_URL('admin/promotion-list');?>"
                                 class="nav-link <?=active_sidebar(['promotion-list', 'promotion-edit', 'promotion-add', 'promotion-log']);?>">
                                 <i class="nav-icon fas fa-dollar"></i>
                                 <p>
                                     Khuyến Mãi Nạp Tiền
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?=BASE_URL('admin/domain-list');?>"
+                                class="nav-link <?=active_sidebar(['domain-list']);?>">
+                                <i class="nav-icon fas fa-list"></i>
+                                <p>
+                                    Quản lý website con
                                 </p>
                             </a>
                         </li>
@@ -396,7 +519,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="<?=BASE_URL('admin/giftbox-list');?>"
                                 class="nav-link <?=active_sidebar(['giftbox-list']);?>">
                                 <i class="nav-icon fas fa-gift"></i>
@@ -404,7 +527,7 @@
                                     Gift Box
                                 </p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="<?=BASE_URL('admin/question-list');?>"
                                 class="nav-link <?=active_sidebar(['question-list', 'question-edit', 'question-add']);?>">
@@ -438,6 +561,15 @@
                                 <i class="nav-icon fas fa-language"></i>
                                 <p>
                                     Ngôn Ngữ
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?=BASE_URL('admin/currency-list');?>"
+                                class="nav-link <?=active_sidebar(['currency-list','currency-add', 'currency-edit']);?>">
+                                <i class="nav-icon fas fa-wallet"></i>
+                                <p>
+                                    Tiền Tệ
                                 </p>
                             </a>
                         </li>

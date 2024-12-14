@@ -14,7 +14,7 @@ class DB
     public function connect()
     {
         if (!$this->ketnoi) {
-            $this->ketnoi = mysqli_connect($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_DATABASE']) or die('Error => DATABASE');
+            $this->ketnoi = mysqli_connect($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], $_ENV['DB_DATABASE']) or die('Máy chủ đang quá tải, vui lòng thử lại sau');
             mysqli_query($this->ketnoi, "set names 'utf8' ");
         }
     }
@@ -31,6 +31,16 @@ class DB
         return $row['value'];
     }
     public function query($sql)
+    {
+        try {
+            $this->connect();
+            $row = $this->ketnoi->query($sql);
+            return $row;
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+    public function get_row2($sql)
     {
         $this->connect();
         $row = $this->ketnoi->query($sql);

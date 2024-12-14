@@ -12,6 +12,10 @@ $body['header'] = '
 $body['footer'] = '
 
 ';
+if($CMSNT->site('status_bank') != 1){
+    redirect(base_url());
+}
+
 require_once(__DIR__.'/../../../models/is_user.php');
 require_once(__DIR__.'/header.php');
 require_once(__DIR__.'/sidebar.php');
@@ -34,15 +38,15 @@ require_once(__DIR__.'/sidebar.php');
                         <table class="table">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col"><?=__('Tổng nạp lớn hơn hoặc bằng');?></th>
+                                    <th width="5%" scope="col">#</th>
+                                    <th scope="col"><?=__('Số tiền nạp lớn hơn hoặc bằng');?></th>
                                     <th scope="col"><?=__('Khuyến mãi thêm');?></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php $i=1;foreach($CMSNT->get_list(" SELECT * FROM `promotions` WHERE `status` = 1  ORDER BY `amount` DESC ") as $promotion):?>
                                 <tr>
-                                    <th scope="row"><?=$i++;?></th>
+                                    <td><?=$i++;?></td>
                                     <td><b style="color: blue;"><?=format_currency($promotion['amount']);?></b></td>
                                     <td><b style="color: red;"><?=$promotion['discount'];?>%</b></td>
                                 </tr>
@@ -90,26 +94,62 @@ require_once(__DIR__.'/sidebar.php');
                             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-4 mt-4 mt-lg-0 mb-3">
                                 <div class="blur-shadow p-4 shadow-showcase">
                                     <center>
+                                        <?php if($bank['short_name'] == 'Kasikorn Bank' || 
+                                        $bank['short_name'] == 'Siam Commercial Bank' || 
+                                        $bank['short_name'] == 'THESIEURE' || 
+                                        $bank['short_name'] == 'Zalo Pay' || 
+                                        $bank['short_name'] == 'Bank of Ayudthya' || 
+                                        $bank['short_name'] == 'Krungthai Bank' || 
+                                        $bank['short_name'] == 'Bangkok Bank' ||
+                                        $bank['short_name'] == 'Wing Bank' ||
+                                        $bank['short_name'] == 'ABA Bank' ||
+                                        $bank['short_name'] == 'State Bank of India' ||
+                                        $bank['short_name'] == 'HDFC Bank' ||
+                                        $bank['short_name'] == 'ICICI Bank' ||
+                                        $bank['short_name'] == 'Thanachart Bank' ||
+                                        $bank['short_name'] == 'Maybank' ||
+                                        $bank['short_name'] == 'CIMB Clicks Malaysia' ||
+                                        $bank['short_name'] == 'United Bank for Africa (UBA)' ||
+                                        $bank['short_name'] == 'Wise.com' ||
+                                        $bank['short_name'] == 'Binance' ||
+                                        $bank['short_name'] == 'Bitcoin' ||
+                                        $bank['short_name'] == 'USDT' ||
+                                        $bank['short_name'] == 'Payoneer' ||
+                                        $bank['short_name'] == 'Algérie Poste' ||
+                                        $bank['short_name'] == 'Paysera' 
+                                         
+                                        ):?>
                                         <img class="mb-3" src="<?=base_url($bank['image']);?>" width="200px"
                                             height="100px">
+                                        <?php elseif($bank['short_name'] == 'MOMO'): ?>
+                                        <?=file_get_contents("https://api.web2m.com/api/qrmomo.php?amount=100000&phone=".$bank['accountNumber']."&noidung=".urlencode($CMSNT->site('prefix_autobank')).$getUser['id']."&size=300");?>
+                                        <?php else:?>
+                                        <img src="https://api.vietqr.io/<?=$bank['short_name'];?>/<?=$bank['accountNumber'];?>/0/<?=$CMSNT->site('prefix_autobank').$getUser['id'];?>/vietqr_net_2.jpg?accountName=<?=$bank['accountName'];?>"
+                                            width="300px" />
+                                        <?php endif?>
                                     </center>
                                     <ul class="list-group mb-2">
-                                        <li class="list-group-item"><?=__('Số tài khoản:');?> <b id="copySTK<?=$bank['id'];?>"
+                                        <li class="list-group-item"><?=__('Số tài khoản:');?> <b
+                                                id="copySTK<?=$bank['id'];?>"
                                                 style="color: green;"><?=$bank['accountNumber'];?></b> <button
                                                 onclick="copy()" data-clipboard-target="#copySTK<?=$bank['id'];?>"
                                                 class="copy btn btn-primary btn-sm"><i class="fas fa-copy"></i></button>
                                         </li>
-                                        <li class="list-group-item"><?=__('Chủ tài khoản:');?> <b><?=$bank['accountName'];?></b>
+                                        <li class="list-group-item"><?=__('Chủ tài khoản:');?>
+                                            <b><?=$bank['accountName'];?></b>
                                         </li>
-                                        <li class="list-group-item"><?=__('Ngân hàng:');?> <b><?=$bank['short_name'];?></b></li>
-                                        <li class="list-group-item"><?=__('Nội dung nạp:');?> <b id="copyNoiDung<?=$bank['id'];?>"
+                                        <li class="list-group-item"><?=__('Ngân hàng:');?>
+                                            <b><?=$bank['short_name'];?></b></li>
+                                        <li class="list-group-item"><?=__('Nội dung nạp:');?> <b
+                                                id="copyNoiDung<?=$bank['id'];?>"
                                                 style="color: red;"><?=$CMSNT->site('prefix_autobank').$getUser['id'];?></b>
                                             <button onclick="copy()"
                                                 data-clipboard-target="#copyNoiDung<?=$bank['id'];?>"
                                                 class="copy btn btn-primary btn-sm"><i class="fas fa-copy"></i></button>
                                         </li>
                                     </ul>
-                                    <center><i><i class="fa fa-spinner fa-spin"></i> <?=__('Xử lý giao dịch tự động trong vài giây...');?></i></center>
+                                    <center><i><i class="fa fa-spinner fa-spin"></i>
+                                            <?=__('Xử lý giao dịch tự động trong vài giây...');?></i></center>
                                 </div>
                             </div>
                             <?php }?>

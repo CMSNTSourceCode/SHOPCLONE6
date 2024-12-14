@@ -11,6 +11,10 @@ use PragmaRX\Google2FAQRCode\Google2FA;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['action']) && $_POST['action'] == 'VerifyGoogle2FA') {
+        die(json_encode([
+            'status'    => 'error',
+            'msg'       => 'Chức năng này đã bị đóng, vui lòng đăng nhập bằng trang khách'
+        ]));
         if (empty($_POST['token'])) {
             die(json_encode(['status' => 'error', 'msg' => __('Vui lòng đăng nhập')]));
         }
@@ -21,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             die(json_encode(['status' => 'error', 'msg' => __('Vui lòng nhập mã xác minh')]));
         }
         $google2fa = new Google2FA();
-        if ($google2fa->verifyKey($getUser['SecretKey_2fa'], check_string($_POST['code'])) != true) {
+        if ($google2fa->verifyKey($getUser['SecretKey_2fa'], check_string($_POST['code']), 2) != true) {
             $CMSNT->insert("logs", [
                 'user_id'       => $getUser['id'],
                 'ip'            => myip(),

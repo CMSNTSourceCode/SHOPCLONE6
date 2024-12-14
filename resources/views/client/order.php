@@ -2,7 +2,7 @@
     die('The Request Not Found');
 }
 $body = [
-    'title' => 'Chi tiết đơn hàng | '.$CMSNT->site('title'),
+    'title' => __('Chi tiết đơn hàng').' | '.$CMSNT->site('title'),
     'desc'   => $CMSNT->site('description'),
     'keyword' => $CMSNT->site('keywords')
 ];
@@ -93,7 +93,7 @@ require_once(__DIR__.'/sidebar.php');
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Chi tiết đơn hàng #<?=$row['trans_id'];?></h5>
+                <h5 class="modal-title" id="exampleModalLabel"><?=__('Chi tiết đơn hàng');?> #<?=$row['trans_id'];?></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -156,10 +156,15 @@ require_once(__DIR__.'/sidebar.php');
                                         <td><?=$i++;?></td>
                                         <td><textarea rows="1" class="form-control" id="coypy<?=$taikhoan['id'];?>"
                                                 readonly><?=$taikhoan['account'];?></textarea></td>
-                                        <td><a type="button" target="_blank"
-                                                href="<?=base_url('assets/storage/backup/'.explode("|", $taikhoan['account'])[0].'.zip');?>"
+                                        <td>
+                                            <?php
+                                            $file_backup = base_url('assets/storage/backup/'.explode("|", $taikhoan['account'])[0].'.zip');
+                                            if (file_exists($file_backup)):?>
+                                            <a type="button" target="_blank"
+                                                href="<?=$file_backup;?>"
                                                 class="btn btn-primary btn-sm"><i
                                                     class="fas fa-file-download mr-1"></i><?=__('Download Backup');?></a>
+                                            <?php endif?>
                                             <button type="button" onclick="copy()"
                                                 data-clipboard-target="#coypy<?=$taikhoan['id'];?>"
                                                 class="btn btn-danger btn-sm copy"><i
@@ -185,6 +190,7 @@ require_once(__DIR__.'/sidebar.php');
                     <?php endif?>
                 </div>
             </div>
+            <?php if($CMSNT->site('display_rating') == 1):?>
             <div class="col-lg-12">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-body">
@@ -278,6 +284,7 @@ require_once(__DIR__.'/sidebar.php');
                 </div>
                 <div class="mt-5" id="review_content"></div>
             </div>
+            <?php endif?>
         </div>
     </div>
 </div>
@@ -287,7 +294,7 @@ require_once(__DIR__.'/sidebar.php');
 
 
 
-
+<?php if($CMSNT->site('display_rating') == 1):?>
 <div id="review_modal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -323,7 +330,11 @@ require_once(__DIR__.'/sidebar.php');
         </div>
     </div>
 </div>
+<?php endif?>
+
+
 <?php require_once(__DIR__.'/footer.php');?>
+
 <script type="text/javascript">
 function downloadTXT(filename, text) {
     var element = document.createElement('a');
@@ -378,6 +389,10 @@ function downloadFile(transid, token) {
     })
 }
 </script>
+
+
+<?php if($CMSNT->site('display_rating') == 1):?>
+    
 <script>
 var rating_data = 0;
 $('#add_review').click(function() {
@@ -539,9 +554,10 @@ function load_rating_data() {
         }
     })
 }
+</script>
+<?php endif?>
 
-
-
+<script>
 new ClipboardJS(".copy");
 
 function copy() {

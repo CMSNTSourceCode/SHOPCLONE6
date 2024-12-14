@@ -8,26 +8,23 @@ $body = [
     'keyword' => 'cmsnt, CMSNT, cmsnt.co,'
 ];
 $body['header'] = '
-    <!-- DataTables -->
-    <link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 ';
 $body['footer'] = '
+<!-- Select2 -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/select2/js/select2.full.min.js"></script>
+<script>
+$(function () {
+    $(".select2").select2()
+    $(".select2bs4").select2({
+        theme: "bootstrap4"
+    });
+});
+</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
-    <!-- DataTables  & Plugins -->
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/jszip/jszip.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/pdfmake/vfs_fonts.js"></script>   
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+ 
 ';
 require_once(__DIR__.'/../../../models/is_admin.php');
 if (isset($_GET['id'])) {
@@ -39,17 +36,51 @@ if (isset($_GET['id'])) {
 } else {
     redirect(base_url('admin/product-list'));
 }
+
+if(isset($_GET['limit'])){
+    $limit = intval(check_string($_GET['limit']));
+}else{
+    $limit = 10;
+}
+if(isset($_GET['page'])){
+    $page = check_string(intval($_GET['page']));
+}
+else{
+    $page = 1;
+}
+$from = ($page - 1) * $limit;
+
+$where = ' `product_id` = "'.$row['id'].'" AND `buyer` IS NULL ';
+$account = '';
+$buyer = '';
+$status = '';
+
+if(!empty($_GET['account'])){
+    $account = check_string($_GET['account']);
+    $where .= ' AND `account` LIKE "%'.$account.'%" ';
+}
+
+if(!empty($_GET['status'])){
+    $status = check_string($_GET['status']);
+    $where .= ' AND `status` = "'.$status.'" ';
+}
+$listAccount = $CMSNT->get_list("SELECT * FROM `accounts` WHERE $where ORDER BY id DESC LIMIT $from,$limit  ");
+$totalDatatable = $CMSNT->num_rows(" SELECT * FROM `accounts` WHERE $where ORDER BY id DESC ");
+$urlDatatable = pagination(base_url("index.php?module=admin&action=account-view&id=$id&status=$status&account=$account&limit=$limit&"), $from, $totalDatatable, $limit);
+
+
+
 require_once(__DIR__.'/header.php');
 require_once(__DIR__.'/sidebar.php');
 require_once(__DIR__.'/nav.php');
 ?>
- 
+
 <div class="content-wrapper">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Danh sách tài khoản đang bán</h1>
+                    <h1 class="m-0">Danh sách tài khoản đang bán '<?=$row['name'];?>'</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -63,7 +94,31 @@ require_once(__DIR__.'/nav.php');
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-            <a type="button" href="<?=base_url_admin('accounts/'.check_string($_GET['id']));?>" class="btn btn-danger btn-block mb-5">QUAY LẠI</a>
+                <a type="button" href="<?=base_url('admin/accounts/'.check_string($_GET['id']));?>"
+                    class="btn btn-danger btn-block mb-5">QUAY LẠI</a>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box mb-3">
+                        <span class="info-box-icon bg-success elevation-1"><i
+                                class="fa-solid fa-cart-shopping"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Tài khoản đang bán LIVE</span>
+                            <span
+                                class="info-box-number"><?=format_cash($CMSNT->get_row("SELECT COUNT(id)  FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)']);?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box mb-3">
+                        <span class="info-box-icon bg-danger elevation-1"><i
+                                class="fa-solid fa-cart-shopping"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Tài khoản đang bán DIE</span>
+                            <span
+                                class="info-box-number"><?=format_cash($CMSNT->get_row("SELECT COUNT(id)  FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NULL AND `status` = 'DIE' ")['COUNT(id)']);?></span>
+                        </div>
+                    </div>
+                </div>
                 <section class="col-lg-12 connectedSortable">
                     <div class="card card-primary card-outline">
                         <div class="card-header">
@@ -85,38 +140,92 @@ require_once(__DIR__.'/nav.php');
                         </div>
                         <div class="card-body">
                             <div class="row mb-2">
-                                <div class="col-sm-6">
-                                </div>
-                                <div class="col-sm-6">
-                                    <button class="float-right btn btn-danger btn-sm" type="button"
-                                        onclick="deleteConfirm()" name="btn_delete"><i
-                                            class="fas fa-trash mr-1"></i>Delete</button>
+                                <div class="col-sm-12 mb-3">
+                                    <form action="" id="formSearch" name="formSearch" method="GET">
+                                        <input type="hidden" name="module" value="admin">
+                                        <input type="hidden" name="action" value="account-view">
+                                        <input type="hidden" name="id" value="<?=$id;?>">
+                                        <div class="row">
+                                            <input class="form-control col-sm-2 mb-2" value="<?=$account;?>"
+                                                name="account" placeholder="Tìm tài khoản">
+
+                                            <select class="form-control select2bs4 col-sm-2 mb-2" name="status">
+                                                <option value="">Trạng thái</option>
+                                                <option <?=$status == 'LIVE' ? 'selected' : '';?> value="LIVE">LIVE
+                                                </option>
+                                                <option <?=$status == 'DIE' ? 'selected' : '';?> value="DIE">DIE
+                                                </option>
+                                            </select>
+
+                                            <div class="col-sm-4 mb-2">
+                                                <button type="submit" 
+                                                    class="btn btn-warning"><i class="fa fa-search"></i>
+                                                    Tìm kiếm
+                                                </button>
+                                                <a class="btn btn-danger"
+                                                    href="<?=BASE_URL('index.php?module=admin&action=account-view&id='.$id);?>"><i
+                                                        class="fa fa-trash"></i>
+                                                    Bỏ lọc
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-6">
+                                                <div class="dataTables_length">
+                                                    <label>Show :
+                                                        <select name="limit" id="limit" onchange="this.form.submit()"
+                                                            class="custom-select custom-select-sm form-control form-control-sm">
+                                                            <option <?=$limit == 5 ? 'selected' : '';?> value="5">5
+                                                            </option>
+                                                            <option <?=$limit == 10 ? 'selected' : '';?> value="10">10
+                                                            </option>
+                                                            <option <?=$limit == 20 ? 'selected' : '';?> value="20">20
+                                                            </option>
+                                                            <option <?=$limit == 50 ? 'selected' : '';?> value="50">50
+                                                            </option>
+                                                            <option <?=$limit == 100 ? 'selected' : '';?> value="100">
+                                                                100
+                                                            </option>
+                                                            <option <?=$limit == 500 ? 'selected' : '';?> value="500">
+                                                                500
+                                                            </option>
+                                                            <option <?=$limit == 1000 ? 'selected' : '';?> value="1000">
+                                                                1000
+                                                            </option>
+                                                            <option <?=$limit == 10000 ? 'selected' : '';?> value="10000">
+                                                                10000
+                                                            </option>
+                                                        </select>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                             <div class="table-responsive p-0">
-                                <table id="datatable1" class="table table-bordered table-striped table-hover">
+                                <table class="table table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th width="5px;">#</th>
                                             <th width="5px;"><input type="checkbox" name="check_all" id="check_all"
                                                     value="option1"></th>
                                             <th>Người bán</th>
-                                            <th>Người mua</th>
-                                            <th>Thông tin </th>
+                                            <th>Tài khoản</th>
                                             <th>Thời gian đưa lên</th>
                                             <th>Trạng thái</th>
-                                            <th>Thời gian check live gần đây</th>
-                                            <th style="width: 20%">Action</th>
+                                            <th>Check live gần nhất</th>
+                                            <th>Thao tác</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NULL ") as $row) {?>
+                                        <?php foreach ($listAccount as $row) {?>
                                         <tr>
-                                            <td><?=$i++;?></td>
                                             <td><input type="checkbox" data-id="<?=$row['id'];?>" name="checkbox"
                                                     class="checkbox" value="<?=$row['id'];?>" /></td>
-                                            <td><a href="<?=base_url('admin/user-edit/'.$row['seller']);?>"><?=getRowRealtime("users", $row['seller'], "username");?></a></td>
-                                            <td><a href="<?=base_url('admin/user-edit/'.$row['buyer']);?>"><?=getRowRealtime("users", $row['buyer'], "username");?></a></td>
+                                            <td><a
+                                                    href="<?=base_url('admin/user-edit/'.$row['seller']);?>"><?=getRowRealtime("users", $row['seller'], "username");?></a>
+                                            </td>
                                             <td><textarea class="form-control" readonly><?=$row['account'];?></textarea>
                                             </td>
                                             <td><?=$row['create_date'];?></td>
@@ -133,16 +242,34 @@ require_once(__DIR__.'/nav.php');
                                     </tbody>
                                 </table>
                             </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-5">
+                                    <p class="page-info">Showing <?=$limit;?> of <?=$totalDatatable;?> Results</p>
+                                </div>
+                                <div class="col-sm-12 col-md-7">
+                                    <?=$totalDatatable > $limit ? $urlDatatable : '';?>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button class="btn btn-danger btn-sm" type="button" onclick="deleteConfirm()"
+                                        name="btn_delete"><i class="fas fa-trash mr-1"></i>Xoá đã chọn</button>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </section>
             </div>
         </div>
     </div>
+
+
 </div>
+ 
 <?php
 require_once(__DIR__.'/footer.php');
 ?>
+
+ 
 <script type="text/javascript">
 function RemoveRow(id) {
     cuteAlert({
@@ -167,7 +294,7 @@ function RemoveRow(id) {
                             message: respone.msg,
                             timer: 5000
                         });
-                        //location.reload();
+                        location.reload();
                     } else {
                         cuteAlert({
                             type: "error",

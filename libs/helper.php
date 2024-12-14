@@ -3,8 +3,856 @@
 if (!defined('IN_SITE')) {
     die('The Request Not Found');
 }
+$CMSNT = new DB;
+date_default_timezone_set($CMSNT->site('timezone'));
 
+if($CMSNT->get_row(" SELECT * FROM `banned_ips` WHERE `ip` = '".myip()."' AND `banned` = 1 ")){
+    require_once(__DIR__.'/../resources/views/common/block-ip.php');
+    exit();
+}
+function checkWhiteDomain($domain){
+    $domain_white = [
+        'muafb.net',
+        'trongclone.com',
+        'uyenclone.com',
+        'shopviafb24h.com',
+        'storerobloxvn.com',
+        'fptvclone.com',
+        'nksport.vn',
+        'sellfb247.com',
+        'accrunner.com',
+        'adsygo.com',
+        '250fb.com',
+        'funcatz.info',
+        'cuongmkt.com',
+        'blackacc.com',
+        'shop.kmedia.vn',
+        'wow1shop.vn',
+        'muaads.com.vn'.
+        'anyfb.com'
+    ];
+    foreach($domain_white as $row){
+        if($row == $domain){
+            return true;
+        }
+    }
+    return false;
+}
+function CMSNT_check_license($licensekey, $localkey='') {
+    global $config;
+    $whmcsurl = 'https://client.cmsnt.co/';
+    $licensing_secret_key = $config['project'];
+    $localkeydays = 15;
+    $allowcheckfaildays = 5;
+    $check_token = time() . md5(mt_rand(100000000, mt_getrandmax()) . $licensekey);
+    $checkdate = date("Ymd");
+    $domain = $_SERVER['SERVER_NAME'];
+    $usersip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : $_SERVER['LOCAL_ADDR'];
+    $dirpath = dirname(__FILE__);
+    $verifyfilepath = 'modules/servers/licensing/verify.php';
+    $localkeyvalid = false;
+    if ($localkey) {
+        $localkey = str_replace("\n", '', $localkey); # Remove the line breaks
+        $localdata = substr($localkey, 0, strlen($localkey) - 32); # Extract License Data
+        $md5hash = substr($localkey, strlen($localkey) - 32); # Extract MD5 Hash
+        if ($md5hash == md5($localdata . $licensing_secret_key)) {
+            $localdata = strrev($localdata); # Reverse the string
+            $md5hash = substr($localdata, 0, 32); # Extract MD5 Hash
+            $localdata = substr($localdata, 32); # Extract License Data
+            $localdata = base64_decode($localdata);
+            $localkeyresults = json_decode($localdata, true);
+            $originalcheckdate = $localkeyresults['checkdate'];
+            if ($md5hash == md5($originalcheckdate . $licensing_secret_key)) {
+                $localexpiry = date("Ymd", mktime(0, 0, 0, date("m"), date("d") - $localkeydays, date("Y")));
+                if ($originalcheckdate > $localexpiry) {
+                    $localkeyvalid = true;
+                    $results = $localkeyresults;
+                    $validdomains = explode(',', $results['validdomain']);
+                    if (!in_array($_SERVER['SERVER_NAME'], $validdomains)) {
+                        $localkeyvalid = false;
+                        $localkeyresults['status'] = "Invalid";
+                        $results = array();
+                    }
+                    $validips = explode(',', $results['validip']);
+                    if (!in_array($usersip, $validips)) {
+                        $localkeyvalid = false;
+                        $localkeyresults['status'] = "Invalid";
+                        $results = array();
+                    }
+                    $validdirs = explode(',', $results['validdirectory']);
+                    if (!in_array($dirpath, $validdirs)) {
+                        $localkeyvalid = false;
+                        $localkeyresults['status'] = "Invalid";
+                        $results = array();
+                    }
+                }
+            }
+        }
+    }
+    if (!$localkeyvalid) {
+        $responseCode = 0;
+        $postfields = array(
+            'licensekey' => $licensekey,
+            'domain' => $domain,
+            'ip' => $usersip,
+            'dir' => $dirpath,
+        );
+        if ($check_token) $postfields['check_token'] = $check_token;
+        $query_string = '';
+        foreach ($postfields AS $k=>$v) {
+            $query_string .= $k.'='.urlencode($v).'&';
+        }
+        if (function_exists('curl_exec')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $whmcsurl . $verifyfilepath);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $query_string);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $data = curl_exec($ch);
+            $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        } else {
+            $responseCodePattern = '/^HTTP\/\d+\.\d+\s+(\d+)/';
+            $fp = @fsockopen($whmcsurl, 80, $errno, $errstr, 5);
+            if ($fp) {
+                $newlinefeed = "\r\n";
+                $header = "POST ".$whmcsurl . $verifyfilepath . " HTTP/1.0" . $newlinefeed;
+                $header .= "Host: ".$whmcsurl . $newlinefeed;
+                $header .= "Content-type: application/x-www-form-urlencoded" . $newlinefeed;
+                $header .= "Content-length: ".@strlen($query_string) . $newlinefeed;
+                $header .= "Connection: close" . $newlinefeed . $newlinefeed;
+                $header .= $query_string;
+                $data = $line = '';
+                @stream_set_timeout($fp, 20);
+                @fputs($fp, $header);
+                $status = @socket_get_status($fp);
+                while (!@feof($fp)&&$status) {
+                    $line = @fgets($fp, 1024);
+                    $patternMatches = array();
+                    if (!$responseCode
+                        && preg_match($responseCodePattern, trim($line), $patternMatches)
+                    ) {
+                        $responseCode = (empty($patternMatches[1])) ? 0 : $patternMatches[1];
+                    }
+                    $data .= $line;
+                    $status = @socket_get_status($fp);
+                }
+                @fclose ($fp);
+            }
+        }
+        if ($responseCode != 200) {
+            $localexpiry = date("Ymd", mktime(0, 0, 0, date("m"), date("d") - ($localkeydays + $allowcheckfaildays), date("Y")));
+            if ($originalcheckdate > $localexpiry) {
+                $results = $localkeyresults;
+            } else {
+                $results = array();
+                $results['status'] = "Invalid";
+                $results['description'] = "Remote Check Failed";
+                return $results;
+            }
+        } else {
+            preg_match_all('/<(.*?)>([^<]+)<\/\\1>/i', $data, $matches);
+            $results = array();
+            foreach ($matches[1] AS $k=>$v) {
+                $results[$v] = $matches[2][$k];
+            }
+        }
+        if (!is_array($results)) {
+            die("Invalid License Server Response");
+        }
+        if (isset($results['md5hash'])) {
+            if ($results['md5hash'] != md5($licensing_secret_key . $check_token)) {
+                $results['status'] = "Invalid";
+                $results['description'] = "MD5 Checksum Verification Failed";
+                return $results;
+            }
+        }
+        if ($results['status'] == "Active") {
+            $results['checkdate'] = $checkdate;
+            $data_encoded = json_encode($results);
+            $data_encoded = base64_encode($data_encoded);
+            $data_encoded = md5($checkdate . $licensing_secret_key) . $data_encoded;
+            $data_encoded = strrev($data_encoded);
+            $data_encoded = $data_encoded . md5($data_encoded . $licensing_secret_key);
+            $data_encoded = wordwrap($data_encoded, 80, "\n", true);
+            $results['localkey'] = $data_encoded;
+        }
+        $results['remotecheck'] = true;
+    }
+    unset($postfields,$data,$matches,$whmcsurl,$licensing_secret_key,$checkdate,$usersip,$localkeydays,$allowcheckfaildays,$md5hash);
+    return $results;
+}
+function checkLicenseKey($licensekey){
+    $results = CMSNT_check_license($licensekey, '');
+    if($results['status'] == "Active"){   
+        $results['msg'] = "Giấy phép hợp lệ";
+        $results['status'] = true;
+        return $results;
+    }
+    if($results['status'] == "Invalid"){   
+        $results['msg'] = "Giấy phép kích hoạt không hợp lệ";
+        $results['status'] = false;
+        return $results;
+    }
+    if($results['status'] == "Expired"){   
+        $results['msg'] = "Giấy phép mã nguồn đã hết hạn, vui lòng gia hạn ngay";
+        $results['status'] = false;
+        return $results;
+    }
+    if($results['status'] == "Suspended"){   
+        $results['msg'] = "Giấy phép của bạn đã bị tạm ngưng";
+        $results['status'] = false;
+        return $results;
+    }
+    $results['msg'] = "Không tìm thấy giấy phép này trong hệ thống";
+    $results['status'] = false;
+    return $results;
+}
+function buy_API_SHOPCLONE7($domain, $username, $password, $id_api, $amount){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.'ajaxs/client/product.php',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => array('action' => 'buyProduct','id' => $id_api,'amount' => $amount,'coupon' => $username,'api_key' => $password),
+      CURLOPT_HTTPHEADER => array(),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response; 
+}
+function display_mua_xu($data){
+    if ($data == 1) {
+        $show = '<span class="badge badge-success">Hoàn tất</span>';
+    } elseif ($data == 0) {
+        $show = '<span class="badge badge-info">Đang xử lý</span>';
+    } elseif ($data == 2) {
+        $show = '<span class="badge badge-danger">Hủy</span>';
+    }
+    return $show;
+}
+function isValidPhoneNumber($phoneNumber) {
+    // Sử dụng biểu thức chính quy để kiểm tra số điện thoại
+    $pattern = '/^\+?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,10}$/';
+    // Sử dụng hàm preg_match để kiểm tra so khớp
+    if (preg_match($pattern, $phoneNumber)) {
+        return true; // Số điện thoại hợp lệ
+    } else {
+        return false; // Số điện thoại không hợp lệ
+    }
+}
+function getDiscount($amount, $product_id){
+    $CMSNT = new DB;
+    foreach($CMSNT->get_list("SELECT * FROM `discounts` WHERE `amount` <= '$amount' AND `product_id` = '$product_id' ORDER BY `amount` DESC ") as $discount){
+        return $discount['discount'];
+    } 
+    return 0;
+}
+function xoaDauCach($chuoi) {
+    return str_replace(' ', '', $chuoi);
+}
+function generate_csrf_token() {
+    if(!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = base64_encode(openssl_random_pseudo_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+function buy_API_15($domain, $username, $password, $id_api, $amount, $trans_id){
+    return curl_get2($domain.'api/v1/buy.php?apikey='.$password.'&account_type='.$id_api.'&quantity='.$amount);
+}
+function balance_API_15($domain, $username, $password){
+    return curl_get2($domain.'api/v1/login.php?password='.$password);
+}
+function listProduct_API_15($domain, $password){
+    return curl_get2($domain.'api/v1/account.php?apikey='.$password);
+}
+function getOrder_API_14($domain, $username, $password, $order_id){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.'api',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_HTTPHEADER => array(
+            'Authorization: '.$password
+        ),
+        CURLOPT_POSTFIELDS =>'{
+            "act": "Get-Order",
+            "data": {
+                "order_id": '.$order_id.'
+            }
+        }',
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function buy_API_14($domain, $username, $password, $id_api, $amount, $trans_id){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.'api',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_HTTPHEADER => array(
+            'Authorization: '.$password
+        ),
+      CURLOPT_POSTFIELDS =>'{
+        "act": "Create-Order",
+        "data": {
+            "service_id": '.$id_api.',
+            "quantity": '.$amount.'
+        }
+    }',
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function listProduct_API_14($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array('act' => 'Get-Products'),
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: '.$password
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function balance_API_14($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array('act' => 'Me'),
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: '.$password
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function display_invoice($status)
+{
+    if ($status == 'waiting') {
+        return '<span class="badge bg-warning">Waiting</span>';
+    } elseif ($status == 'expired') {
+        return '<span class="badge bg-danger">Expired</span>';
+    } else if ($status == 'completed') {
+        return '<span class="badge bg-success">Completed</span>';
+    } else if ($status == 0) {
+        return '<p class="mb-0 text-warning font-weight-bold d-flex justify-content-start align-items-center">'.__('Đang chờ thanh toán').'</p>';
+    } else if ($status == 1) {
+        return '<p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">'.__('Đã thanh toán').'</p>';
+    } else if ($status == 2) {
+        return '<p class="mb-0 text-danger font-weight-bold d-flex justify-content-start align-items-center">'.__('Huỷ bỏ').'</p>';
+    } else {
+        return '<b style="color:yellow;">Khác</b>';
+    }
+}
+function base_url_admin($url = '')
+{
+    $a = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER["HTTP_HOST"];
+    if ($a == 'http://localhost') {
+        $a = 'http://localhost/CMSNT.CO/SHOPCLONE6';
+    }
+    return $a.'?module=admin&action='.$url;
+}
 
+function buy_API_23($domain, $password, $id_api, $amount){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.base64_decode('YXBpL2NyZWF0ZV9vcmRlcg=='),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'{
+    "service": "'.$id_api.'",
+    "quantity": '.$amount.',
+    "api_key": "'.$password.'"
+    }',
+    CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json'
+    ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    return $response;
+}
+function getOrder_API_13($domain, $username, $password, $order_id){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.base64_decode('YXBpL09yZGVyL0dldFB1cmNoYXNlZEFjY291bnRzP09yZGVySWQ9').$order_id.'&Custom_UserId='.$username,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'GET',
+      CURLOPT_HTTPHEADER => array(
+        'ApiKey: '.$password,
+        'Cookie: language=vi'
+      ),
+    ));
+    
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function buy_API_13($domain, $username, $password, $id_api, $amount, $trans_id){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.base64_decode('YXBpL1NlcnZpY2UvQnV5'),
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'{
+      "serviceId": '.$id_api.',
+      "quantity": '.$amount.',
+      "voucherCode": "'.$username.'",
+      "custom_UserId": "'.$username.'",
+      "custom_OrderId": "'.$trans_id.'",
+      "custom_ExtraData": "<custom_ExtraData>"
+    }',
+      CURLOPT_HTTPHEADER => array(
+        'ApiKey: '.$password,
+        'Content-Type: application/json',
+        'Cookie: language=vi'
+      ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function listProduct_API_13($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.'api/Service/GetAll',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'GET',
+      CURLOPT_HTTPHEADER => array(
+        'ApiKey: '.$password,
+        'Cookie: language=vi'
+      ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+
+function getOrder_API_12($domain, $password, $order_id){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.'api/',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'{
+        "data": {
+            "order_id": '.$order_id.'
+        },
+        "act": "Get-Order"
+    }',
+      CURLOPT_HTTPHEADER => array(
+        'authorization: '.$password,
+        'Content-Type: application/json'
+      ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response; 
+}
+function buy_API_12($domain, $password, $id_api, $amount){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $domain.'api/',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'{
+        "data": {
+            "quantity": '.$amount.',
+            "service_id": '.$id_api.'
+        },
+        "act": "Create-Order"
+    }',
+      CURLOPT_HTTPHEADER => array(
+        'authorization: '.$password,
+        'Content-Type: application/json'
+      ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response; 
+}
+function listProduct_API_12($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'{
+        "act": "Get-Products"
+    }',
+    CURLOPT_HTTPHEADER => array(
+        'authorization: '.$password,
+        'Content-Type: application/json'
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+
+}
+function balance_API_12($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS =>'{
+        "act": "Me"
+    }',
+    CURLOPT_HTTPHEADER => array(
+        'authorization: '.$password,
+        'Content-Type: application/json'
+      ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+if (!function_exists('cal_days_in_month')) {
+    function cal_days_in_month($calendar, $month, $year) {
+        return date('t', mktime(0, 0, 0, $month, 1, $year));
+    }
+}
+function is_valid_domain_name($domain_name){
+    return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain_name) && preg_match("/^.{1,253}$/", $domain_name) && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain_name));
+}
+function display_domains($data){
+    if ($data == 1) {
+        $show = '<span class="badge bg-success">'.__('Hoạt Động').'</span>';
+    } elseif ($data == 0) {
+        $show = '<span class="badge bg-warning">'.__('Đang Xây Dựng').'</span>';
+    } elseif ($data == 2) {
+        $show = '<span class="badge bg-danger">'.__('Huỷ').'</span>';
+    }
+    return $show;
+}
+function balance_API_10($domain, $password){
+    return curl_get($domain.'/user/balance?apikey='.$password);
+}
+function buy_API_9($domain, $password, $dataPost){
+    $data = json_encode($dataPost);
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'v1/api/buy?api_key='.$password,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => $data,
+    CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json'
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function listProduct_API_9($domain, $password){
+    return curl_get($domain.'v1/api/categories?api_key='.$password);
+}
+function balance_API_9($domain, $password){
+    return curl_get($domain.'v1/api/me?api_key='.$password);
+}
+
+function buy_API_8($domain, $password, $dataPost){
+    $data = json_encode($dataPost);
+    $ch = curl_init($domain."api/v1/s3/buy");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS,$data);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($data),
+        'Authorization: Bearer '.$password
+    )
+    );
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return $result;
+}
+function listProduct_API_8($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api/v1/s3/services',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: Bearer '.$password
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function balance_API_8($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api/v1/s3/get_wallet',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: Bearer '.$password
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+
+function buy_API_7($domain, $token, $id_product, $amount){
+    
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api/san-pham/mua?category='.$id_product.'&quantity='.$amount,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: Bearer '.$token
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+function listProduct_API_7($domain, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'api/san-pham/tat-ca',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'GET',
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: Bearer '.$password
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+
+}
+function display_camp($status)
+{
+    if ($status == 0) {
+        return '<b style="color:blue;">Processing</b>';
+    } elseif ($status == 1) {
+        return '<b style="color:green;">Completed</b>';
+    } elseif ($status == 2) {
+        return '<b style="color:red;">Cancel</b>';
+    } else {
+        return '<b style="color:yellow;">Khác</b>';
+    }
+}
+function balance_API_6($domain, $password){
+    return curl_get($domain.'/api.php?apikey='.$password.'&action=get-balance');
+}
+function display_otp_service($status)
+{
+    if ($status == 3) {
+        return '<span class="badge bg-danger">'.__('Dữ liệu đầu vào không hợp lệ').'</span>';
+    } elseif ($status == 0) {
+        return '<span class="badge bg-success">'.__('Hoàn tất').'</span>';
+    } elseif ($status == 2) {
+        return '<span class="badge bg-danger">'.__('Hết hạn (hoàn tiền)').'</span>';
+    } elseif ($status == 1) {
+        return '<span class="badge bg-warning">'.__('Đang chờ').'</span>';
+    } else {
+        return '<span class="badge bg-warning">'.__('Khác').'</span>';
+    }
+}
+function display_service_client($status)
+{
+    if ($status == 'Pending') {
+        return '<span class="badge bg-info">Đang chờ</span>';
+    } elseif ($status == 'Completed') {
+        return '<span class="badge bg-success">Hoàn thành</span>';
+    } elseif ($status == 'Canceled') {
+        return '<span class="badge bg-danger">Đã hủy (Đã hoàn tiền)</span>';
+    } elseif ($status == 'In progress') {
+        return '<span class="badge bg-warning">Đang chạy</span>';
+    } elseif ($status == 'Partial') {
+        return '<span class="badge bg-danger">Chạy thiếu (Đã hoàn tiền)</span>';
+    } elseif ($status == 'Processing') {
+        return '<span class="badge bg-warning">Đang xử lý</span>';
+    } else {
+        return '<span class="badge bg-warning">Khác</span>';
+    }
+}
+function setCurrency($id){
+    global $CMSNT;
+    if ($row = $CMSNT->get_row("SELECT * FROM `currencies` WHERE `id` = '$id' AND `display` = 1 ")) {
+        $isSet = setcookie('currency', $row['id'], time() + (31536000 * 30), "/"); // 31536000 = 365 ngày
+        if ($isSet) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    return false;
+}
+function getCurrency(){
+    global $CMSNT;
+    if (isset($_COOKIE['currency'])) {
+        $currency = check_string($_COOKIE['currency']);
+        $rowcurrency = $CMSNT->get_row("SELECT * FROM `currencies` WHERE `id` = '$currency' AND `display` = 1 ");
+        if ($rowcurrency) {
+            return $rowcurrency['id'];
+        }
+    }
+    $rowcurrency = $CMSNT->get_row("SELECT * FROM `currencies` WHERE `default_currency` = 1 ");
+    if ($rowcurrency) {
+        return $rowcurrency['id'];
+    }
+    return false;
+}
+function buy_API_DONGVANFB($domain, $apikey, $id_product, $amount){
+    return curl_get($domain."user/buy?apikey=$apikey&account_type=$id_product&quality=$amount&type=full");
+}
+function balance_API_DONGVANFB($domain, $username, $apikey){
+    return curl_get($domain."user/balance?apikey=$apikey");
+}
+function buy_API_4($domain, $token, $id_product, $amount){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $domain.'v1/user/partnerbuy',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => array('amount' => $amount, 'categoryId' => $id_product),
+    CURLOPT_HTTPHEADER => array(
+        'authorization: '.$token
+    ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+
+}
+function balance_API_4($domain, $username, $password){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $domain.'v1/user/login',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => array(
+            'username' => $username,
+            'password'  => $password
+        ),
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
 function balance_API_1($domain, $token){
     $curl = curl_init();
     curl_setopt_array($curl, array(
@@ -12,7 +860,7 @@ function balance_API_1($domain, $token){
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
+        CURLOPT_TIMEOUT => 5,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'POST',
@@ -63,7 +911,11 @@ function addRef($user_id, $price, $note = ''){
     }
     $getUser = $CMSNT->get_row(" SELECT * FROM `users` WHERE `id` = '$user_id' ");
     if($getUser['ref_id'] != 0){
-        $price = $price * $CMSNT->site('ck_ref') / 100;
+        $ck = $CMSNT->site('ck_ref');
+        if(getRowRealtime('users', $getUser['ref_id'], 'ref_ck') != 0){
+            $ck = getRowRealtime('users', $getUser['ref_id'], 'ref_ck');
+        }
+        $price = $price * $ck / 100;
         $CMSNT->cong('users', 'ref_money', $price, " `id` = '".$getUser['ref_id']."' ");
         $CMSNT->cong('users', 'ref_total_money', $price, " `id` = '".$getUser['ref_id']."' ");
         $CMSNT->cong('users', 'ref_amount', $price, " `id` = '".$getUser['id']."' ");
@@ -72,7 +924,8 @@ function addRef($user_id, $price, $note = ''){
             'reason'        => $note,
             'sotientruoc'   => getRowRealtime('users', $getUser['ref_id'], 'ref_money') - $price,
             'sotienthaydoi' => $price,
-            'sotienhientai' => getRowRealtime('users', $getUser['ref_id'], 'ref_money')
+            'sotienhientai' => getRowRealtime('users', $getUser['ref_id'], 'ref_money'),
+            'create_gettime'    => gettime()
         ]);
         return true;
     }
@@ -80,7 +933,7 @@ function addRef($user_id, $price, $note = ''){
 }
 function sendMessAdmin($my_text){
     $CMSNT = new DB;
-    if(checkAddon(112246) == true){
+    if(checkAddon(112246) == true && $my_text != ''){
         if($CMSNT->site('type_notification') == 'telegram'){
             return sendMessTelegram($my_text);
         }
@@ -88,19 +941,38 @@ function sendMessAdmin($my_text){
     }
     return false;
 }
-function sendMessTelegram($my_text){
+function sendMessTelegram($my_text, $token = '', $chat_id = ''){
     $CMSNT = new DB;
-    if($CMSNT->site('token_telegram') != '' && $CMSNT->site('chat_id_telegram') != ''){
-        return curl_get("https://api.telegram.org/bot".$CMSNT->site('token_telegram')."/sendMessage?chat_id=".$CMSNT->site('chat_id_telegram')."&text=".$my_text);
+    if($chat_id == ''){
+        $chat_id = $CMSNT->site('chat_id_telegram');
     }
-    return true;
+    if($token == ''){
+        $token = $CMSNT->site('token_telegram');
+    }
+    if($token != '' && $chat_id != ''){
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.telegram.org/bot'.$token.'/sendMessage?chat_id='.$chat_id.'&text='.urlencode($my_text),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+      ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        return $response;
+    }
+    return false;
 }
 function getFlag($flag){
 
     if(empty($flag)){
         return '';
     }
-    return '<img src="https://flagcdn.com/24x18/'.$flag.'.png">';
+    return '<img width="30px;" src="https://flagicons.lipis.dev/flags/4x3/'.$flag.'.svg">';
 }
 function checkPromotion($amount){
     $CMSNT = new DB();
@@ -259,7 +1131,7 @@ function checkCoupon($coupon, $user_id, $total_money)
     // check coupon có tồn tại hay không
     if ($coupon = $CMSNT->get_row("SELECT * FROM `coupons` WHERE `code` = '".check_string($coupon)."' AND `min` <= $total_money AND `max` >= $total_money AND `used` < `amount` ")) {
         // chek số lượng còn hay không
-        if ($coupon['used'] < $coupon['amount']) {
+        if ($CMSNT->num_rows(" SELECT * FROM coupon_used WHERE `coupon_id` = '".$coupon['id']."' ") < $coupon['amount']) {
             // check đã dùng hay chưa
             if (!$CMSNT->get_row("SELECT * FROM `coupon_used` WHERE `coupon_id` = '".$coupon['id']."' AND `user_id` = '".$user_id."' ")) {
                 return $coupon['discount'];
@@ -285,6 +1157,7 @@ function active_sidebar_client($action)
     }
     return '';
 }
+ 
 function show_sidebar_client($action)
 {
     foreach ($action as $row) {
@@ -294,6 +1167,8 @@ function show_sidebar_client($action)
     }
     return '';
 }
+
+
 function parse_order_id($des, $MEMO_PREFIX)
 {
     $re = '/'.$MEMO_PREFIX.'\d+/im';
@@ -306,6 +1181,26 @@ function parse_order_id($des, $MEMO_PREFIX)
     $prefixLength = strlen($MEMO_PREFIX);
     $orderId = intval(substr($orderCode, $prefixLength));
     return $orderId ;
+}
+function display_status_toyyibpay($status)
+{
+    if ($status == 0) {
+        return '<b style="color:#db7e06;">'.__('Waiting').'</b>';
+    } elseif ($status == 'confirming') {
+        return '<b style="color:blue;">'.__('Confirming').'</b>';
+    } elseif ($status == 'confirmed') {
+        return '<b style="color:green;">'.__('Confirmed').'</b>';
+    } elseif ($status == 'refunded') {
+        return '<b style="color:pink;">'.__('Refunded').'</b>';
+    } elseif ($status == 'expired') {
+        return '<b style="color:red;">'.__('Expired').'</b>';
+    } elseif ($status == 2) {
+        return '<b style="color:red;">'.__('Failed').'</b>';
+    } elseif ($status == 'partially_paid') {
+        return '<b style="color:green;">'.__('Partially Paid').'</b>';
+    } elseif ($status == 1) {
+        return '<b style="color:green;">'.__('Finished').'</b>';
+    }
 }
 function display_status_crypto($status)
 {
@@ -351,28 +1246,6 @@ function display_card($status)
         return '<b style="color:yellow;">Khác</b>';
     }
 }
-// display hoá đơn
-function display_invoice($status)
-{
-    if ($status == 0) {
-        return '<p class="mb-0 text-warning font-weight-bold d-flex justify-content-start align-items-center">
-        <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
-        <circle cx="12" cy="12" r="8" fill="#db7e06"></circle></svg>
-        </small>'.__('Đang chờ thanh toán').'</p>';
-    } elseif ($status == 1) {
-        return '<p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
-        <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
-        <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle></svg>
-        </small>'.__('Đã thanh toán').'</p>';
-    } elseif ($status == 2) {
-        return '<p class="mb-0 text-danger font-weight-bold d-flex justify-content-start align-items-center">
-        <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
-        <circle cx="12" cy="12" r="8" fill="#F42B3D"></circle></svg>
-        </small>'.__('Huỷ bỏ').'</p>';
-    } else {
-        return '<b style="color:yellow;">Khác</b>';
-    }
-}
 function display_invoice_text($status)
 {
     if ($status == 0) {
@@ -389,7 +1262,18 @@ function display_invoice_text($status)
 function getRowRealtime($table, $id, $row)
 {
     global $CMSNT;
-    return $CMSNT->get_row("SELECT * FROM `$table` WHERE `id` = '$id' ")[$row];
+    return $CMSNT->get_row("SELECT `".$row."` FROM `$table` WHERE `id` = '$id' ")[$row];
+}
+
+function get_url(){
+    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'){
+        $url = "https://"; 
+    }else {
+        $url = "http://";
+    }         
+    $url.= $_SERVER['HTTP_HOST'];   
+    $url.= $_SERVER['REQUEST_URI'];    
+    return $url;  
 }
 // Hàm tạo URL
 function base_url($url = '')
@@ -399,20 +1283,7 @@ function base_url($url = '')
     if ($a == 'http://localhost') {
         $a = 'http://localhost/CMSNT.CO/SHOPCLONE6';
     }
-    // foreach($domain_block as $domain){
-    //     if($domain == $_SERVER['HTTP_HOST']){
-    //         return redirect(base64_decode('aHR0cHM6Ly93d3cuY21zbnQuY28v'));
-    //     }
-    // }
     return $a.'/'.$url;
-}
-function base_url_admin($url = '')
-{
-    $a = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER["HTTP_HOST"];
-    if ($a == 'http://localhost') {
-        $a = 'http://localhost/CMSNT.CO/SHOPCLONE6';
-    }
-    return $a.'/admin/'.$url;
 }
 // mã hoá password
 function TypePassword($password)
@@ -420,6 +1291,9 @@ function TypePassword($password)
     $CMSNT = new DB();
     if ($CMSNT->site('type_password') == 'md5') {
         return md5($password);
+    }
+    if ($CMSNT->site('type_password') == 'md5md5') {
+        return md5(md5($password));
     }
     if ($CMSNT->site('type_password') == 'bcrypt') {
         return password_hash($password, PASSWORD_BCRYPT);
@@ -458,8 +1332,8 @@ function gettime()
 {
     return date('Y/m/d H:i:s', time());
 }
-//format money
-function format_currency($amount)
+
+function format_currency2($amount)
 {
     $CMSNT = new DB();
     $currency = $CMSNT->site('currency');
@@ -470,10 +1344,42 @@ function format_currency($amount)
     } elseif ($currency == 'THB') {
         return format_cash($amount / 645.36).' THB';
     }
+} 
+function format_currency($amount){
+    $CMSNT = new DB();
+    if (isset($_COOKIE['currency'])) {
+        $currency = check_string($_COOKIE['currency']);
+        $rowCurrency = $CMSNT->get_row("SELECT * FROM `currencies` WHERE `id` = '$currency' AND `display` = 1 ");
+        if ($rowCurrency) {
+            if($rowCurrency['seperator'] == 'comma'){
+                $seperator = ',';
+            }
+            if($rowCurrency['seperator'] == 'space'){
+                $seperator = '';
+            }
+            if($rowCurrency['seperator'] == 'dot'){
+                $seperator = '.';
+            } 
+            return $rowCurrency['symbol_left'].number_format($amount / $rowCurrency['rate'], $rowCurrency['decimal_currency'], '.', $seperator).$rowCurrency['symbol_right'];
+        }
+    }
+    $rowCurrency = $CMSNT->get_row("SELECT * FROM `currencies` WHERE `default_currency` = 1 ");
+    if ($rowCurrency) {
+        if($rowCurrency['seperator'] == 'comma'){
+            $seperator = ',';
+        }
+        if($rowCurrency['seperator'] == 'space'){
+            $seperator = '';
+        }
+        if($rowCurrency['seperator'] == 'dot'){
+            $seperator = '.';
+        }
+        return $rowCurrency['symbol_left'].number_format($amount / $rowCurrency['rate'], $rowCurrency['decimal_currency'], '.', $seperator).$rowCurrency['symbol_right'];
+    }
+    return format_cash($amount).'đ';
 }
 //show ip
-function myip()
-{
+function myip(){
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
         $ip_address = $_SERVER['HTTP_CLIENT_IP'];
     } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -481,8 +1387,15 @@ function myip()
     } else {
         $ip_address = $_SERVER['REMOTE_ADDR'];
     }
+    if(isset(explode(',', $ip_address)[1])){
+        return explode(',', $ip_address)[0];
+    }
     return check_string($ip_address);
 }
+// function myip(){
+//     $ip_address = $_SERVER['REMOTE_ADDR'];
+//     return check_string($ip_address);
+// }
 // lọc input
 function check_string($data)
 {
@@ -544,14 +1457,41 @@ function checkAddon($id_addon){
     return false;
 }
 // curl get
-function curl_get($url)
-{
+function curl_get($url){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     $data = curl_exec($ch);
     curl_close($ch);
     return $data;
+}
+function curl_get2($url){
+    $arrContextOptions=array(
+        "ssl"=>array(
+            "verify_peer"=>false,
+            "verify_peer_name"=>false,
+        ),
+    ); 
+    return file_get_contents($url, false, stream_context_create($arrContextOptions));
+}
+function curl_dataPost($url, $dataPost){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => $dataPost,
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
 }
 function curl_post($url, $method, $postinfo, $cookie_file_path)
 {
@@ -587,67 +1527,15 @@ function convertTokenToCookie($token)
     $html = json_decode(file_get_contents("https://api.facebook.com/method/auth.getSessionforApp?access_token=$token&format=json&new_app_id=350685531728&generate_session_cookies=1"), true);
     $cookie = $html['session_cookies'][0]['name']."=".$html['session_cookies'][0]['value'].";".$html['session_cookies'][1]['name']."=".$html['session_cookies'][1]['value'].";".$html['session_cookies'][2]['name']."=".$html['session_cookies'][2]['value'].";".$html['session_cookies'][3]['name']."=".$html['session_cookies'][3]['value'];
     return $cookie;
-}
-function senInboxCSM($cookie, $noiDungTinNhan, $idAnh, $idNguoiNhan)
-{
-    //lấy id người gửi
-    preg_match("/c_user=([0-9]+);/", $cookie, $idNguoiGui);
-    $idNguoiGui = $idNguoiGui[1];
-    //lấy dtsg
-    $html =  curl_post('https://m.facebook.com', 'GET', "", $cookie);
-    $re = "/<input type=\"hidden\" name=\"fb_dtsg\" value=\"(.*?)\" autocomplete=\"off\" \\/>/";
-    preg_match($re, $html, $dtsg);
-    $dtsg = $dtsg[1];
-    //tách chuỗi thành vòng lặp, lấy từng người nhận ra
-    $ex = explode("|", $idNguoiNhan);
-    foreach ($ex as $idNguoiNhan) {
-        // echo ".$idNguoiNhan.";
-        //lấy tids
-        $html1 = curl_post("https://m.facebook.com/messages/read/?fbid=$idNguoiNhan&_rdr", 'GET', '', $cookie);
-        $re = "/tids=(.*?)\&/";
-        preg_match($re, $html1, $tid);
-        if (isset($tid[1])) {
-            $tid=urldecode($tid[1]);  //encode mã tids lại
-            $data = array("fb_dtsg" => "$dtsg",
-            "body" => "$noiDungTinNhan",
-            "send" => "Gá»­i",
-            "photo_ids[$idanh]" => "$idAnh",
-            "tids" => "$tid",
-            "referrer" => "",
-            "ctype" => "",
-            "cver" => "legacy");
-        } else {
-            $data = array("fb_dtsg" => "$dtsg",
-                "body" => "$noiDungTinNhan",
-                "Send" => "Gá»­i",
-                "ids[0]" => "$idNguoiNhan",
-                "photo" => "",
-                "waterfall_source" => "message");
-        }
-        //Gửi tin nhắn
-        $html = curl_post('https://m.facebook.com/messages/send/?icm=1&refid=12', 'POST', http_build_query($data), $cookie);
-        $re = preg_match("/send_success/", $html, $rep); //bắt kết quả trả về
-        if (isset($rep[0])) {
-            return true;
-            ob_flush();
-            flush();
-        } else {
-            return false;
-            ob_flush();
-            flush();
-        }
-    }
-}
-
+} 
 // hàm tạo string random
 function random($string, $int)
 {
     return substr(str_shuffle($string), 0, $int);
 }
 // Hàm redirect
-function redirect($url)
-{
-    header("Location: {$url}");
+function redirect($url){
+    header("Location: ".$url);
     exit();
 }
 
@@ -903,6 +1791,7 @@ function timeAgo($time_ago)
         return "$years ".__('năm trước');
     }
 }
+
 function timeAgo2($time_ago)
 {
     $time_ago   = date("Y-m-d H:i:s", $time_ago);
@@ -1145,4 +2034,38 @@ function getLocation($ip)
     $url = "http://ipinfo.io/" . $ip;
     $location = json_decode(file_get_contents($url), true);
     return $location;
+}
+function pagination($url, $start, $total, $kmess)
+{
+    $out[] = ' <div class="paging_simple_numbers"><ul class="pagination">';
+    $neighbors = 2;
+    if ($start >= $total) $start = max(0, $total - (($total % $kmess) == 0 ? $kmess : ($total % $kmess)));
+    else $start = max(0, (int)$start - ((int)$start % (int)$kmess));
+    $base_link = '<li class="paginate_button page-item previous "><a class="page-link" href="' . strtr($url, array('%' => '%%')) . 'page=%d' . '">%s</a></li>';
+    $out[] = $start == 0 ? '' : sprintf($base_link, $start / $kmess, 'Previous');
+    if ($start > $kmess * $neighbors) $out[] = sprintf($base_link, 1, '1');
+    if ($start > $kmess * ($neighbors + 1)) $out[] = '<li class="paginate_button page-item previous disabled"><a class="page-link">...</a></li>';
+    for ($nCont = $neighbors;$nCont >= 1;$nCont--) if ($start >= $kmess * $nCont) {
+        $tmpStart = $start - $kmess * $nCont;
+        $out[] = sprintf($base_link, $tmpStart / $kmess + 1, $tmpStart / $kmess + 1);
+    }
+    $out[] = '<li class="paginate_button page-item previous active"><a class="page-link">' . ($start / $kmess + 1) . '</a></li>';
+    $tmpMaxPages = (int)(($total - 1) / $kmess) * $kmess;
+    for ($nCont = 1;$nCont <= $neighbors;$nCont++) if ($start + $kmess * $nCont <= $tmpMaxPages) {
+        $tmpStart = $start + $kmess * $nCont;
+        $out[] = sprintf($base_link, $tmpStart / $kmess + 1, $tmpStart / $kmess + 1);
+    }
+    if ($start + $kmess * ($neighbors + 1) < $tmpMaxPages) $out[] = '<li class="paginate_button page-item previous disabled"><a class="page-link">...</a></li>';
+    if ($start + $kmess * $neighbors < $tmpMaxPages) $out[] = sprintf($base_link, $tmpMaxPages / $kmess + 1, $tmpMaxPages / $kmess + 1);
+    if ($start + $kmess < $total)
+    {
+        $display_page = ($start + $kmess) > $total ? $total : ($start / $kmess + 2);
+        $out[] = sprintf($base_link, $display_page, 'Next');
+    }
+    $out[] = '</ul></div>';
+    return implode('', $out);
+}
+
+function check_path($path){
+    return preg_replace("/[^A-Za-z0-9_-]/", '', check_string($path));
 }

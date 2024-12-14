@@ -58,7 +58,9 @@ require_once(__DIR__.'/sidebar.php');
                                             clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                                <p class="mb-0"><?=$getUser['status_2fa'] == 1 ? __('Đang bật bảo mật') : __('Đang tắt bảo mật');?></p>
+                                <p class="mb-0">
+                                    <?=$getUser['status_2fa'] == 1 ? __('Đang bật bảo mật') : __('Đang tắt bảo mật');?>
+                                </p>
                             </div>
                             <div class="d-flex justify-content-center">
                                 <div class="social-ic d-inline-flex rounded">
@@ -152,6 +154,12 @@ require_once(__DIR__.'/sidebar.php');
                         </div>
                     </div>
                 </div>
+                <?php 
+                if ($CMSNT->site('is_update_phone') == 1 && isset($_SESSION['login']) && $getUser['phone'] == '') {?>
+                <div class="alert text-white bg-warning" role="alert">
+                    <div class="iq-alert-text"><i class="fa-solid fa-exclamation mr-1"></i><?=__('Vui lòng cập nhật số điện thoại để tiếp tục sử dụng website');?></div>
+                </div>
+                <?php }?>
                 <div class="card card-block">
                     <div class="card-header d-flex justify-content-between pb-0">
                         <div class="header-title">
@@ -214,8 +222,7 @@ require_once(__DIR__.'/sidebar.php');
                     <div class="card-footer">
                         <button type="button" id="btnSaveProfile"
                             class="btn btn-primary"><?=__('Lưu Thay Đổi');?></button>
-                        <a type="button" href="<?=base_url('');?>"
-                            class="btn btn-danger"><?=__('Đóng');?></a>
+                        <a type="button" href="<?=base_url('');?>" class="btn btn-danger"><?=__('Đóng');?></a>
                     </div>
                 </div>
             </div>
@@ -226,7 +233,8 @@ require_once(__DIR__.'/sidebar.php');
 <?php require_once(__DIR__.'/footer.php');?>
 <script type="text/javascript">
 $("#btnSaveProfile").on("click", function() {
-    $('#btnSaveProfile').html('<i class="fa fa-spinner fa-spin"></i> <?=__('Đang xử lý...');?>').prop('disabled',
+    $('#btnSaveProfile').html('<i class="fa fa-spinner fa-spin"></i> <?=__('Đang xử lý...');?>').prop(
+        'disabled',
         true);
     $.ajax({
         url: "<?=base_url('ajaxs/client/profile.php');?>",

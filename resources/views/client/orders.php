@@ -38,11 +38,11 @@ require_once(__DIR__.'/sidebar.php');
                 </div>
             </div>
             <div class="col-lg-6 text-right">
-                <div class="mb-3">
+                <!-- <div class="mb-3">
                     <button class="btn btn-primary btn-sm btn-icon-left m-b-10" data-toggle="modal"
                         data-target="#modal-default" type="button"><i
                             class="fas fa-cloud-download-alt mr-1"></i><?=__('Tải Về File Backup VIA');?></button>
-                </div>
+                </div> -->
             </div>
             <div class="col-lg-12">
                 <div class="card">
@@ -66,15 +66,15 @@ require_once(__DIR__.'/sidebar.php');
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `orders` WHERE `fake` = 0 AND `buyer` = '".$getUser['id']."' AND `display` = 1  ORDER BY id DESC LIMIT 1000  ") as $row) {?>
+                                    <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `orders` WHERE `fake` = 0 AND `buyer` = '".$getUser['id']."' AND `display` = 1  ORDER BY id DESC  ") as $row) {?>
                                     <tr>
                                         <td><?=$i++;?></td>
                                         <td><?=$row['trans_id'];?></td>
                                         <?php if($row['product_id'] != 0){?>
-                                            <td><b><?=getRowRealtime("products", $row['product_id'], 'name');?></b></td>
+                                            <td><b><?=$row['name'] == NULL ? getRowRealtime("products", $row['product_id'], 'name') : $row['name'];?></b></td>
                                         <?php }?>
                                         <?php if($row['document_id'] != 0){?>
-                                            <td><b><?=getRowRealtime("documents", $row['document_id'], 'name');?></b></td>
+                                            <td><b><?=$row['name'] == NULL ? getRowRealtime("documents", $row['document_id'], 'name') : $row['name'];?></b></td>
                                         <?php }?>
                                         <td><b style="color:blue;"><?=format_cash($row['amount']);?></b></td>
                                         <td><b style="color:red;"><?=format_currency($row['pay']);?></b></td>

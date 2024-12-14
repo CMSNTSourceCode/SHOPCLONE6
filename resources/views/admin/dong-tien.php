@@ -7,30 +7,77 @@ $body = [
     'keyword' => 'cmsnt, CMSNT, cmsnt.co,'
 ];
 $body['header'] = '
-    <!-- DataTables -->
-    <link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 ';
 $body['footer'] = '
-    <!-- DataTables  & Plugins -->
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/jszip/jszip.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/pdfmake/vfs_fonts.js"></script>   
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+$(function() {
+    $("#reservationtime").daterangepicker({
+        locale: {
+            format: "YYYY/MM/DD/"
+        }
+    })
+    //Date picker
+    $("#reservationdate").datetimepicker({
+        format: "L"
+    });
+});
+</script>
+
+<!-- Select2 -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/select2/js/select2.full.min.js"></script>
+<script>
+$(function () {
+    $(".select2").select2()
+    $(".select2bs4").select2({
+        theme: "bootstrap4"
+    });
+});
+</script>
 ';
 require_once(__DIR__.'/../../../models/is_admin.php');
 require_once(__DIR__.'/header.php');
 require_once(__DIR__.'/sidebar.php');
 require_once(__DIR__.'/nav.php');
+
+
+
+$sotin1trang = 10;
+if(isset($_GET['page'])){
+    $page = check_string(intval($_GET['page']));
+}
+else{
+    $page = 1;
+}
+$from = ($page - 1) * $sotin1trang;
+$where = " `id` > 0 ";
+$user_id = '';
+$noidung = '';
+$create_date = '';
+
+
+if(!empty($_GET['user_id'])){
+    $user_id = check_string($_GET['user_id']);
+    $where .= ' AND `user_id` = "'.$user_id.'" ';
+}
+if(!empty($_GET['noidung'])){
+    $noidung = check_string($_GET['noidung']);
+    $where .= ' AND `noidung` LIKE "%'.$noidung.'%" ';
+}
+if(!empty($_GET['create_date'])){
+    $create_date = check_string($_GET['create_date']);
+    $create_date_1 = $create_date;
+    $create_date_1 = explode(' - ', $create_date_1);
+    if($create_date_1[0] != $create_date_1[1]){
+        $create_date_1 = [$create_date_1[0].' 00:00:00', $create_date_1[1].' 23:59:59'];
+        $where .= " AND `thoigian` >= '".$create_date_1[0]."' AND `thoigian` <= '".$create_date_1[1]."' ";
+    }
+}
+
+
+$listDatatable = $CMSNT->get_list(" SELECT * FROM `dongtien` WHERE $where ORDER BY `id` DESC LIMIT $from,$sotin1trang ");
 ?>
 
 <div class="content-wrapper">
@@ -39,10 +86,12 @@ require_once(__DIR__.'/nav.php');
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0">Biến động số dư</h1>
+                    <p>Balance change history</p>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="<?=BASE_URL('admin/home');?>">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="#">Lịch sử</a></li>
                         <li class="breadcrumb-item active">Biến động số dư</li>
                     </ol>
                 </div>
@@ -72,11 +121,48 @@ require_once(__DIR__.'/nav.php');
                             </div>
                         </div>
                         <div class="card-body">
+                            <div class="row mb-2">
+
+                                <div class="col-sm-12 mb-3">
+                                    <form action="" name="formSearch" method="GET">
+                                        <input type="hidden" name="module" value="admin">
+                                        <input type="hidden" name="action" value="dong-tien">
+                                        <div class="row">
+                                            <input class="form-control col-sm-2 mb-2" value="<?=$user_id;?>"
+                                                name="user_id" placeholder="Search ID Khách hàng">
+                                            <input class="form-control col-sm-2 mb-2" value="<?=$noidung;?>"
+                                                name="noidung" placeholder="Nội dung">
+                                            <div class="form-group col-sm-2 mb-2">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="text" name="create_date" value="<?=$create_date;?>"
+                                                        class="form-control float-right" id="reservationtime">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4 mb-2">
+                                                <button type="submit" name="submit" value="filter"
+                                                    class="btn btn-warning"><i class="fa fa-search"></i>
+                                                    Tìm kiếm
+                                                </button>
+                                                <a class="btn btn-danger"
+                                                    href="<?=BASE_URL('index.php?module=admin&action=dong-tien');?>"><i
+                                                        class="fa fa-trash"></i>
+                                                    Bỏ lọc
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
                             <div class="table-responsive p-0">
-                                <table id="datatable1" class="table table-bordered table-striped table-hover">
-                                    <thead>
+                                <table class="table table-bordered table-striped table-hover">
+                                    <thead> 
                                         <tr>
-                                            <th width="5%">#</th>
                                             <th>Username</th>
                                             <th>Số tiền trước</th>
                                             <th>Số tiền thay đổi</th>
@@ -86,11 +172,10 @@ require_once(__DIR__.'/nav.php');
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `dongtien` ORDER BY id DESC  ") as $row) {?>
+                                        <?php foreach ($listDatatable as $row) {?>
                                         <tr>
-                                            <td class="text-center"><?=$i++;?></td>
                                             <td class="text-center"><a
-                                                    href="<?=base_url('admin/user-edit/'.$row['user_id']);?>"><?=getRowRealtime("users", $row['user_id'], "username");?></a>
+                                                    href="<?=base_url('admin/user-edit/'.$row['user_id']);?>"><?=getRowRealtime("users", $row['user_id'], "username");?> [ID <?=$row['user_id'];?>]</a>
                                             </td>
                                             <td class="text-center"><b
                                                     style="color: green;"><?=format_currency($row['sotientruoc']);?></b>
@@ -108,6 +193,16 @@ require_once(__DIR__.'/nav.php');
                                     </tbody>
                                 </table>
                             </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-5">
+
+                                </div>
+                                <div class="col-sm-12 col-md-7">
+                                    <?php
+                                $total = $CMSNT->num_rows(" SELECT * FROM `dongtien` WHERE $where ORDER BY id DESC ");
+                                if ($total > $sotin1trang){echo '<center>' . pagination(base_url("index.php?module=admin&action=dong-tien&user_id=$user_id&noidung=$noidung&create_date=$create_date&"), $from, $total, $sotin1trang) . '</center>';}?>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -118,8 +213,3 @@ require_once(__DIR__.'/nav.php');
 <?php
 require_once(__DIR__.'/footer.php');
 ?>
-<script>
-$(function() {
-    $('#datatable1').DataTable();
-});
-</script>

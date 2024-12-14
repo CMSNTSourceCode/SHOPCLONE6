@@ -8,6 +8,9 @@ $body = [
 ];
 $body['header'] = '';
 $body['footer'] = '';
+
+redirect(base_url('client/login'));
+
 require_once(__DIR__.'/header.php');
 ?>
 <link rel="stylesheet" href="<?=base_url('public/css/LoginAdmin.css');?>">
@@ -18,26 +21,17 @@ require_once(__DIR__.'/header.php');
     <h1 id="litheader">CMSNT.CO</h1>
     <div class="inset">
         <p>
-            <input type="text" name="email" id="email" value="<?=$CMSNT->site('status_demo') == 1 ? 'admin@cmsnt.co' : '';?>" placeholder="Email">
+            <input type="text" name="username" id="username"
+                value="<?=$CMSNT->site('status_demo') == 1 ? 'admin' : '';?>" placeholder="Username">
         </p>
         <p>
-            <input type="password" name="password" id="password" value="<?=$CMSNT->site('status_demo') == 1 ? 'admin' : '';?>" placeholder="Password">
+            <input type="password" name="password" id="password"
+                value="<?=$CMSNT->site('status_demo') == 1 ? 'admin' : '';?>" placeholder="Password">
         </p>
-        <?php
-        use Gregwar\Captcha\CaptchaBuilder;
-
-$builder = new CaptchaBuilder();
-        if ($CMSNT->site('status_captcha') == 1) {
-            $builder->build();
-            $_SESSION['phrase'] = $builder->getPhrase(); ?>
-        <p>
-            <img width="100%" src="<?php echo $builder->inline(); ?>" />
-        </p>
-        <p>
-            <input type="text" id="phrase" placeholder="<?=__('Vui lòng nhập mã captcha để xác minh'); ?>">
-        </p>
-        <?php
-        }?>
+        <center class="mb-3" <?=$CMSNT->site('reCAPTCHA_status') == 1 ? '' : 'style="display:none;"';?>>
+            <div class="g-recaptcha" id="g-recaptcha-response"
+                data-sitekey="<?=$CMSNT->site('reCAPTCHA_site_key');?>"></div>
+        </center>
         <div style="text-align: center;">
             <label>Vui lòng đăng nhập</label>
         </div>
@@ -55,9 +49,9 @@ $("#btnLogin").on("click", function() {
         method: "POST",
         dataType: "JSON",
         data: {
-            email: $("#email").val(),
+            username: $("#username").val(),
             password: $("#password").val(),
-            phrase: $("#phrase").val()
+            recaptcha: $("#g-recaptcha-response").val()
         },
         success: function(respone) {
             if (respone.status == 'success') {
@@ -67,16 +61,14 @@ $("#btnLogin").on("click", function() {
                     timer: 5000
                 });
                 setTimeout("location.href = '<?=BASE_URL('admin/');?>';", 100);
-            } 
-            else if (respone.status == 'verify') {
+            } else if (respone.status == 'verify') {
                 cuteToast({
                     type: "warning",
                     message: respone.msg,
                     timer: 5000
                 });
-                setTimeout("location.href = '" + respone.url +"';", 1000);
-            }
-            else {
+                setTimeout("location.href = '" + respone.url + "';", 1000);
+            } else {
                 cuteToast({
                     type: "error",
                     message: respone.msg,

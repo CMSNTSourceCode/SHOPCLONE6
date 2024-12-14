@@ -20,11 +20,12 @@ require_once(__DIR__.'/header.php');
 
 
 <style>
-    .bg-image {
+.bg-image {
     background-position: 0 50%;
     background-size: cover;
 }
 </style>
+
 <body class="bg-image" style="background-image: url(<?=BASE_URL($CMSNT->site('bg_register'));?>);">
     <!-- loader Start -->
     <div id="loading">
@@ -93,14 +94,14 @@ require_once(__DIR__.'/header.php');
                                             <div class="form-group">
                                                 <label class="text-secondary"><?=__('Tên đăng nhập');?></label>
                                                 <input class="form-control" type="text" id="username"
-                                                    placeholder="Enter Username">
+                                                    placeholder="<?=__('Vui lòng nhập Username');?>">
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="form-group">
                                                 <label class="text-secondary"><?=__('Địa chỉ Email');?></label>
                                                 <input class="form-control" type="email" id="email"
-                                                    placeholder="Enter Email">
+                                                    placeholder="<?=__('Vui lòng nhập địa chỉ Email');?>">
                                             </div>
                                         </div>
                                         <div class="col-lg-12 mt-2">
@@ -121,33 +122,26 @@ require_once(__DIR__.'/header.php');
                                                     placeholder="<?=__('Vui lòng nhập lại mật khẩu');?>">
                                             </div>
                                         </div>
-                                        <?php
-                                            use Gregwar\Captcha\CaptchaBuilder;
-
-$builder = new CaptchaBuilder();
-                                            if ($CMSNT->site('status_captcha') == 1) {
-                                                $builder->build();
-                                                $_SESSION['phrase'] = $builder->getPhrase(); ?>
-                                        <div class="col-lg-6 mt-2">
-                                            <div class="form-group">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <label class="text-secondary"><?=__('Captcha'); ?></label>
+                                        <div class="col-lg-12 mt-2">
+                                            <div class="form-check form-check-inline">
+                                                <div class="custom-control custom-checkbox custom-control-inline mb-3">
+                                                    <input type="checkbox" class="custom-control-input m-0"
+                                                        id="isCheckbox">
+                                                    <label class="custom-control-label pl-2" for="isCheckbox"><?=__('Đồng ý với');?> <a href="<?=base_url('client/privacy-policy');?>"><?=__('Chính sách');?>
+                                                        </a> <?=__('và');?> <a href="<?=base_url('client/terms');?>"><?=__('Điều khoản dịch vụ');?></a></label>
                                                 </div>
-                                                <img width="100%" src="<?php echo $builder->inline(); ?>" />
                                             </div>
                                         </div>
-                                        <div class="col-lg-6 mt-2">
+                                        <div class="col-lg-12 mt-2">
                                             <div class="form-group">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <label
-                                                        class="text-secondary"><?=__('Nhập nội dung bên trái'); ?></label>
-                                                </div>
-                                                <input class="form-control" type="text" id="phrase"
-                                                    placeholder="<?=__('Vui lòng nhập mã captcha để xác minh'); ?>">
+                                                <center class="mb-3"
+                                                    <?=$CMSNT->site('reCAPTCHA_status') == 1 ? '' : 'style="display:none;"';?>>
+                                                    <div class="g-recaptcha" id="g-recaptcha-response"
+                                                        data-sitekey="<?=$CMSNT->site('reCAPTCHA_site_key');?>"></div>
+                                                </center>
                                             </div>
                                         </div>
-                                        <?php
-                                            }?>
+                                         
                                     </div>
                                     <button type="button" id="btnRegister"
                                         class="btn btn-primary btn-block mt-2"><?=__('Đăng Ký');?></button>
@@ -194,6 +188,15 @@ $builder = new CaptchaBuilder();
 
 <script type="text/javascript">
 $("#btnRegister").on("click", function() {
+    var checkbox = document.getElementById("isCheckbox");
+    if (!checkbox.checked) {
+        Swal.fire(
+            '<?=__('Thất bại');?>',
+            "<?=__('Vui lòng đồng ý điều khoản và chính sách sẽ tiếp tục');?>",
+            'error'
+        );
+        return 0;
+    }
     $('#btnRegister').html('<i class="fa fa-spinner fa-spin"></i> <?=__('Đang xử lý...');?>').prop('disabled',
         true);
     $.ajax({
@@ -205,7 +208,7 @@ $("#btnRegister").on("click", function() {
             email: $("#email").val(),
             password: $("#password").val(),
             repassword: $("#repassword").val(),
-            phrase: $("#phrase").val()
+            recaptcha: $("#g-recaptcha-response").val()
         },
         success: function(respone) {
             if (respone.status == 'success') {
@@ -214,7 +217,7 @@ $("#btnRegister").on("click", function() {
                     message: respone.msg,
                     timer: 5000
                 });
-                setTimeout("location.href = '<?=BASE_URL('');?>';", 100);
+                setTimeout("location.href = '<?=BASE_URL('client/home');?>';", 100);
             } else {
                 Swal.fire(
                     '<?=__('Thất bại');?>',

@@ -113,8 +113,8 @@ require_once(__DIR__.'/nav.php');
                                         <td><?=display_status_product($row['status']);?></td>
                                         <td>
                                             <ul>
-                                                <li>Đang bán (LIVE):  <b style="color: green;"><?=format_cash($CMSNT->get_row("SELECT COUNT(id)  FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NULL ")['COUNT(id)']);?></b> <a href="<?=base_url_admin('accounts/'.$row['id']);?>">Xem</a></li>
-                                                <li>Đã bán:  <b style="color:blue;"><?=format_cash($CMSNT->get_row("SELECT COUNT(id)  FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NOT NULL ")['COUNT(id)']);?></b> <a href="<?=base_url_admin('account-sold/'.$row['id']);?>">Xem</a></li>
+                                                <li>Đang bán:  <b style="color: green;"><?=format_cash($CMSNT->get_row("SELECT COUNT(id)  FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NULL  ")['COUNT(id)']);?></b> <a href="<?=base_url('index.php?module=admin&action=account-view&id='.$row['id']);?>">Xem</a></li>
+                                                <li>Đã bán:  <b style="color:blue;"><?=format_cash($CMSNT->get_row("SELECT COUNT(id)  FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NOT NULL ")['COUNT(id)']);?></b> <a href="<?=base_url('index.php?module=admin&action=account-sold&id='.$row['id']);?>">Xem</a></li>
                                                 <li>Die: <b style="color: red;"><?=format_cash($CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `status` = 'DIE' ")['COUNT(id)']);?></b></li>
                                             </ul>
                                            </td>

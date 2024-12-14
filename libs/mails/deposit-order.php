@@ -86,9 +86,9 @@ $CMSNT = new DB();
                     <tr>
                         <td align="center" valign="top" style="font-size:0; padding: 35px;" bgcolor="<?=$CMSNT->site('theme_color');?>">
                             <div style="display:inline-block; max-width:50%; min-width:100px; vertical-align:top; width:100%;">
-                                <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
+                                <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
                                     <tr>
-                                        <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 800; line-height: 48px;" class="mobile-center">
+                                        <td align="center" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 800; line-height: 48px;" class="mobile-center">
                                             <h1 style="font-size: 36px; font-weight: 800; margin: 0; color: #ffffff;"><?=$CMSNT->site('title');?></h1>
                                         </td>
                                     </tr>
@@ -117,7 +117,7 @@ $CMSNT = new DB();
                                 </tr>
                                 <tr>
                                     <td align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 10px;">
-                                        <p style="font-size: 16px; font-weight: 400; line-height: 24px; color: #777777;"> <?=__('Hoá đơn của bạn sẽ hiện hạn sau '.timeAgo2($CMSNT->site('invoice_expiration')).', vui lòng thanh toán ngay. ');?> </p>
+                                        <p style="font-size: 16px; font-weight: 400; line-height: 24px; color: #777777;"> <?=__('Hoá đơn của bạn sẽ hết hạn sau '.timeAgo2($CMSNT->site('invoice_expiration')).', vui lòng thanh toán ngay. ');?> </p>
                                     </td>
                                 </tr>
                                 <tr>

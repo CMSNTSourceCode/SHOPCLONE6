@@ -41,13 +41,19 @@ if (isset($_POST['AddProduct'])) {
     }
     $isInsert = $CMSNT->insert("products", [
         'user_id'  => $getUser['id'],
-        'name' => check_string($_POST['name']),
+        'stt'       => isset($_POST['stt']) ? $_POST['stt'] : 0,
+        'name'      => $_POST['name'],
         'category_id' => check_string($_POST['category_id']),
-        'price' => check_string($_POST['price']),
-        'content' => isset($_POST['content']) ? check_string($_POST['content']) : null,
-        'flag' => isset($_POST['flag']) ? check_string($_POST['flag']) : null,
+        'price'     => check_string($_POST['price']),
+        'content'   => isset($_POST['content']) ? $_POST['content'] : null,
+        'flag'      => isset($_POST['flag']) ? check_string($_POST['flag']) : null,
         'checklive' => isset($_POST['checklive']) ? check_string($_POST['checklive']) : 0,
-        'status' => check_string($_POST['status']),
+        'time_delete_account'   => isset($_POST['time_delete_account']) ? check_string($_POST['time_delete_account']) : 0,
+        'sold'                  => isset($_POST['sold']) ? check_string($_POST['sold']) : 0,
+        'filter_time_checklive' => isset($_POST['filter_time_checklive']) ? check_string($_POST['filter_time_checklive']) : 0,
+        'status'    => check_string($_POST['status']),
+        'minimum'   => isset($_POST['minimum']) ? $_POST['minimum'] : 1,
+        'maximum'   => isset($_POST['maximum']) ? $_POST['maximum'] : 10000,
         'preview'   => $url_image
     ]);
     if ($isInsert) {
@@ -113,6 +119,12 @@ if (isset($_POST['AddProduct'])) {
                         </div>
                         <form action="" method="POST" enctype="multipart/form-data">
                             <div class="card-body">
+                            <div class="form-group">
+                                    <label for="exampleInputEmail1">Số thự tự hiển thị sản phẩm</label>
+                                    <input type="number" class="form-control" name="stt" value="0"
+                                        placeholder="Nhập số thứ tự hiển thị sản phẩm">
+                                    <i>Số càng thấp, sản phẩm càng lên đầu</i>
+                                </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Tên sản phẩm</label>
                                     <input type="text" class="form-control" name="name" placeholder="Nhập tên sản phẩm"
@@ -120,17 +132,19 @@ if (isset($_POST['AddProduct'])) {
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Loại sản phẩm</label>
-                                    <select class="form-control" name="category_id" required>
+                                    <select class="form-control select2bs4" name="category_id" required>
                                         <option value="">Chọn loại sản phẩm</option>
                                         <?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ") as $list) {?>
                                         <option value="<?=$list['id'];?>"><?=$list['name'];?></option>
                                         <?php }?>
                                     </select>
+                                    <i>Thêm chuyên mục <a href="<?=BASE_URL('admin/category-list');?>" target="_blank">tại đây</a></i>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Giá sản phẩm</label>
-                                    <input type="number" class="form-control" name="price"
+                                    <input type="text" class="form-control" name="price"
                                         placeholder="Nhập giá sản phẩm" required>
+                                        <i>Vui lòng nhập giá VND</i>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Chi tiết sản phẩm</label>
@@ -142,7 +156,7 @@ if (isset($_POST['AddProduct'])) {
                                     <input type="text" class="form-control" name="flag"
                                         placeholder="Nếu là Việt Nam thì ghi vn">
                                     <i>Xem ISO CODE Quốc Gia tại đây: <a target="_blank"
-                                            href="https://countrycode.org/">https://countrycode.org/</a></i>
+                                            href="https://countrycode.org/">https://countrycode.org/</a>, vui lòng không ghi IN HOA</i>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputFile">Ảnh xem trước sản phẩm</label>
@@ -170,8 +184,40 @@ if (isset($_POST['AddProduct'])) {
                                         <input class="custom-control-input" type="checkbox" name="checklive" value="1"
                                             id="customCheckbox2" checked>
                                         <label for="customCheckbox2" class="custom-control-label">Tự động check
-                                            live tài khoản</label>
+                                            live tài khoản facebook</label>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Thời gian xoá tài khoản</label>
+                                    <input type="number" class="form-control" value="0" name="time_delete_account"
+                                        placeholder="Tắt chức năng này vui lòng nhập: 0" required>
+                                        <i>Hệ thống sẽ tự động xoá các tài khoản chưa bán sau khi đủ thời gian cần xoá, tính theo giây 1 = 1 giây (dùng cho các tài khoản cần bán trong thời gian ngắn vd: hotmail, proxy v.v).<br>
+                                    Để số 0 nếu muốn tắt chức năng này.</i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Số lượng mua tối thiểu</label>
+                                    <input type="number" class="form-control" value="1" name="minimum"
+                                        placeholder="Nhập số lượng mua tối thiểu" required>
+                                        <i>Số lượng mua tối thiểu trong 1 lần mua.</i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Số lượng mua tối đa</label>
+                                    <input type="number" class="form-control" value="10000" name="maximum"
+                                        placeholder="Nhập số lượng mua tối đa" required>
+                                        <i>Số lượng mua tối đa trong 1 lần mua.</i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Thứ tự mua</label>
+                                    <select class="form-control" name="filter_time_checklive" required>
+                                        <option value="1">Check live gần nhất sẽ ưu tiên bán trước</option>
+                                        <option value="0">Acc nào up lên web trước bán trước</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Số lượng đã bán</label>
+                                    <input type="number" class="form-control" name="sold" value="0"
+                                        placeholder="Nhập số lượng đã bán" <?=checkAddon(211) != true ? 'readonly' : '';?> required>
+                                    <i>Số lượng thật sẽ tự cộng dồn vào đây, bạn chỉ có thể tuỳ chỉnh số lượng khi đã mua <a href="<?=base_url_admin('addons');?>">Addon</a></i>
                                 </div>
                             </div>
                             <div class="card-footer clearfix">

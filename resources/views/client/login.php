@@ -17,11 +17,12 @@ $body['footer'] = '
 require_once(__DIR__.'/header.php');
 ?>
 <style>
-    .bg-image {
+.bg-image {
     background-position: 0 50%;
     background-size: cover;
 }
 </style>
+
 <body class="bg-image" style="background-image: url(<?=BASE_URL($CMSNT->site('bg_login'));?>);">
     <!-- loader Start -->
     <div id="loading">
@@ -89,47 +90,32 @@ require_once(__DIR__.'/header.php');
                                         <div class="col-lg-12">
                                             <div class="form-group">
                                                 <label class="text-secondary"><?=__('Tên đăng nhập');?></label>
-                                                <input class="form-control" type="text" id="username" value="<?=$CMSNT->site('status_demo') == 1 ? 'admin' : '';?>"
-                                                    placeholder="Enter Username">
+                                                <input class="form-control" type="text" id="username"
+                                                    value="<?=$CMSNT->site('status_demo') == 1 ? 'admin' : '';?>"
+                                                    placeholder="<?=__('Enter Username');?>">
                                             </div>
                                         </div>
                                         <div class="col-lg-12 mt-2">
                                             <div class="form-group">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <label class="text-secondary"><?=__('Mật khẩu');?></label>
-                                                    <!--<label><a href="auth-recover-pwd.html"><?=__('Quên mật khẩu');?></a></label>-->
+                                                    <label><a
+                                                            href="<?=base_url('client/forgot-password');?>"><?=__('Quên mật khẩu');?></a></label>
                                                 </div>
-                                                <input class="form-control" type="password" id="password" value="<?=$CMSNT->site('status_demo') == 1 ? 'admin' : '';?>"
+                                                <input class="form-control" type="password" id="password"
+                                                    value="<?=$CMSNT->site('status_demo') == 1 ? 'admin' : '';?>"
                                                     placeholder="<?=__('Vui lòng nhập mật khẩu');?>">
                                             </div>
                                         </div>
-                                        <?php
-                                            use Gregwar\Captcha\CaptchaBuilder;
-
-$builder = new CaptchaBuilder();
-                                            if ($CMSNT->site('status_captcha') == 1) {
-                                                $builder->build();
-                                                $_SESSION['phrase'] = $builder->getPhrase(); ?>
-                                        <div class="col-lg-6 mt-2">
+                                        <div class="col-lg-12 mt-2">
                                             <div class="form-group">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <label class="text-secondary"><?=__('Captcha'); ?></label>
-                                                </div>
-                                                <img width="100%" src="<?php echo $builder->inline(); ?>" />
+                                                <center class="mb-3"
+                                                    <?=$CMSNT->site('reCAPTCHA_status') == 1 ? '' : 'style="display:none;"';?>>
+                                                    <div class="g-recaptcha" id="g-recaptcha-response"
+                                                        data-sitekey="<?=$CMSNT->site('reCAPTCHA_site_key');?>"></div>
+                                                </center>
                                             </div>
                                         </div>
-                                        <div class="col-lg-6 mt-2">
-                                            <div class="form-group">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <label
-                                                        class="text-secondary"><?=__('Nhập nội dung bên trái'); ?></label>
-                                                </div>
-                                                <input class="form-control" type="text" id="phrase"
-                                                    placeholder="<?=__('Vui lòng nhập mã captcha để xác minh'); ?>">
-                                            </div>
-                                        </div>
-                                        <?php
-                                            }?>
                                     </div>
                                     <button type="button" id="btnLogin"
                                         class="btn btn-primary btn-block mt-2"><?=__('Đăng Nhập');?></button>
@@ -185,7 +171,7 @@ $("#btnLogin").on("click", function() {
         data: {
             username: $("#username").val(),
             password: $("#password").val(),
-            phrase: $("#phrase").val()
+            recaptcha: $("#g-recaptcha-response").val()
         },
         success: function(respone) {
             if (respone.status == 'success') {
@@ -194,17 +180,15 @@ $("#btnLogin").on("click", function() {
                     message: respone.msg,
                     timer: 5000
                 });
-                setTimeout("location.href = '<?=BASE_URL('');?>';", 100);
-            } 
-            else if (respone.status == 'verify') {
+                setTimeout("location.href = '<?=BASE_URL('client/home');?>';", 100);
+            } else if (respone.status == 'verify') {
                 cuteToast({
                     type: "warning",
                     message: respone.msg,
                     timer: 5000
                 });
-                setTimeout("location.href = '" + respone.url +"';", 1000);
-            }
-            else {
+                setTimeout("location.href = '" + respone.url + "';", 1000);
+            } else {
                 Swal.fire(
                     '<?=__('Thất bại');?>',
                     respone.msg,

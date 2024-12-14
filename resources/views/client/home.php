@@ -30,6 +30,17 @@ if($CMSNT->site('status_is_change_password') == 1){
         redirect(base_url('client/is-change-password'));
     }
 }
+if ($CMSNT->site('is_update_phone') == 1) {
+    if (isset($_SESSION['login']) && $getUser['phone'] == '') {
+        redirect(base_url('client/profile'));
+    }
+}
+
+$categoryINT = 0;
+if(isset($_GET['category'])){
+    $categoryINT = check_string($_GET['category']);
+}
+
 
 require_once(__DIR__ . '/header.php');
 require_once(__DIR__ . '/sidebar.php');
@@ -50,6 +61,7 @@ require_once(__DIR__ . '/sidebar.php');
                     </div>
                 </div>
             <?php } ?> -->
+            <?php if($CMSNT->site('thongbao') != ''):?>
             <div class="col-lg-12">
                 <div class="alert bg-white alert-primary" role="alert">
                     <div class="iq-alert-icon">
@@ -58,6 +70,9 @@ require_once(__DIR__ . '/sidebar.php');
                     <div class="iq-alert-text"><?= $CMSNT->site('thongbao'); ?></div>
                 </div>
             </div>
+            <?php endif?>
+
+            <?=$CMSNT->site('html_top_product');?>
 
             <?php if ($CMSNT->site('status_giao_dich_gan_day') == 1 && $CMSNT->site('position_gd_gan_day') == 1) { ?>
             <div class="col-lg-6">
@@ -138,17 +153,7 @@ require_once(__DIR__ . '/sidebar.php');
             </div>
             <?php } ?>
             <?php
-            if (isset($_GET['shop'])) {
-                if (check_string($_GET['shop']) == 'shop-account') {
-                    require_once(__DIR__ . '/shop-account.php');
-                } else if (check_string($_GET['shop']) == 'shop-document') {
-                    require_once(__DIR__ . '/shop-document.php');
-                } else {
-                    require_once(__DIR__ . '/shop-account.php');
-                }
-            } else {
-                require_once(__DIR__ . '/shop-account.php');
-            }
+            require_once(__DIR__ . '/shop-account.php');
             ?>
             <?php if ($CMSNT->site('status_giao_dich_gan_day') == 1 && $CMSNT->site('position_gd_gan_day') == 2) { ?>
             <div class="col-lg-6">
@@ -234,7 +239,47 @@ require_once(__DIR__ . '/sidebar.php');
 </div>
 
 
+<?php
+if(isset($_POST['hide_notice_popup'])){
+    $_SESSION['hide_notice_popup'] = 1;
+    die('<script type="text/javascript">window.history.back().location.reload();</script>');
+}
+?>
+<?php if($CMSNT->site('notice_popup') != ''): ?>
+<?php if(!isset($_SESSION['hide_notice_popup'])):?>
 
+<div class="onboarding-modal modal fade animated" id="notice_popup" role="dialog" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><?=__('Thông báo');?></h5>
+            </div>
+            <form action="" method="POST">
+                <div class="modal-body">
+                     <?=$CMSNT->site('notice_popup');?>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" name="hide_notice_popup"><?=__('Không hiển thị lại');?></button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?=__('Đóng');?></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    setTimeout(e => {
+        ShowModal_notice_popup()
+    }, 0)
+});
 
-
+function ShowModal_notice_popup() {
+    $('#notice_popup').modal({
+        keyboard: true,
+        show: true
+    });
+}
+</script>
+<?php endif?>
+<?php endif?>
 <?php require_once(__DIR__ . '/footer.php'); ?>

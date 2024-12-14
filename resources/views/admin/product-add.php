@@ -7,9 +7,21 @@ $body = [
     'keyword' => 'cmsnt, CMSNT, cmsnt.co,'
 ];
 $body['header'] = '
-
+<!-- Select2 -->
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 ';
 $body['footer'] = '
+<!-- Select2 -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/select2/js/select2.full.min.js"></script>
+<script>
+$(function () {
+    $(".select2").select2()
+    $(".select2bs4").select2({
+        theme: "bootstrap4"
+    });
+});
+</script>
 <!-- bs-custom-file-input -->
 <script src="'.BASE_URL('public/AdminLTE3/').'plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 <!-- Page specific script -->
@@ -54,6 +66,7 @@ if (isset($_POST['AddProduct'])) {
         'status'    => check_string($_POST['status']),
         'minimum'   => isset($_POST['minimum']) ? $_POST['minimum'] : 1,
         'maximum'   => isset($_POST['maximum']) ? $_POST['maximum'] : 10000,
+        'allow_api' => isset($_POST['allow_api']) ? check_string($_POST['allow_api']) : 1,
         'preview'   => $url_image
     ]);
     if ($isInsert) {
@@ -132,7 +145,7 @@ if (isset($_POST['AddProduct'])) {
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Loại sản phẩm</label>
-                                    <select class="form-control" name="category_id" required>
+                                    <select class="form-control select2bs4" name="category_id" required>
                                         <option value="">Chọn loại sản phẩm</option>
                                         <?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ") as $list) {?>
                                         <option value="<?=$list['id'];?>"><?=$list['name'];?></option>
@@ -142,8 +155,9 @@ if (isset($_POST['AddProduct'])) {
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Giá sản phẩm</label>
-                                    <input type="number" class="form-control" name="price"
+                                    <input type="text" class="form-control" name="price"
                                         placeholder="Nhập giá sản phẩm" required>
+                                        <i>Vui lòng nhập giá VND</i>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Chi tiết sản phẩm</label>
@@ -155,7 +169,7 @@ if (isset($_POST['AddProduct'])) {
                                     <input type="text" class="form-control" name="flag"
                                         placeholder="Nếu là Việt Nam thì ghi vn">
                                     <i>Xem ISO CODE Quốc Gia tại đây: <a target="_blank"
-                                            href="https://countrycode.org/">https://countrycode.org/</a></i>
+                                            href="https://countrycode.org/">https://countrycode.org/</a>, vui lòng không ghi IN HOA</i>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputFile">Ảnh xem trước sản phẩm</label>
@@ -181,10 +195,11 @@ if (isset($_POST['AddProduct'])) {
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" type="checkbox" name="checklive" value="1"
-                                            id="customCheckbox2" checked>
+                                            id="customCheckbox2">
                                         <label for="customCheckbox2" class="custom-control-label">Tự động check
                                             live tài khoản facebook</label>
                                     </div>
+                                    <small>Chỉ tích vào khi bạn bán tài khoản Facebook cần check live.</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Thời gian xoá tài khoản</label>
@@ -210,6 +225,14 @@ if (isset($_POST['AddProduct'])) {
                                     <select class="form-control" name="filter_time_checklive" required>
                                         <option value="1">Check live gần nhất sẽ ưu tiên bán trước</option>
                                         <option value="0">Acc nào up lên web trước bán trước</option>
+                                        <option value="2">Acc nào up lên web sau bán trước</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Cho phép đấu API</label>
+                                    <select class="form-control" name="allow_api" required>
+                                        <option value="1">ON</option>
+                                        <option value="0">OFF</option>
                                     </select>
                                 </div>
                                 <div class="form-group">

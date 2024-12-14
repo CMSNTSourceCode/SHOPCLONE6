@@ -107,11 +107,12 @@ if (isset($_POST['type'])) {
 
 
     if($_POST['type'] == 'users'){
-        $content = 'ID,TÀI KHOẢN,EMAIL,MẬT KHẨU,SỐ DƯ KHẢ DỤNG,TỔNG NẠP,GIẢM GIÁ,ĐĂNG KÝ,ĐĂNG NHẬP,IP,BANNED,CTV,ADMIN'.PHP_EOL;
+        $content = 'ID,USERNAME,EMAIL,PASSWORD,PHONE,MONEY,TOTAL MONEY,DISCOUNT,ĐĂNG KÝ,ĐĂNG NHẬP,IP,BANNED,CTV,ADMIN'.PHP_EOL;
         foreach($CMSNT->get_list(" SELECT * FROM `users` ORDER BY `id` ") as $row){
             $content .= $row['id'].
             ','.$row['username'].
             ','.$row['email'].
+            ','.$row['phone'].
             ','.$row['password'].
             ','.format_currency($row['money']).
             ','.format_currency($row['total_money']).

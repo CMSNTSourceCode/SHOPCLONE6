@@ -36,19 +36,19 @@ require_once(__DIR__.'/sidebar.php');
 <div class="content-page">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-sm-7">
                 <h3 class="mb-3"><?=__('Danh sách bài viết');?></h3>
                 <?php foreach ($CMSNT->get_list("SELECT * FROM `blogs` WHERE `display` = 1 ORDER BY id DESC ") as $blog) {?>
                 <div class="col-md-12 col-lg-12">
                     <div class="card mb-2">
                         <div class="row no-gutters">
                             <div class="col-md-6 col-lg-4">
-                                <a href="<?=base_url('client/blog/'.$blog['slug']);?>"><img src="<?=base_url($blog['image']);?>" class="card-img" alt="#"></a>
+                                <a href="<?=base_url('client/blog/'.$blog['slug']);?>"><img src="<?=base_url($blog['image']);?>" style="width: 100%; height: 150px;" class="card-img" alt="#"></a>
                             </div>
                             <div class="col-md-6 col-lg-8">
                                 <div class="card-body">
-                                    <h4 class="card-title"><a href="<?=base_url('client/blog/'.$blog['slug']);?>"><?=$blog['title'];?></a></h4>
-                                    <p class="card-text"><?=substr(base64_decode($blog['content']), 0, 255);?></p>
+                                    <h5 class="card-title"><a href="<?=base_url('client/blog/'.$blog['slug']);?>"><?=$blog['title'];?></a></h5>
+                                     
                                     <p class="card-text"><small class="text-muted"><?=$blog['create_date'];?></small>
                                     </p>
                                 </div>
@@ -59,18 +59,18 @@ require_once(__DIR__.'/sidebar.php');
                 <?php }?>
 
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-5">
                 <h3 class="mb-3"><?=__('Bài viết nổi bật');?></h3>
                 <?php foreach ($CMSNT->get_list("SELECT * FROM `blogs` WHERE `display` = 1 ORDER BY `view` DESC ") as $blog) {?>
                 <div class="col-md-12 col-lg-12">
                     <div class="card mb-2">
                         <div class="row no-gutters">
                             <div class="col-md-6 col-lg-4">
-                                <a href="<?=base_url('client/blog/'.$blog['slug']);?>"><img src="<?=base_url($blog['image']);?>" class="card-img" alt="#"></a>
+                                <a href="<?=base_url('client/blog/'.$blog['slug']);?>"><img src="<?=base_url($blog['image']);?>" style="height: 100%;" class="card-img" alt="#"></a>
                             </div>
                             <div class="col-md-6 col-lg-8">
                                 <div class="card-body">
-                                    <h4 class="card-title"><a href="<?=base_url('client/blog/'.$blog['slug']);?>"><?=$blog['title'];?></a></h4>
+                                    <h5 class="card-title"><a href="<?=base_url('client/blog/'.$blog['slug']);?>"><?=$blog['title'];?></a></h5>
                                     <p class="card-text"><small class="text-muted"><?=$blog['create_date'];?></small>
                                     </p>
                                 </div>

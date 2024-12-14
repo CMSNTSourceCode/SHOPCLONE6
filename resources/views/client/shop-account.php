@@ -1,6 +1,3 @@
-
-
-
 <?php if($CMSNT->site('display_box_shop') == 1){?>
 <div class="col-sm-12 col-lg-12">
     <div class="card">
@@ -9,7 +6,7 @@
             <ol class="row">
                 <?php foreach($CMSNT->get_list("SELECT * FROM `products` WHERE `status` = 1 ORDER BY RAND() LIMIT 6 ") as $product):?>
                 <?php
-                $conlai = $product['id_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
+                $conlai = $product['id_connect_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
                 if($CMSNT->site('hide_product_empty') == 1){
                     if($conlai == 0){
                         continue;
@@ -26,30 +23,43 @@
     </div>
 </div>
 <?php }?>
+<?php if($CMSNT->site('marquee_notication_shopacc') != ''):?>
+<div class="col-sm-12 col-lg-12">
+    <div class="alert text-white bg-primary" role="alert">
+        <marquee><?=$CMSNT->site('marquee_notication_shopacc');?></marquee>
+    </div>
+</div>
+<?php endif?>
+
 <?php if($CMSNT->site('display_show_product') == 1):?>
-<div class="col-lg-12">
-    <div class="card">
-    <div class="card-header d-flex justify-content-between" style="background: <?=$CMSNT->site('theme_color');?>;">
+
+
+
+<div class="col-lg-12 mt-3">
+    <div>
+        <!-- <div class="card-header card-product d-flex justify-content-between mb-3"
+            style="background-image: linear-gradient(to right, <?=$CMSNT->site('theme_color');?>, <?=$CMSNT->site('theme_color');?>, <?=$CMSNT->site('theme_color2');?>);">
             <div class="header-title">
-                <h5 class="card-title" style="color:white;"><?=mb_strtoupper(__('MUA TÀI KHOẢN'), 'UTF-8');?>
-                </h5>
+                <h4 style="color:white;"><?=mb_strtoupper(__('MUA TÀI KHOẢN'), 'UTF-8');?></h4>
             </div>
-        </div>
-        <div class="card-body">
-            <ul class="nav nav-pills mb-3 nav-fill" id="pills-tab-1" role="tablist">
+        </div> -->
+        <div>
+            <ul class="nav nav-pills mb-1 nav-fill" id="pills-tab-1" role="tablist">
+                <?php if($CMSNT->site('show_category') == 'head'):?>
                 <li class="nav-item">
-                    <a class="nav-link active" id="pills-home-tab-fill" onclick="showProduct(0)" data-toggle="pill"
+                    <a class="nav-link  <?=$categoryINT == 0 ? 'active' : '';?>" id="pills-home-tab-fill" onclick="showProduct(0)" data-toggle="pill"
                         href="#pills-home-fill" role="tab" aria-controls="pills-home" aria-selected="true"><i
                             class="fas fa-shopping-cart mr-1"></i><?=mb_strtoupper(__('TẤT CẢ SẢN PHẨM'), 'UTF-8');?></a>
                 </li>
-                <?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ORDER BY `stt` ASC ") as $category) {?>
+                <?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ORDER BY `stt` ASC ") as $category):?>
                 <li class="nav-item">
-                    <a class="nav-link" id="pills-home-tab-fill" onclick="showProduct(<?=$category['id'];?>)"
+                    <a class="nav-link <?=$categoryINT == $category['id'] ? 'active' : '';?>" id="pills-home-tab-fill" onclick="showProduct(<?=$category['id'];?>)"
                         data-toggle="pill" href="#pills-home-fill" role="tab" aria-controls="pills-home"
                         aria-selected="true"><img src="<?=base_url($category['image']);?>" width="25px" />
                         <?=mb_strtoupper(__($category['name']), 'UTF-8');?></a>
                 </li>
-                <?php }?>
+                <?php endforeach?>
+                <?php endif?>
             </ul>
             <div class="tab-content" id="pills-tabContent-1">
                 <div class="tab-pane fade show active" id="pills-home-fill" role="tabpanel"
@@ -65,8 +75,10 @@
         </div>
     </div>
 </div>
+
+
 <script>
-showProduct(0);
+showProduct(<?=$categoryINT;?>);
 
 function showProduct(id) {
     $("#showProduct").html('<center><img src="<?=base_url($CMSNT->site('gif_loading'));?>" width="100px" /></center>');
@@ -89,10 +101,18 @@ function showProduct(id) {
     });
 }
 </script>
+
+
+
+
+
 <?php elseif($CMSNT->site('display_show_product') == 2):?>
 
+<?php 
+// Show Type Box 
+if ($CMSNT->site('type_showProduct') == 1):?>
 <?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ORDER BY `stt` ASC ") as $category):?>
-<div class="col-lg-12">
+<div class="col-lg-12" id="category_<?=$category['id'];?>">
     <div class="card">
         <div class="card-header card-product d-flex justify-content-between"
             style="background-image: linear-gradient(to right, <?=$CMSNT->site('theme_color');?>, <?=$CMSNT->site('theme_color');?>, <?=$CMSNT->site('theme_color2');?>);">
@@ -101,14 +121,11 @@ function showProduct(id) {
                         class="mr-2" /><?=$category['name'];?></h5>
             </div>
         </div>
-        <?php 
-        // Show Type Box
-        if ($CMSNT->site('type_showProduct') == 1):?>
-        <div class="card-body">
+        <div class="card-body p-2">
             <div class="row">
                 <?php foreach ($CMSNT->get_list("SELECT * FROM `products` WHERE `status` = 1 AND `category_id` = '".$category['id']."' ORDER BY `stt` ASC ") as $product):?>
                 <?php
-                $conlai = $product['id_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
+                $conlai = $product['id_connect_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
                 if($CMSNT->site('hide_product_empty') == 1){
                     if($conlai == 0){
                         continue;
@@ -117,40 +134,43 @@ function showProduct(id) {
                 ?>
                 <div class="col-sm-6 col-md-6 col-lg-4 mt-4 mt-md-3">
                     <div class="basic-drop-shadow p-3 shadow-showcase">
-                        <!--
-            <div class="ribbon-wrapper ribbon-lg">
-                <div class="ribbon bg-danger">
-                    Sale 20%
-                </div>
-            </div>-->
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <p><img class="mr-1"
                                         src="<?=base_url(getRowRealtime("categories", $product['category_id'], 'image'));?>"
                                         width="25px"><b><?=__($product['name']);?></b>
-                                    <?=$product['preview'] != null ? '<a href="'.base_url($product['preview']).'" target="_blank"><i class="fas fa-search"></i></a>' : '';?>
                                 </p>
                                 <p style="font-size: 12px;"><i
                                         class="fas fa-angle-right mr-1"></i><i><?=__($product['content']);?></i></p>
                             </div>
                             <div class="col-md-7">
                                 <span class="btn mb-1 btn-sm btn-outline-danger">
-                                    <i class="far fa-money-bill-alt mr-1"></i><?=__('Giá');?>:
+                                    <?=__('Giá:');?>
                                     <b><?=format_currency($product['price']);?></b>
-                                </span> <span class="btn mb-1 btn-sm btn-outline-warning">
-                                    <i class="fas fa-flag mr-1"></i><?=__('Quốc gia');?>: <img
-                                        src="https://flagcdn.com/24x18/<?=$product['flag'];?>.png">
-                                </span><br>
-                                <?php if ($CMSNT->site('display_sold') == 1) {?>
+                                </span>
+                                <span class="btn mb-1 btn-sm btn-outline-info">
+                                    <?=__('Còn lại:');?>
+                                    <b><?=format_cash($conlai);?></b>
+                                </span>
+                                <?php if ($CMSNT->site('display_sold') == 1):?>
                                 <span class="btn mb-1 btn-sm btn-outline-success">
-                                    <i class="fas fa-cart-arrow-down mr-1"></i><?=__('Đã bán');?>:
+                                    <?=__('Đã bán:');?>
                                     <b><?=format_cash($product['sold']);?></b>
                                 </span>
-                                <?php }?>
-                                <span class="btn mb-1 btn-sm btn-outline-info">
-                                    <i class="fas fa-luggage-cart mr-1"></i><?=__('Hiện có');?>:
-                                    <b><?=format_cash($conlai);?></b>
-                                </span><br>
+                                <?php endif?>
+                                <?php if($CMSNT->site('display_country') == 1):?>
+                                <span class="btn mb-1 btn-sm btn-outline-warning">
+                                    <?=__('Quốc gia:');?>
+                                    <?=getFlag($product['flag']);?>
+                                </span>
+                                <?php endif?>
+                                <?php if($CMSNT->site('display_preview') == 1 && $product['preview'] != ''):?>
+                                <span class="btn mb-1 btn-sm btn-outline-success">
+                                    <div class="thumbnail-mobile">
+                                        <img src="<?=base_url($product['preview']);?>">
+                                    </div>
+                                </span>
+                                <?php endif?>
                             </div>
                             <div class="col-md-5">
                                 <?php if($CMSNT->site('display_rating') == 1):?>
@@ -199,13 +219,27 @@ function showProduct(id) {
                 <?php endforeach?>
             </div>
         </div>
-        <?php elseif($CMSNT->site('type_showProduct') == 2):?>
-        <div class="card-body p-0">
+    </div>
+</div>
+<?php endforeach?>
+
+<?php endif?>
+
+
+
+
+<?php if($CMSNT->site('type_showProduct') == 2):?>
+<?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ORDER BY `stt` ASC ") as $category):?>
+<div class="col-lg-12 p-0" id="category_<?=$category['id'];?>">
+    <div class="card">
+        <div>
             <div class="table-responsive">
-                <table class="table table-striped mb-0">
-                    <thead class="table-color-heading">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-color-heading"
+                        style="background:<?=$CMSNT->site('theme_color');?>;color:white;">
                         <tr>
-                            <th><?=__('Tên sản phẩm');?></th>
+                            <th><img src="<?=base_url($category['image']);?>" width="30px"
+                                    class="mr-2" /><?=$category['name'];?></th>
                             <?php if($CMSNT->site('display_rating') == 1):?>
                             <th class="text-center" width="10%"><?=__('Đánh giá');?></th>
                             <?php endif?>
@@ -226,7 +260,7 @@ function showProduct(id) {
                     <tbody>
                         <?php foreach ($CMSNT->get_list("SELECT * FROM `products` WHERE `status` = 1 AND `category_id` = '".$category['id']."' ORDER BY `stt` ASC ") as $product) {?>
                         <?php
-                        $conlai = $product['id_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
+                        $conlai = $product['id_connect_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
                         if($CMSNT->site('hide_product_empty') == 1){
                             if($conlai == 0){
                                 continue;
@@ -271,18 +305,19 @@ function showProduct(id) {
                             </td>
                             <?php endif?>
                             <?php if($CMSNT->site('display_country') == 1):?>
-                            <td class="text-center"><span class="btn mb-1 btn-sm btn-outline-warning">
-                                    <?=getFlag($product['flag']);?>
-                                    </span>
+                            <td class="text-center">
+                                <?=getFlag($product['flag']);?>
                             </td>
                             <?php endif?>
                             <?php if($CMSNT->site('display_preview') == 1):?>
                             <td class="text-center">
-                            <?php if($product['preview'] != null):?>
-                            <div class="thumbnail_zoom">
-                                 <img src="<?=base_url($product['preview']);?>" class="img_thumbnail_zoom" alt="image preview">
-                            </div>
-                            <?php endif?>
+                                <?php if($product['preview'] != ''):?>
+                                <span class="btn mb-1 btn-sm btn-outline-success">
+                                    <div class="thumbnail">
+                                        <img src="<?=base_url($product['preview']);?>">
+                                    </div>
+                                </span>
+                                <?php endif?>
                             </td>
                             <?php endif?>
                             <td class="text-center"><span class="btn mb-1 btn-sm btn-outline-info">
@@ -317,19 +352,18 @@ function showProduct(id) {
                 </table>
             </div>
         </div>
-        <?php endif?>
     </div>
 </div>
 <?php endforeach?>
+<?php endif?>
 
 <?php elseif($CMSNT->site('display_show_product') == 3):?>
 
-<?php if(checkAddon(1) == true):?>
 <?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ORDER BY `stt` ASC ") as $category):?>
 <div class="col-lg-12">
     <div class="card">
         <div class="card-body p-0">
-            <div>
+            <div class="table-responsive">
                 <table class="table table-striped mb-0">
                     <thead class="table-color-heading card-product">
                         <tr>
@@ -364,7 +398,7 @@ function showProduct(id) {
                     <tbody>
                         <?php foreach ($CMSNT->get_list("SELECT * FROM `products` WHERE `status` = 1 AND `category_id` = '".$category['id']."' ORDER BY `stt` ASC ") as $product) {?>
                         <?php
-                        $conlai = $product['id_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
+                        $conlai = $product['id_connect_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
                         if($CMSNT->site('hide_product_empty') == 1){
                             if($conlai == 0){
                                 continue;
@@ -414,12 +448,14 @@ function showProduct(id) {
                                     <?=getFlag($product['flag']);?>
                                 </span></td>
                             <?php endif?>
-                            <?php if($CMSNT->site('preview') == 1):?>
+                            <?php if($CMSNT->site('display_preview') == 1):?>
                             <td class="text-center">
-                                <?php if($product['preview'] != null):?>
-                                <div class="thumbnail_zoom">
-                                    <img src="<?=base_url($product['preview']);?>" class="img_thumbnail_zoom" alt="image preview">
-                                </div>
+                                <?php if($product['preview'] != ''):?>
+                                <span class="btn mb-1 btn-sm btn-outline-success">
+                                    <div class="thumbnail">
+                                        <img src="<?=base_url($product['preview']);?>">
+                                    </div>
+                                </span>
                                 <?php endif?>
                             </td>
                             <?php endif?>
@@ -458,28 +494,38 @@ function showProduct(id) {
     </div>
 </div>
 <?php endforeach?>
-<?php else:?>
-<div class="col-lg-12">
-    <div class="alert alert-danger" role="alert">
-        <div class="iq-alert-text">Bạn chưa kích hoạt Addon này!</div>
-    </div>
-</div>
-<?php endif?>
+
+
+
+
+
 <?php elseif($CMSNT->site('display_show_product') == 4):?>
-<?php if(checkAddon(3) == true):?>
 <style>
 .custom-block {
     padding: 0;
 }
+
 .custom-block .custom-control-label2:hover {
     color: #403E10;
-    box-shadow: <?=$CMSNT->site('theme_color');?> -1px 1px, <?=$CMSNT->site('theme_color');?> -2px 2px, <?=$CMSNT->site('theme_color');?> -3px 3px, <?=$CMSNT->site('theme_color');?> -4px 4px, <?=$CMSNT->site('theme_color');?> -5px 5px, <?=$CMSNT->site('theme_color');?> -6px 6px;
+    box-shadow: <?=$CMSNT->site('theme_color');
+    ?>-1px 1px,
+    <?=$CMSNT->site('theme_color');
+    ?>-2px 2px,
+    <?=$CMSNT->site('theme_color');
+    ?>-3px 3px,
+    <?=$CMSNT->site('theme_color');
+    ?>-4px 4px,
+    <?=$CMSNT->site('theme_color');
+    ?>-5px 5px,
+    <?=$CMSNT->site('theme_color');
+    ?>-6px 6px;
     transform: translate3d(6px, -6px, 0);
     transition-delay: 0s;
     transition-duration: 0.4s;
     transition-property: all;
     transition-timing-function: line;
 }
+
 .custom-control {
     position: relative;
     display: block;
@@ -489,7 +535,8 @@ function showProduct(id) {
 .custom-block .custom-control-label2 {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid <?=$CMSNT->site('theme_color');?>;
+    border: 2px solid <?=$CMSNT->site('theme_color');
+    ?>;
     border-radius: 0.2rem;
     cursor: pointer;
 }
@@ -534,6 +581,7 @@ function showProduct(id) {
 .bg-black-5 {
     background-color: rgba(0, 0, 0, .05) !important;
 }
+
 .item {
     display: -webkit-box;
     display: flex;
@@ -548,14 +596,18 @@ function showProduct(id) {
     transition: opacity .25s ease-out, transform .25s ease-out;
     transition: opacity .25s ease-out, transform .25s ease-out, -webkit-transform .25s ease-out;
 }
+
 .item.item-circle {
     border-radius: 50%;
-    border: 1px solid <?=$CMSNT->site('theme_color');?>;
+    border: 1px solid <?=$CMSNT->site('theme_color');
+    ?>;
 }
+
 .custom-control-primary.custom-block .custom-block-indicator,
 .custom-control-primary.custom-radio .custom-control-input:checked~.custom-control-label2:before {
     background-color: #0665d0;
 }
+
 .font-w700 {
     font-weight: 700 !important;
 }
@@ -574,7 +626,7 @@ function showProduct(id) {
             <div class="row">
                 <?php foreach ($CMSNT->get_list("SELECT * FROM `products` WHERE `status` = 1 AND `category_id` = '".$category['id']."' ORDER BY `stt` ASC ") as $product):?>
                 <?php
-                $conlai = $product['id_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
+                $conlai = $product['id_connect_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
                 if($CMSNT->site('hide_product_empty') == 1){
                     if($conlai == 0){
                         continue;
@@ -582,7 +634,8 @@ function showProduct(id) {
                 }
                 ?>
                 <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-3">
-                    <div class="custom-control custom-block custom-control-primary" onclick="modalBuy(<?=$product['id'];?>, <?=$product['price'];?>,`<?=__($product['name']);?>`)">
+                    <div class="custom-control custom-block custom-control-primary"
+                        onclick="modalBuy(<?=$product['id'];?>, <?=$product['price'];?>,`<?=__($product['name']);?>`)">
                         <div class="custom-control-label2 p-2">
                             <span class="d-flex align-items-center">
                                 <div class="item item-circle bg-black-5 text-primary-light" style="min-width: 60px;">
@@ -620,15 +673,242 @@ function showProduct(id) {
 </div>
 <?php endforeach?>
 
+<?php elseif($CMSNT->site('display_show_product') == 5):?>
 
-<?php else:?>
+<style>
+.list-category {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .content-heading {
+        margin-bottom: 1.5rem;
+        padding-top: 2.5rem;
+    }
+}
+
+.content-heading {
+    margin-bottom: 0.875rem;
+    padding-top: 2rem;
+    padding-bottom: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.75;
+    border-bottom: 1px solid #e4e7ed;
+}
+
+@media (min-width: 768px) {
+    .content-heading {
+        margin-bottom: 1.5rem;
+        padding-top: 2.5rem;
+    }
+}
+
+.content-heading {
+    margin-bottom: 0.875rem;
+    padding-top: 2rem;
+    padding-bottom: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.75;
+    border-bottom: 1px solid #e4e7ed;
+}
+
+.block.block-rounded>.block-content:last-child {
+    border-bottom-right-radius: 0.875rem 1rem;
+    border-bottom-left-radius: 0.875rem 1rem;
+}
+
+.block-content.block-content-full {
+    padding-bottom: 1.625rem;
+}
+
+.block-content.block-content-full {
+    padding-bottom: 1.625rem;
+}
+
+.block-content {
+    transition: opacity .2s ease-out;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.625rem 1.625rem 1px;
+    overflow-x: visible;
+}
+
+.block-content {
+    transition: opacity .2s ease-out;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.625rem 1.625rem 1px;
+    overflow-x: visible;
+}
+
+.action:hover {
+    transform: scale(1.1);
+
+}
+
+.fw-semibold {
+    font-weight: 400 !important;
+}
+
+.fs-3 {
+    font-size: calc(1.275rem + .3vw) !important;
+}
+
+.hvr-underline-from-center {
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (min-width: 1200px) {
+    .fs-3 {
+        font-size: 1.5rem !important;
+    }
+
+    .fw-semibold {
+        font-weight: 600 !important;
+    }
+
+    .fs-3 {
+        font-size: calc(1.275rem + .3vw) !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .fs-3 {
+        font-size: 1.5rem !important;
+    }
+
+    .fw-semibold {
+        font-weight: 600 !important;
+    }
+
+    .fs-3 {
+        font-size: calc(1.275rem + .3vw) !important;
+    }
+
+    .col-xl-4 {
+        flex: 0 0 auto;
+        width: 33.33333333%;
+    }
+}
+</style>
+
+
+<?php foreach ($CMSNT->get_list("SELECT * FROM `categories` WHERE `status` = 1 ORDER BY `stt` ASC ") as $category):?>
 <div class="col-lg-12">
-    <div class="alert alert-danger" role="alert">
-        <div class="iq-alert-text">Bạn chưa kích hoạt Addon này!</div>
+    <div class="card">
+        <div class="card-header card-product d-flex justify-content-between" id="<?= $category['id']; ?>"
+            style="background-image: linear-gradient(to right, <?=$CMSNT->site('theme_color');?>, <?=$CMSNT->site('theme_color');?>, <?=$CMSNT->site('theme_color2');?>);">
+            <div class="header-title">
+                <h5 class="card-title" style="color:white;"><img src="<?=base_url($category['image']);?>" width="30px"
+                        class="mr-2" /><?=$category['name'];?></h5>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <?php foreach ($CMSNT->get_list("SELECT * FROM `products` WHERE `status` = 1 AND `category_id` = '" . $category['id'] . "' ORDER BY `stt` ASC ") as $product): 
+                $conlai = $product['id_connect_api'] != 0 ? $product['api_stock'] : $CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$product['id']."' AND `buyer` IS NULL AND `status` = 'LIVE' ")['COUNT(id)'];
+                if($CMSNT->site('hide_product_empty') == 1){
+                    if($conlai == 0){
+                        continue;
+                    }
+                } ?>
+                <div class="col-lg-6 col-xl-4">
+                    <a class="card action" style="border: 2px solid #e9ecef;">
+
+                        <div class="block-content block-content-full" style="padding: 0;">
+
+                            <table class="table table-borderless table-vcenter">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center" style="width: 20%;">
+                                            <div class="fs-3 fw-semibold"
+                                                style="background: <?=$CMSNT->site('theme_color');?>;color: white;font-size:1px; border-radius: 100%;width: 5rem;height: 5rem;display: flex;-webkit-box-align: center;align-items: center;-webkit-box-pack: center;justify-content: center;text-align: center;margin: 0 auto;">
+                                                <?=$conlai > 0 ? format_cash($conlai) : '<img style="width: 120%;" src="'.base_url().'resources/images/sold.png">' ?>
+                                            </div>
+                                        </td>
+                                        <td class="fs-sm text-muted">
+
+                                            <div class="text-muted my-1" style="font-size:17px;">
+                                                <?= __($product['name']); ?></div>
+                                            <div class="text-muted my-1"><span class="d-block font-size-sm text-muted">
+                                                    <strong style="font-size:11px"
+                                                        class="text-secondary"><del><?= format_currency($product['price'] + $product['price'] * 10 / 100); ?></del></strong>
+                                                    <strong class="text-danger" style="font-size:14px">»
+                                                        <?= format_currency($product['price']); ?></strong></span>
+                                            </div>
+                                            <div class="fs-sm">
+                                                <a class="btn btn-sm btn-outline-secondary" href="javascript:void(0)"
+                                                    onclick="info(`<?= $product['content']; ?>`)">
+                                                    <i class="fa fa-circle-info opacity-50 me-1"></i> Thông tin</a>
+                                                <a class="btn btn-sm btn-outline-primary" href="javascript:void(0)"
+                                                    onclick="modalBuy(<?= $product['id']; ?>, <?= $product['price']; ?>, `<?= __($product['name']); ?>`)">
+                                                    <i class="fa fa-cart-shopping opacity-50 me-1"></i> MUA NGAY
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </a>
+                </div>
+                <?php endforeach ?>
+
+
+            </div>
+        </div>
     </div>
 </div>
+<?php endforeach ?>
+<script>
+function info(content) {
+    Swal.fire('<?= __('Thông tin'); ?>',
+        content);
+}
+
+function hideModal() {
+    $("#myModal").hide();
+}
+// Get the modal
+var modal = document.getElementById("myModal");
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("closeModal")[0];
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+
+
 <?php endif?>
-<?php endif?>
+
+
+
 
 
 
@@ -652,8 +932,10 @@ function showProduct(id) {
                         onkeyup="totalPayment()" placeholder="<?=__('Nhập số lượng cần mua');?>" id="amount" />
                     <input type="hidden" value="" readonly class="form-control" id="modal-id">
                     <input type="hidden" value="" readonly class="form-control" id="price">
-                    <input class="form-control" type="hidden" id="token" value="<?=isset($getUser) ? $getUser['token'] : '';?>">
+                    <input class="form-control" type="hidden" id="token"
+                        value="<?=isset($getUser) ? $getUser['token'] : '';?>">
                 </div>
+                <div id="hotdeal"></div>
                 <div class="form-group mb-3" id="showDiscountCode">
                     <label><?=__('Mã giảm giá');?>:</label>
                     <input type="text" class="form-control" onchange="totalPayment()" onkeyup="totalPayment()"
@@ -697,7 +979,8 @@ function buyProduct() {
                     message: data.msg,
                     timer: 5000
                 });
-                setTimeout("location.href = '<?=BASE_URL('client/orders');?>';", 1000);
+                $urlReturn = '<?=BASE_URL('client/orders');?>';
+                setTimeout("location.href = '" + $urlReturn + "';", 1000);
             } else {
                 Swal.fire(
                     '<?=__('Thất bại');?>',
@@ -723,8 +1006,13 @@ function modalBuy(id, price, name) {
     $("#modal-id").val(id);
     $("#price").val(price);
     $("#name").val(name);
+    $("#total").html(0);
     $("#amount").val('');
     $("#modalBuy").modal();
+    $("#hotdeal").html('');
+    $.get("<?=BASE_URL('ajaxs/client/loadForm.php?id=');?>" + id + '&type=loadHotDeal', function(data) {
+        $("#hotdeal").html(data);
+    });
 }
 
 document.getElementById('showDiscountCode').style.display = 'none';

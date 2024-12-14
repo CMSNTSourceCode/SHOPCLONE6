@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="<?=BASE_URL('public/AdminLTE3/');?>plugins/fontawesome-free/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="<?=BASE_URL('public/AdminLTE3/');?>dist/css/adminlte.min.css">
+    
+ 
     <!-- Cute Alert -->
     <link class="main-stylesheet" href="<?=BASE_URL('public/');?>cute-alert/style.css" rel="stylesheet"
         type="text/css">
@@ -25,11 +27,17 @@
     <link rel="stylesheet" href="<?=BASE_URL('public/AdminLTE3/');?>plugins/jqvmap/jqvmap.min.css">
     <!-- summernote -->
     <link rel="stylesheet" href="<?=BASE_URL('public/AdminLTE3/');?>plugins/summernote/summernote-bs4.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="<?=BASE_URL('public/AdminLTE3/');?>plugins/daterangepicker/daterangepicker.css">
     <!-- Sparkline -->
     <script src="<?=BASE_URL('public/AdminLTE3/');?>plugins/sparklines/sparkline.js"></script>
     <!-- jQuery -->
     <script src="<?=base_url('public/js/jquery-3.6.0.js');?>"></script>
+    <script src="https://use.fontawesome.com/99c3653b8b.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <?=$body['header'];?>
 </head>
  

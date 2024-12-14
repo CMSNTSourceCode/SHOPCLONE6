@@ -37,10 +37,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (check_email($email) != true) {
         die(json_encode(['status' => 'error', 'msg' => __('Định dạng Email không đúng')]));
     }
-    if ($CMSNT->site('status_captcha') == 1) {
-        $phrase = check_string($_POST['phrase']);
-        if (strcasecmp($phrase, $_SESSION['phrase']) != 0) {
-            die(json_encode(['status' => 'error', 'msg' => __('Captcha không chính xác')]));
+    // if ($CMSNT->site('status_captcha') == 1) {
+    //     $phrase = check_string($_POST['phrase']);
+    //     if (strcasecmp($phrase, $_SESSION['phrase']) != 0) {
+    //         die(json_encode(['status' => 'error', 'msg' => __('Captcha không chính xác')]));
+    //     }
+    // }
+    if($CMSNT->site('reCAPTCHA_status') == 1){
+        if (empty($_POST['recaptcha'])) {
+            die(json_encode(['status' => 'error', 'msg' => __('Vui lòng xác minh Captcha')]));
+        }
+        $recaptcha = check_string($_POST['recaptcha']);
+        $url = "https://www.google.com/recaptcha/api/siteverify?secret=".$CMSNT->site('reCAPTCHA_secret_key')."&response=$recaptcha";
+        $verify = file_get_contents($url);
+        $captcha_success=json_decode($verify);
+        if ($captcha_success->success==false) {
+            die(json_encode(['status' => 'error', 'msg' => __('Vui lòng xác minh Captcha')]));
         }
     }
     if ($CMSNT->num_rows("SELECT * FROM `users` WHERE `username` = '$username' ") > 0) {
@@ -49,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($CMSNT->num_rows("SELECT * FROM `users` WHERE `email` = '$email' ") > 0) {
         die(json_encode(['status' => 'error', 'msg' => __('Địa chỉ email đã tồn tại trong hệ thống')]));
     }
-    if ($CMSNT->num_rows("SELECT * FROM `users` WHERE `ip` = '".myip()."' ") >= 5) {
+    if ($CMSNT->num_rows("SELECT * FROM `users` WHERE `ip` = '".myip()."' ") >= $CMSNT->site('max_register_ip')) {
         die(json_encode(['status' => 'error', 'msg' => __('IP của bạn đã đạt giới hạn tạo tài khoản cho phép')]));
     }
     # Create the 2FA class
@@ -60,12 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'username'      => $username,
         'email'         => $email,
         'password'      => TypePassword($password),
-        'ref_id'           => !empty($_SESSION['ref']) ? $_SESSION['ref'] : 0,
+        'ref_id'        => !empty($_SESSION['ref']) ? check_string($_SESSION['ref']) : 0,
         'ip'            => myip(),
         'device'        => $Mobile_Detect->getUserAgent(),
         'create_date'   => gettime(),
         'update_date'   => gettime(),
         'time_session'  => time(),
+        'change_password'        => 1,
         'SecretKey_2fa' => $google2fa->generateSecretKey()
     ]);
     if ($isCreate) {

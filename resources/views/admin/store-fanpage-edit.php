@@ -10,7 +10,14 @@ $body['header'] = '
 
 ';
 $body['footer'] = '
-
+<!-- bs-custom-file-input -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<!-- Page specific script -->
+<script>
+$(function () {
+  bsCustomFileInput.init();
+});
+</script> 
 ';
 require_once(__DIR__.'/../../../models/is_admin.php');
 if (isset($_GET['id'])) {

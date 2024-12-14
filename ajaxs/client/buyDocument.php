@@ -89,8 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $CMSNT->update("users", [
             'time_request' => time()
         ], " `id` = '".$getUser['id']."' ");
-        /* CỘNG DOANH THU CHO NGƯỜI BÁN */
-        $isAddCreditsRef = $User->AddCredits($row['user_id'], $total_payment, "Doanh thu đơn hàng #".$trans_id);
+
+        if($CMSNT->site('status_addfun_seller') == 1 ){
+            /* CỘNG DOANH THU CHO NGƯỜI BÁN */
+            $User->AddCredits($row['user_id'], $total_payment, "Doanh thu đơn hàng bán tài khoản #".$trans_id);
+        }
+ 
+
+
         /* GỬI EMAIL ĐƠN HÀNG CHO NGƯỜI MUA*/
         if($CMSNT->site('email_smtp') != ''){
             $chu_de = "Xác nhận thanh toán hóa đơn #$trans_id thành công";

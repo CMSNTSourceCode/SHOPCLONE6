@@ -42,7 +42,7 @@ if (isset($_POST['SaveInvoice'])) {
     ], " `id` = '".$row['id']."' ");
     if ($isInsert) {
         if ($_POST['status'] == 1) {
-            $user->AddCredits($row['user_id'], $row['amount'], 'Hoá đơn nạp tiền #'.$row['trans_id']);
+            $user->AddCredits($row['user_id'], $row['amount'], '[Admin] '.__('Thanh toán hoá đơn nạp tiền').' #'.$row['trans_id']);
         }
         $Mobile_Detect = new Mobile_Detect();
         $CMSNT->insert("logs", [
@@ -50,7 +50,7 @@ if (isset($_POST['SaveInvoice'])) {
             'ip'            => myip(),
             'device'        => $Mobile_Detect->getUserAgent(),
             'createdate'    => gettime(),
-            'action'        => "Chỉnh sửa hoá đơn (#".$row['trans_id'].")."
+            'action'        => "Chỉnh sửa hoá đơn (".$row['trans_id'].")."
         ]);
         die('<script type="text/javascript">if(!alert("Lưu thành công!")){window.history.back().location.reload();}</script>');
     } else {

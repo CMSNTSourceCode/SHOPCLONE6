@@ -30,7 +30,7 @@ if (isset($_POST['transid'])) {
         $clone = $clone.PHP_EOL.htmlspecialchars_decode($row1['account']);
     }
     if (isset($clone)) {
-        $file = "Đơn hàng ".$trans_id." số lượng ".$row['amount']." giá ".format_currency($row['pay']).".txt";
+        $file = $trans_id.".txt";
         $Mobile_Detect = new Mobile_Detect();
         $CMSNT->insert("logs", [
             'user_id'       => $getUser['id'],

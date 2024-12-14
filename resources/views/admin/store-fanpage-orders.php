@@ -106,7 +106,7 @@ require_once(__DIR__.'/nav.php');
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `store_fanpage` WHERE `buyer` != 0 ") as $row) {?>
+                                        <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `store_fanpage` WHERE `buyer` != 0 ORDER BY `update_gettime` DESC ") as $row) {?>
                                         <tr>
                                             <td><?=$i++;?></td>
                                             <td>
@@ -142,7 +142,8 @@ require_once(__DIR__.'/nav.php');
                                                     <li>Số lượng Like/Member: <b><?=format_cash($row['sl_like']);?></b></li>
                                                     <li>Thời gian tạo: <b><?=$row['nam_tao_fanpage'];?></b></li>
                                                     <li>Giá: <b style="color: blue;"><?=format_currency($row['price']);?></b></li>
-                                                    <li>FB Admin: <a href="<?=$row['fb_admin'];?>" target="_blank"><?=$row['fb_admin'];?></a></li>
+                                                    <li>FB Admin mới: <a href="<?=$row['url'];?>" target="_blank"><?=$row['url'];?></a></li>
+                                                    <li>Tên Fanpage cần thay đổi: <b><?=$row['new_name'];?></b></li>
                                                     <li>Thời gian bán: <b><?=$row['update_gettime'];?></b>
                                                         (<b><?=timeAgo($row['update_time']);?></b>)</li>
                                                 </ul>

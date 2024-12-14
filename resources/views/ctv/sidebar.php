@@ -34,6 +34,15 @@
                                 </p>
                             </a>
                         </li>
+                        <!-- <li class="nav-item has-treeview">
+                            <a href="<?=BASE_URL('ctv/withdraw');?>"
+                                class="nav-link <?=active_sidebar(['withdraw', '']);?>">
+                                <i class="nav-icon fa-solid fa-money-bill"></i>
+                                <p>
+                                    Rút tiền
+                                </p>
+                            </a>
+                        </li> -->
                         <li class="nav-item menu-open">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-cart-plus"></i>

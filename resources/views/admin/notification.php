@@ -55,10 +55,7 @@ if (isset($_POST['SendNoti'])) {
     }
     $content = $_POST['content'];
     $title = check_string($_POST['title']);
-
-    $content_email = file_get_contents(base_url('libs/mails/notification.php'));
-    $content_email = str_replace('{title}', $title, $content_email);
-    $content_email = str_replace('{content}', $content, $content_email);
+ 
 
     if (empty($_POST['listUser'])) {
         foreach ($CMSNT->get_list("SELECT * FROM `users` WHERE `banned` = 0 ") as $user) {
@@ -71,21 +68,6 @@ if (isset($_POST['SendNoti'])) {
                 'createdate'    => gettime(),
                 'status'    => 0
             ]);
-            if (isset($_POST['sendEmail'])) {
-                sendCSM($user['email'], $user['username'], "Bạn có thông báo mới từ BQT ".$CMSNT->site('title'), $content_email, $CMSNT->site('title'));
-                // $CMSNT->insert("send_email", [
-                //     'template'  => 'notification',
-                //     'receiver'  => $user['email'],
-                //     'name'      => $user['username'],
-                //     'title'     => 'Bạn có thông báo mới từ BQT '.$CMSNT->site('title'),
-                //     'content'   => $content_email,
-                //     'bbc'       => $CMSNT->site('title'),
-                //     'status'    => 0,
-                //     'create_date'   => gettime(),
-                //     'update_date'   => gettime(),
-                //     'response'      => NULL
-                // ]);
-            }
         }
     } else {
         foreach ($_POST['listUser'] as $user) {
@@ -99,21 +81,6 @@ if (isset($_POST['SendNoti'])) {
                 'createdate'    => gettime(),
                 'status'    => 0
             ]);
-            if (isset($_POST['sendEmail'])) {
-                sendCSM($user['email'], $user['username'], "Bạn có thông báo mới từ BQT ".$CMSNT->site('title'), $content_email, $CMSNT->site('title'));
-                // $CMSNT->insert("task_email", [
-                //     'template'  => 'notification',
-                //     'receiver'  => $user['email'],
-                //     'name'      => $user['username'],
-                //     'title'     => "Bạn có thông báo mới từ BQT ".$CMSNT->site('title'),
-                //     'content'   => $content_email,
-                //     'bbc'       => $CMSNT->site('title'),
-                //     'status'    => 0,
-                //     'create_date'   => gettime(),
-                //     'update_date'   => gettime(),
-                //     'response'      => NULL
-                // ]);
-            }
         }
     }
     if ($isInsert) {
@@ -187,12 +154,6 @@ if (isset($_POST['SendNoti'])) {
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Nội dung</label>
                                     <textarea class="form-control" placeholder="Nhập nội dung chi tiết thông báo" name="content" required></textarea>
-                                </div>
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" name="sendEmail" value="1"
-                                        id="customCheckbox2" checked>
-                                    <label for="customCheckbox2" class="custom-control-label">Gửi đến Email cho khách hàng được chọn.</label>
-                                    <i>(quá trình này có thể mất một vài phút tuỳ vào số lượng user)</i>
                                 </div>
                             </div>
                             <div class="card-footer clearfix">

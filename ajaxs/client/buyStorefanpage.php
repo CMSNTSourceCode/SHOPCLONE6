@@ -105,6 +105,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $bcc = $CMSNT->site('title');
         sendCSM($CMSNT->site('email'), $CMSNT->site('email'), $chu_de, $noi_dung, $bcc);
 
+        /** SEND NOTI CHO ADMIN */
+        $my_text = $CMSNT->site('buy_fanpage_notification');
+        $my_text = str_replace('{domain}', $_SERVER['SERVER_NAME'], $my_text);
+        $my_text = str_replace('{username}', $getUser['username'], $my_text);
+        $my_text = str_replace('{product_name}', $row['type'].': '.$row['name'], $my_text);
+        $my_text = str_replace('{price}', format_currency($row['price']), $my_text);
+        $my_text = str_replace('{url}', check_string($_POST['url']), $my_text);
+        $my_text = str_replace('{time}', gettime(), $my_text);
+        $my_text = str_replace('{method}', 'Website', $my_text);
+        sendMessAdmin($my_text);
+
+
         die(json_encode(['status' => 'success', 'msg' => __('Thanh toán đơn hàng thành công')]));
     }
     die(json_encode(['status' => 'error', 'msg' => __('Không thể thanh toán, vui lòng thử lại')]));

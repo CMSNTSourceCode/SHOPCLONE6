@@ -51,8 +51,7 @@ require_once(__DIR__.'/sidebar.php');
                             </div>
                             <div id='form_box'>
                                 <div class="form-group">
-                                    <label class="col-sm-12 control-label" style='text-align:left'><?=__('Nhập Danh Sách
-                                        UID');?>:</label>
+                                    <label class="col-sm-12 control-label" style='text-align:left'><?=__('Nhập Danh Sách UID');?>:</label>
                                     <div class="col-sm-12">
                                         <textarea style='height:150px;white-space:pre;overflow-wrap:normal;'
                                             class="form-control" id='fb_ids'

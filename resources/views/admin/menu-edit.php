@@ -7,10 +7,35 @@ $body = [
     'keyword' => 'cmsnt, CMSNT, cmsnt.co,'
 ];
 $body['header'] = '
-
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+<!-- CodeMirror -->
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/codemirror/codemirror.css">
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/codemirror/theme/monokai.css">
+<!-- ckeditor -->
+<script src="'.BASE_URL('public/ckeditor/ckeditor.js').'"></script>
+<!-- Select2 -->
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 ';
 $body['footer'] = '
-
+<!-- bootstrap color picker -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+<!-- CodeMirror -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/codemirror/codemirror.js"></script>
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/codemirror/mode/css/css.js"></script>
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/codemirror/mode/xml/xml.js"></script>
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<!-- Select2 -->
+<script src="'.BASE_URL('public/AdminLTE3/').'plugins/select2/js/select2.full.min.js"></script>
+<script>
+$(function () {
+    $(".select2").select2()
+    $(".select2bs4").select2({
+        theme: "bootstrap4"
+    });
+});
+</script>
 ';
 require_once(__DIR__.'/../../../models/is_admin.php');
 if (isset($_GET['id'])) {
@@ -31,12 +56,18 @@ if (isset($_POST['save'])) {
     if ($CMSNT->site('status_demo') != 0) {
         die('<script type="text/javascript">if(!alert("Không được dùng chức năng này vì đây là trang web demo.")){window.history.back().location.reload();}</script>');
     }
+    if ($CMSNT->get_row("SELECT * FROM `menu` WHERE `name` = '".check_string($_POST['name'])."' AND `id` != ".$row['id']." ")) {
+        die('<script type="text/javascript">if(!alert("Tên menu này đã tồn tại trong hệ thống.")){window.history.back().location.reload();}</script>');
+    }
     $isCreate = $CMSNT->update("menu", [
-        'name'      => check_string($_POST['name']),
-        'href'      => check_string($_POST['href']),
-        'icon'      => $_POST['icon'],
-        'target'    => isset($_POST['target']) ? check_string($_POST['target']) : '',
-        'status'    => check_string($_POST['status'])
+        'name'              => check_string($_POST['name']),
+        'slug'              => create_slug(check_string($_POST['name'])),
+        'href'              => !empty($_POST['href']) ? check_string($_POST['href']) : '',
+        'icon'              => $_POST['icon'],
+        'position'          => !empty($_POST['position']) ? check_string($_POST['position']) : 3,
+        'target'            => !empty($_POST['target']) ? check_string($_POST['target']) : '',
+        'content'           => !empty($_POST['content']) ? $_POST['content'] : '',
+        'status'            => check_string($_POST['status'])
     ], " `id` = '".$row['id']."' ");
     if ($isCreate) {
         $Mobile_Detect = new Mobile_Detect();
@@ -111,7 +142,21 @@ if (isset($_POST['save'])) {
                                     <label for="exampleInputEmail1">Liên kết</label>
                                     <input type="text" class="form-control" value="<?=$row['href'];?>"
                                         placeholder="Nhập địa chỉ liên kết cần tới khi click vào menu này" name="href"
-                                        required>
+                                        >
+                                        <i>Chỉ áp dụng khi nội dung hiển thị trống</i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Nội dung hiển thị nếu có</label>
+                                    <textarea id="content"
+                                        name="content" placeholder="Để trống nếu muốn sử dụng liên kết"><?=$row['content'];?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Vị trí hiển thị</label>
+                                    <select class="form-control" name="position" required>
+                                        <option <?=$row['position'] == 1 ? 'selected' : '';?> value="1">Trong menu SỐ DƯ</option>
+                                        <option <?=$row['position'] == 2 ? 'selected' : '';?> value="2">Trong menu NẠP TIỀN</option>
+                                        <option <?=$row['position'] == 3 ? 'selected' : '';?> value="3">Trong menu KHÁC</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Icon menu</label>
@@ -149,7 +194,9 @@ if (isset($_POST['save'])) {
     </div>
 </div>
 
-
+<script>
+CKEDITOR.replace("content");
+</script>
 <?php
 require_once(__DIR__.'/footer.php');
 ?>

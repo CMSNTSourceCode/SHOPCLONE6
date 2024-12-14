@@ -7,6 +7,16 @@
     require_once(__DIR__.'/../libs/lang.php');
     $CMSNT = new DB();
 
+    if($CMSNT->site('pin_cron') != ''){
+        if(empty($_GET['pin'])){
+            die('Vui lòng nhập mã PIN');
+        }
+        if($_GET['pin'] != $CMSNT->site('pin_cron')){
+            die('Mã PIN không chính xác');
+        }
+    }
+
+    
     /* START CHỐNG SPAM */
     if (time() > $CMSNT->site('check_time_cron3')) {
         if (time() - $CMSNT->site('check_time_cron3') < 5) {
@@ -31,7 +41,7 @@
                 ], " `id` = '".$website['id']."' ");
             }
             // CURL LẤY THÔNG TIN SẢN PHẨM TỪNG WEBSITE
-            $data = curl_get($website['domain'].'api/v1/categories');
+            $data = curl_get2($website['domain'].'api/v1/categories');
             $data = json_decode($data, true);
             if(isset($data['data'])){
                 foreach($data['data'] as $category){
@@ -48,18 +58,18 @@
                         echo '<b style="color:red;">CREATE</b> - Tạo category '.check_string($category['name']).' thành công !<br>';
                     }
                     // CURL LẤY SẢN PHẨM
-                    $list_product = curl_get($website['domain'].'api/v1/category/'.$category['id']);
+                    $list_product = curl_get2($website['domain'].'api/v1/category/'.$category['id']);
                     $list_product = json_decode($list_product, true);
                     foreach($list_product['data'] as $account){
                         $product_name = check_string($account['name']);
-                        $ck = check_string($account['price']) * $CMSNT->site('ck_connect_api') / 100;
+                        $ck = check_string($account['price']) * $website['ck_connect_api'] / 100;
                         $price = check_string($account['price']) + $ck;
                         if(!$rowProduct = $CMSNT->get_row(" SELECT * FROM `products` WHERE `id_api` = '".check_string($account['id_product'])."' AND `id_connect_api` = '".$website['id']."' ")){
                             // LẤY ID CATEGORY
                             $id_api = $CMSNT->get_row(" SELECT * FROM `categories` WHERE `id_api` = '".check_string($category['id'])."' AND `id_connect_api` = '".$website['id']."' ")['id'];
                             $CMSNT->insert('products', [
                                 'user_id'           => $website['user_id'],
-                                'category_id'       => $id_api,
+                                'category_id'       => !empty($id_api) ? $id_api : 0,
                                 'id_api'            => check_string($account['id_product']),
                                 'id_connect_api'    => $website['id'],
                                 'name'              => $product_name,
@@ -68,7 +78,7 @@
                                 'status'            => $CMSNT->site('default_api_product_status'),
                                 'cost'              => check_string($account['price']),
                                 'api_stock'         => check_string($account['quantity']),
-                                'flag'              => 'vn',
+                                'flag'              => '',
                                 'content'           => check_string($account['desc']),
                                 'update_api'        => time(),
                                 'minimum'           => 1,
@@ -77,13 +87,13 @@
                             echo '<b style="color:red;">CREATE</b> - Tạo sản phẩm '.$product_name.' thành công !<br>';
                         }else{
                             $price = $rowProduct['price'];
-                            if($CMSNT->site('ck_connect_api') > 0){
-                                $ck = check_string($account['price']) * $CMSNT->site('ck_connect_api') / 100;
+                            if($website['status_update_ck'] == 1){
+                                $ck = check_string($account['price']) * $website['ck_connect_api'] / 100;
                                 $price = check_string($account['price']) + $ck;
-                            }
+                            } 
                             $product_name = $rowProduct['name'];
                             $product_content = $rowProduct['content'];
-                            if($CMSNT->site('auto_rename_api') == 1){
+                            if($website['auto_rename_api'] == 1){
                                 $product_name = check_string($account['name']);
                                 $product_content = check_string($account['desc']);
                             }
@@ -101,10 +111,8 @@
                         }
                     }
                 }
-                // ẨN SẢN PHẨM KHI API XOÁ HOẶC ẨN SẢN PHẨM
-                $CMSNT->update('products', [
-                    'status'    => 0
-                ], " `id_connect_api` = '".$website['id']."' AND ".time()." - `update_api` >= 300 ");
             }
-        }
+            // ẨN SẢN PHẨM KHI API XOÁ HOẶC ẨN SẢN PHẨM
+            $CMSNT->remove('products', " `id_connect_api` = '".$website['id']."' AND ".time()." - `update_api` >= 3600 ");
+        }   
     }

@@ -50,55 +50,69 @@ class users extends DB
         $sql = "SELECT * FROM ".$this->_table_name." WHERE ".$where;
         return $this->num_rows($sql);
     }
-    public function AddCredits($user_id, $amount, $reason)
-    {
-        parent::insert("dongtien", array(
+    public function AddCredits($user_id, $amount, $reason, $transid = NULL){
+        if($transid == NULL){
+            $transid = uniqid().'_'.mt_rand(0, 9999999);
+        }
+        $isInsert = parent::insert("dongtien", array(
             'sotientruoc' => getUser($user_id, 'money'),
             'sotienthaydoi' => $amount,
             'sotiensau' => getUser($user_id, 'money') + $amount,
             'thoigian' => gettime(),
             'noidung' => $reason,
-            'user_id' => $user_id
+            'user_id'   => $user_id,
+            'transid'   => $transid
         ));
-        $isUpdate = parent::cong("users", "money", $amount, " `id` = '$user_id' ");
-        if ($isUpdate) {
-            parent::cong("users", "total_money", $amount, " `id` = '$user_id' ");
-            return true;
+        if($isInsert){
+            $isUpdate = parent::cong("users", "money", $amount, " `id` = '$user_id' ");
+            if($isUpdate) {
+                parent::cong("users", "total_money", $amount, " `id` = '$user_id' ");
+                return true;
+            }
         }
         return false;
     }
-    public function RefundCredits($user_id, $amount, $reason)
-    {
-        parent::insert("dongtien", array(
+    public function RefundCredits($user_id, $amount, $reason, $transid = NULL){
+        if($transid == NULL){
+            $transid = uniqid().'_'.mt_rand(0, 9999999);
+        }
+        $isInsert = parent::insert("dongtien", array(
             'sotientruoc' => getUser($user_id, 'money'),
             'sotienthaydoi' => $amount,
             'sotiensau' => getUser($user_id, 'money') + $amount,
             'thoigian' => gettime(),
             'noidung' => $reason,
-            'user_id' => $user_id
+            'user_id'   => $user_id,
+            'transid'   => $transid
         ));
-        $isUpdate = parent::cong("users", "money", $amount, " `id` = '$user_id' ");
-        if ($isUpdate) {
-            return true;
+        if($isInsert){
+            $isUpdate = parent::cong("users", "money", $amount, " `id` = '$user_id' ");
+            if ($isUpdate) {
+                return true;
+            }
         }
         return false;
     }
-    public function RemoveCredits($user_id, $amount, $reason)
-    {
-        parent::insert("dongtien", array(
+    public function RemoveCredits($user_id, $amount, $reason, $transid = NULL){
+        if($transid == NULL){
+            $transid = uniqid().'_'.mt_rand(0, 9999999);
+        }
+        $isInsert = parent::insert("dongtien", array(
             'sotientruoc' => getUser($user_id, 'money'),
             'sotienthaydoi' => $amount,
             'sotiensau' => getUser($user_id, 'money') - $amount,
-            'thoigian' => gettime(),
-            'noidung' => $reason,
-            'user_id' => $user_id
+            'thoigian'  => gettime(),
+            'noidung'   => $reason,
+            'user_id'   => $user_id,
+            'transid'   => $transid
         ));
-        $isRemove = parent::tru("users", "money", $amount, " `id` = '$user_id' ");
-        if ($isRemove) {
-            return true;
-        } else {
-            return false;
+        if($isInsert){
+            $isRemove = parent::tru("users", "money", $amount, " `id` = '$user_id' ");
+            if ($isRemove) {
+                return true;
+            }
         }
+        return false;
     }
     public function Banned($user_id, $reason)
     {

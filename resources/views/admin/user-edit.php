@@ -42,12 +42,91 @@ if (isset($_GET['id'])) {
     }
     // submit form edit
     if (isset($_POST['email'])) {
+        $Mobile_Detect = new Mobile_Detect();
+        
         if ($CMSNT->site('status_demo') != 0) {
             die('<script type="text/javascript">if(!alert("Không được dùng chức năng này vì đây là trang web demo.")){window.history.back().location.reload();}</script>');
         }
+        if(check_string($_POST['chietkhau']) > 100){
+            die('<script type="text/javascript">if(!alert("Chiết khấu giảm giá không được lớn hơn 100")){window.history.back().location.reload();}</script>');
+        }
+        if(check_string($_POST['username']) != $user['username']){
+            if($CMSNT->get_row(" SELECT * FROM `users` WHERE `username` = '".check_string($_POST['username'])."' AND `id` != '".$user['id']."' ")){
+                die('<script type="text/javascript">if(!alert("Tên đăng nhập này đã có người sử dụng")){window.history.back().location.reload();}</script>');
+            }
+            $CMSNT->insert("logs", [
+                'user_id'       => $getUser['id'],
+                'createdate'    => gettime(),
+                'device'        => $Mobile_Detect->getUserAgent(),
+                'ip'            => myip(),
+                'action'        => '[Admin] Thay đổi username cho thành viên '.$user['username'].'['.$user['id'].'] từ '.$user['username'].' -> '.check_string($_POST['username']).'.'
+            ]);
+            $CMSNT->insert("logs", [
+                'user_id'       => $user['id'],
+                'createdate'    => gettime(),
+                'action'        => 'Bạn được Admin thay đổi username.'
+            ]);
+        }
+        if(check_string($_POST['admin']) != $user['admin']){
+            $CMSNT->insert("logs", [
+                'user_id'       => $getUser['id'],
+                'createdate'    => gettime(),
+                'device'        => $Mobile_Detect->getUserAgent(),
+                'ip'            => myip(),
+                'action'        => '[Admin] Thay đổi quyền Admin cho thành viên '.$user['username'].'['.$user['id'].'] từ '.$user['admin'].' -> '.check_string($_POST['admin']).'.'
+            ]);
+            $CMSNT->insert("logs", [
+                'user_id'       => $user['id'],
+                'createdate'    => gettime(),
+                'action'        => 'Bạn được Admin thay đổi quyền Admin.'
+            ]);
+        }
+        if(check_string($_POST['ctv']) != $user['ctv']){
+            $CMSNT->insert("logs", [
+                'user_id'       => $getUser['id'],
+                'createdate'    => gettime(),
+                'device'        => $Mobile_Detect->getUserAgent(),
+                'ip'            => myip(),
+                'action'        => '[Admin] Thay đổi quyền CTV cho thành viên '.$user['username'].'['.$user['id'].'] từ '.$user['ctv'].' -> '.check_string($_POST['ctv']).'.'
+            ]);
+            $CMSNT->insert("logs", [
+                'user_id'       => $user['id'],
+                'createdate'    => gettime(),
+                'action'        => 'Bạn được Admin thay đổi quyền CTV.'
+            ]);
+        }
+        if($_POST['chietkhau'] != $user['chietkhau']){
+            $CMSNT->insert("logs", [
+                'user_id'       => $getUser['id'],
+                'createdate'    => gettime(),
+                'device'        => $Mobile_Detect->getUserAgent(),
+                'ip'            => myip(),
+                'action'        => '[Admin] Thay đổi chiết khấu thành viên '.$user['username'].' từ '.$user['chietkhau'].'% -> '.check_string($_POST['chietkhau']).'%.'
+            ]);
+            $CMSNT->insert("logs", [
+                'user_id'       => $user['id'],
+                'createdate'    => gettime(),
+                'action'        => 'Bạn được Admin thay đổi chiết khấu.'
+            ]);
+        }
+        if($_POST['ref_ck'] != $user['ref_ck']){
+            $CMSNT->insert("logs", [
+                'user_id'       => $getUser['id'],
+                'createdate'    => gettime(),
+                'device'        => $Mobile_Detect->getUserAgent(),
+                'ip'            => myip(),
+                'action'        => '[Admin] Thay đổi chiết khấu giới thiệu của user '.$user['username'].' từ '.$user['ref_ck'].'% -> '.check_string($_POST['ref_ck']).'%.'
+            ]);
+            $CMSNT->insert("logs", [
+                'user_id'       => $user['id'],
+                'createdate'    => gettime(),
+                'action'        => 'Bạn được Admin thay đổi chiết khấu giới thiệu.'
+            ]);
+        }
         $DBUser = new users();
-        $Mobile_Detect = new Mobile_Detect();
         $isUpdate = $DBUser->update_by_id([
+            'login_attempts'    => 0,
+            'username'     => check_string($_POST['username']),
             'email'     => check_string($_POST['email']),
             'spin'      => check_string($_POST['spin']),
             'token'     => check_string($_POST['token']),
@@ -56,10 +135,12 @@ if (isset($_GET['id'])) {
             'ref_money' => check_string($_POST['ref_money']),
             'ref_total_money' => check_string($_POST['ref_total_money']),
             'ref_click' => check_string($_POST['ref_click']),
+            'status_2fa'    => check_string($_POST['status_2fa']),
             'gender'    => check_string($_POST['gender']),
             'admin'     => check_string($_POST['admin']),
             'ctv'       => check_string($_POST['ctv']),
             'chietkhau' => check_string($_POST['chietkhau']),
+            'ref_ck' => check_string($_POST['ref_ck']),
             'banned'    => check_string($_POST['banned'])
         ], $user['id']);
         if ($isUpdate) {
@@ -68,31 +149,17 @@ if (isset($_GET['id'])) {
                     'password' => TypePassword(check_string($_POST['password']))
                 ], $user['id']);
             }
-            if(check_string($_POST['admin']) != $user['admin']){
-                $CMSNT->insert("logs", [
-                    'user_id'       => $getUser['id'],
-                    'createdate'    => gettime(),
-                    'device'        => $Mobile_Detect->getUserAgent(),
-                    'ip'            => myip(),
-                    'action'        => 'Thay đổi quyền Admin cho thành viên '.$user['username'].'['.$user['id'].'].'
-                ]);
-                $CMSNT->insert("logs", [
-                    'user_id'       => $user['id'],
-                    'createdate'    => gettime(),
-                    'action'        => 'Bạn được Admin '.$getUser['username'].' thay đổi quyền Admin.'
-                ]);
-            }
             $CMSNT->insert("logs", [
                 'user_id'       => $getUser['id'],
                 'createdate'    => gettime(),
                 'device'        => $Mobile_Detect->getUserAgent(),
                 'ip'            => myip(),
-                'action'        => 'Cập nhật thông tin thành viên '.$user['username'].'['.$user['id'].'].'
+                'action'        => '[Admin] Cập nhật thông tin thành viên '.$user['username'].'['.$user['id'].'].'
             ]);
             $CMSNT->insert("logs", [
                 'user_id'       => $user['id'],
                 'createdate'    => gettime(),
-                'action'        => 'Bạn được Admin thay đổi thông tin.'
+                'action'        => __('Bạn được Admin thay đổi thông tin.')
             ]);
             die('<script type="text/javascript">if(!alert("Cập nhật thông tin thành công")){window.history.back().location.reload();}</script>');
         }
@@ -112,11 +179,11 @@ if (isset($_GET['id'])) {
             'createdate'    => gettime(),
             'device'        => $Mobile_Detect->getUserAgent(),
             'ip'            => myip(),
-            'action'        => 'Cộng '.$amount.' cho User '.$user['username'].'['.$user['id'].'].'
+            'action'        => '[Admin] Cộng '.$amount.' cho User '.$user['username'].'['.$user['id'].'].'
         ]);
         /* Xử lý cộng tiền */
         $DBUser = new users();
-        $DBUser->AddCredits($id, $amount, $reason);
+        $DBUser->AddCredits($id, $amount, '[Admin]'.$reason, 'ADMIN_ADD_CREDITS_'.uniqid());
         die('<script type="text/javascript">if(!alert("Cộng tiền thành công !")){window.history.back().location.reload();}</script>');
     }
     if (isset($_POST['tru_tien'])) {
@@ -134,11 +201,11 @@ if (isset($_GET['id'])) {
             'createdate'    => gettime(),
             'device'        => $Mobile_Detect->getUserAgent(),
             'ip'            => myip(),
-            'action'        => 'Trừ '.$amount.' cho User '.$user['username'].'['.$user['id'].'].'
+            'action'        => '[Admin] Trừ '.$amount.' cho User '.$user['username'].'['.$user['id'].'].'
         ]);
         /* Xử lý trừ tiền */
         $DBUser = new users();
-        $DBUser->RemoveCredits($id, $amount, $reason);
+        $DBUser->RemoveCredits($id, $amount, '[Admin]'.$reason, 'ADMIN_REMOVE_CREDITS_'.uniqid());
         die('<script type="text/javascript">if(!alert("Trừ tiền thành công !")){window.history.back().location.reload();}</script>');
     }
 }
@@ -162,6 +229,22 @@ if (isset($_GET['id'])) {
     </div>
     <div class="content">
         <div class="container-fluid">
+            <a type="button" href="<?=base_url_admin('logs&user_id='.$user['id']);?>" target="_blank"
+                class="btn btn-hero btn-primary me-1 mb-3 push">
+                <i class="fa fa-fw fa-history me-1"></i> <?=__('Nhật ký hoạt động');?>
+            </a>
+            <a type="button" href="<?=base_url_admin('dong-tien&user_id='.$user['id']);?>" target="_blank"
+                class="btn btn-hero btn-info me-1 mb-3 push">
+                <i class="fa fa-fw fa-history me-1"></i> <?=__('Biến động số dư');?>
+            </a>
+            <a type="button" href="<?=base_url_admin('product-order&buyer='.$user['id']);?>" target="_blank"
+                class="btn btn-hero btn-danger me-1 mb-3 push">
+                <i class="fa-solid fa-cart-shopping"></i> <?=__('Đơn hàng');?>
+            </a>
+            <a type="button" href="<?=base_url_admin('statistic&user_id='.$user['id']);?>" target="_blank"
+                class="btn btn-hero btn-warning me-1 mb-3 push">
+                <i class="fa-solid fa-chart-column"></i> <?=__('Thống kê');?>
+            </a>
             <div class="row">
                 <section class="col-lg-12 connectedSortable">
                     <div class="card card-primary card-outline">
@@ -184,6 +267,11 @@ if (isset($_GET['id'])) {
                         </div>
                         <form action="" method="POST">
                             <div class="card-body">
+                                <div class="form-group">
+                                    <label>Username (*)</label>
+                                    <input type="text" class="form-control" value="<?=$user['username'];?>"
+                                        name="username" required>
+                                </div>
                                 <div class="form-group">
                                     <label>Email (*)</label>
                                     <input type="email" class="form-control" value="<?=$user['email'];?>" name="email"
@@ -262,9 +350,17 @@ if (isset($_GET['id'])) {
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
+                                            <label>Chiết khấu giới thiệu (*)</label>
+                                            <input type="text" class="form-control" value="<?=$user['ref_ck'];?>"
+                                                name="ref_ck">
+                                        </div>
+                                        <i>Nếu đặt thành 0, hệ thống sẽ lấy chiết khấu mặc định.</i>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
                                             <label>Tổng số dư hoa hồng đã nhận (*)</label>
-                                            <input type="number" class="form-control" value="<?=$user['ref_total_money'];?>"
-                                                name="ref_total_money">
+                                            <input type="number" class="form-control"
+                                                value="<?=$user['ref_total_money'];?>" name="ref_total_money">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -468,116 +564,8 @@ if (isset($_GET['id'])) {
                         </div>
                     </div>
                 </section>
-                <section class="col-lg-12 connectedSortable">
-                    <div class="card card-primary card-outline">
-                        <div class="card-header ">
-                            <h3 class="card-title">
-                                <i class="fas fa-history mr-1"></i>
-                                BIẾN ĐỘNG SỐ DƯ
-                            </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn bg-success btn-sm" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn bg-warning btn-sm" data-card-widget="maximize"><i
-                                        class="fas fa-expand"></i>
-                                </button>
-                                <button type="button" class="btn bg-danger btn-sm" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive p-0">
-                                <table id="datatable1" class="table table-bordered table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="5%">#</th>
-                                            <th>Username</th>
-                                            <th>Số tiền trước</th>
-                                            <th>Số tiền thay đổi</th>
-                                            <th>Số tiền hiện tại</th>
-                                            <th>Thời gian</th>
-                                            <th>Nội dung</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `dongtien` WHERE `user_id` = '".$user['id']."' ORDER BY id DESC  ") as $row) {?>
-                                        <tr>
-                                            <td class="text-center"><?=$i++;?></td>
-                                            <td class="text-center"><a
-                                                    href="<?=base_url('admin/user-edit/'.$row['user_id']);?>"><?=getRowRealtime("users", $row['user_id'], "username");?></a>
-                                            </td>
-                                            <td class="text-center"><b
-                                                    style="color: green;"><?=format_currency($row['sotientruoc']);?></b>
-                                            </td>
-                                            <td class="text-center"><b
-                                                    style="color:red;"><?=format_currency($row['sotienthaydoi']);?></b>
-                                            </td>
-                                            <td class="text-center"><b
-                                                    style="color: blue;"><?=format_currency($row['sotiensau']);?></b>
-                                            </td>
-                                            <td class="text-center"><i><?=$row['thoigian'];?></i></td>
-                                            <td><i><?=$row['noidung'];?></i></td>
-                                        </tr>
-                                        <?php }?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section class="col-lg-12 connectedSortable">
-                    <div class="card card-primary card-outline">
-                        <div class="card-header ">
-                            <h3 class="card-title">
-                                <i class="fas fa-history mr-1"></i>
-                                NHẬT KÝ HOẠT ĐỘNG
-                            </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn bg-success btn-sm" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn bg-warning btn-sm" data-card-widget="maximize"><i
-                                        class="fas fa-expand"></i>
-                                </button>
-                                <button type="button" class="btn bg-danger btn-sm" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive p-0">
-                                <table id="datatable2" class="table table-bordered table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="5%">#</th>
-                                            <th>Username</th>
-                                            <th width="40%">Action</th>
-                                            <th>Time</th>
-                                            <th>Ip</th>
-                                            <th width="25%">Device</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php $i=0; foreach ($CMSNT->get_list("SELECT * FROM `logs` WHERE `user_id` = '".$user['id']."' ORDER BY id DESC  ") as $row) {?>
-                                        <tr>
-                                            <td><?=$i++;?></td>
-                                            <td><a
-                                                    href="<?=base_url('admin/user-edit/'.$row['user_id']);?>"><?=getRowRealtime("users", $row['user_id'], "username");?></a>
-                                            </td>
-                                            <td><?=$row['action'];?></td>
-                                            <td><?=$row['createdate'];?></td>
-                                            <td><?=$row['ip'];?></td>
-                                            <td><?=$row['device'];?></td>
-                                        </tr>
-                                        <?php }?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+
+
             </div>
         </div>
     </div>
@@ -588,4 +576,3 @@ if (isset($_GET['id'])) {
 <?php
 require_once(__DIR__.'/footer.php');
 ?>
- 

@@ -8,9 +8,15 @@
     require_once(__DIR__.'/../libs/database/invoices.php');
     $CMSNT = new DB();
     $user = new users();
-    queryCancelInvoices();
-    curl_get(base_url('cron/cron1.php'));
-    
+
+    if($CMSNT->site('pin_cron') != ''){
+        if(empty($_GET['pin'])){
+            die('Vui lòng nhập mã PIN');
+        }
+        if($_GET['pin'] != $CMSNT->site('pin_cron')){
+            die('Mã PIN không chính xác');
+        }
+    }
     /* START CHỐNG SPAM */
     if (time() > $CMSNT->site('check_time_cron')) {
         if (time() - $CMSNT->site('check_time_cron') < 15) {
@@ -18,6 +24,12 @@
         }
     }
     $CMSNT->update("settings", ['value' => time()], " `name` = 'check_time_cron' ");
+
+    queryCancelInvoices();
+    curl_get2(base_url('cron/cron.php?pin='.$CMSNT->site('pin_cron')));
+    curl_get2(base_url('cron/cron1.php?pin='.$CMSNT->site('pin_cron')));
+
+    
     /* END CHỐNG SPAM */
     if ($CMSNT->site('status_momo') != 1) {
         die('Chức năng đang bảo trì.');
@@ -25,9 +37,12 @@
     if ($CMSNT->site('token_momo') == '') {
         die('Thiếu Token Momo');
     }
-    $result = curl_get("https://api.web2m.com/historyapimomo1h/".$CMSNT->site('token_momo'));
+    $result = curl_get2("https://api.web2m.com/historyapimomo1h/".trim($CMSNT->site('token_momo')));
     $result = json_decode($result, true);
     foreach ($result['momoMsg']['tranList'] as $data) {
+        if($data['status'] != 2){
+            continue;
+        }
         $partnerId      = $data['partnerId'];               // SỐ ĐIỆN THOẠI CHUYỂN
         $comment        = $data['comment'];                 // NỘI DUNG CHUYỂN TIỀN
         $tranId         = $data['tranId'];                  // MÃ GIAO DỊCH
@@ -77,6 +92,9 @@
                 if($row['description'] == $comment && $row['tid'] == $tranId){
                     continue;
                 }
+                if($CMSNT->num_rows(" SELECT * FROM `server2_autobank` WHERE `tid` = '$tranId' AND `description` = '$comment' ") > 0){
+                    continue;
+                }
                 if (isset(explode($row['trans_id'], strtoupper($comment))[1])) {
                     if ($amount >= $row['pay']) {
                         $isUpdate = $CMSNT->update("invoices", [
@@ -87,7 +105,7 @@
                             'update_time'   => time()
                         ], " `id` = '".$row['id']."' ");
                         if ($isUpdate) {
-                            $isCong = $user->AddCredits($row['user_id'], $row['amount'], "Thanh toán hoá đơn nạp tiền #".$row['trans_id']);
+                            $isCong = $user->AddCredits($row['user_id'], $row['amount'], "Thanh toán hoá đơn nạp tiền #".$row['trans_id'], 'INVOICE_'.$row['trans_id']);
                             if (!$isCong) {
                                 $CMSNT->update("invoices", [
                                 'status'  => 0
@@ -97,7 +115,7 @@
                         /** SEND NOTI CHO ADMIN */
                         $my_text = $CMSNT->site('naptien_notification');
                         $my_text = str_replace('{domain}', $_SERVER['SERVER_NAME'], $my_text);
-                        $my_text = str_replace('{username}', $getUser['username'], $my_text);
+                        $my_text = str_replace('{username}', getRowRealtime('users', $row['user_id'], 'username'), $my_text);
                         $my_text = str_replace('{method}', 'Ví MOMO server1', $my_text);
                         $my_text = str_replace('{amount}', format_cash($amount), $my_text);
                         $my_text = str_replace('{price}', format_currency($amount), $my_text);

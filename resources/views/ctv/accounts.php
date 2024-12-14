@@ -13,6 +13,7 @@ $body['header'] = '
     <link rel="stylesheet" href="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 ';
 $body['footer'] = '
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
     <!-- DataTables  & Plugins -->
     <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="'.BASE_URL('public/AdminLTE3/').'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -51,34 +52,56 @@ if (isset($_POST['AddAccounts']) && isset($_POST['listAccount'])) {
     $list = check_string($_POST['listAccount']);
     $list = explode(PHP_EOL, $list);
     foreach ($list as $clone) {
-        if ($CMSNT->num_rows(" SELECT * FROM `accounts` WHERE `account` = '$clone' AND `seller` = '".$getUser['id']."' ") == 0) {
+        if (isset($_POST['loc_trung']) && $_POST['loc_trung'] == 1){
             $isAdd = $CMSNT->insert("accounts", [
                 'product_id'    => $row['id'],
                 'seller'        => $getUser['id'],
                 'account'       => $clone,
                 'status'        => 'LIVE',
                 'create_date'   => gettime(),
-                'update_date'   => gettime()
+                'create_time'   => time(),
+                'update_date'   => gettime(),
+                'update_time'   => time()
             ]);
             if ($isAdd) {
                 $value_add++;
             }
-        } else {
-            $row_taikhoan = $CMSNT->get_row(" SELECT * FROM `accounts` WHERE `account` = '$clone' AND `seller` = '".$getUser['id']."' ");
-            if (isset($_POST['filter']) && $_POST['filter'] == 1) {
-                $isUpdate = $CMSNT->update("accounts", array(
-                    'status' => 'LIVE'
-                ), " `id` = '".$row_taikhoan['id']."' ");
-                if ($isUpdate) {
-                    $value_update++;
+        }else{
+            if ($CMSNT->get_row(" SELECT COUNT(id) FROM `accounts` WHERE `account` = '$clone' AND `seller` = '".$getUser['id']."' ")['COUNT(id)'] == 0) {
+                $isAdd = $CMSNT->insert("accounts", [
+                    'product_id'    => $row['id'],
+                    'seller'        => $getUser['id'],
+                    'account'       => $clone,
+                    'status'        => 'LIVE',
+                    'create_date'   => gettime(),
+                    'create_time'   => time(),
+                    'update_date'   => gettime(),
+                    'update_time'   => time()
+                ]);
+                if ($isAdd) {
+                    $value_add++;
                 }
             } else {
-                $isUpdate = $CMSNT->update("accounts", array(
-                    'status' => 'LIVE',
-                    'buyer'  => null
-                ), " `id` = '".$row_taikhoan['id']."' ");
-                if ($isUpdate) {
-                    $value_add++;
+                $row_taikhoan = $CMSNT->get_row(" SELECT * FROM `accounts` WHERE `account` = '$clone' AND `seller` = '".$getUser['id']."' ");
+                if (isset($_POST['filter']) && $_POST['filter'] == 1) {
+                    $isUpdate = $CMSNT->update("accounts", array(
+                        'status' => 'LIVE',
+                        'update_date'   => gettime(),
+                        'update_time'   => time()
+                    ), " `id` = '".$row_taikhoan['id']."' ");
+                    if ($isUpdate) {
+                        $value_update++;
+                    }
+                } else {
+                    $isUpdate = $CMSNT->update("accounts", array(
+                        'status' => 'LIVE',
+                        'buyer'  => null,
+                        'update_date'   => gettime(),
+                        'update_time'   => time()
+                    ), " `id` = '".$row_taikhoan['id']."' AND `seller` = '".$getUser['id']."' ");
+                    if ($isUpdate) {
+                        $value_add++;
+                    }
                 }
             }
         }
@@ -95,7 +118,7 @@ if (isset($_POST['RemoveAccounts']) && isset($_POST['listAccount'])) {
     foreach ($list as $clone) {
         // xoá tài khoản đã bán
         if (isset($_POST['filter']) && $_POST['filter'] == 1) {
-            $isRemove = $CMSNT->remove("accounts", " `account` = '".$clone."' AND `seller` = '".$getUser['id']."' ");
+            $isRemove = $CMSNT->remove("accounts", " `account` = '".$clone."'  AND `seller` = '".$getUser['id']."' ");
             if ($isRemove) {
                 $value_delete++;
             }
@@ -163,8 +186,14 @@ if (isset($_POST['RemoveAccounts']) && isset($_POST['listAccount'])) {
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" type="checkbox" name="filter" value="1"
                                             id="target" checked>
-                                        <label for="target" class="custom-control-label">Nếu bạn huỷ tích, hệ thống sẽ
-                                            không lọc các tài nguyên đã bán, chỉ nhập tài nguyên chưa bán.</label>
+                                        <label for="target" class="custom-control-label">Nếu bạn tích vào ô này, hệ thống sẽ chỉ thêm các tài khoản chưa bán (tốc độ tải lên chậm).</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="loc_trung" value="1"
+                                            id="loc_trung" checked>
+                                        <label for="loc_trung" class="custom-control-label">Nếu bạn tích vào ô này hệ thống sẽ không lọc trùng nick đã thêm (tốc độ tải lên nhanh hơn).</label>
                                     </div>
                                 </div>
                             </div>
@@ -209,8 +238,8 @@ if (isset($_POST['RemoveAccounts']) && isset($_POST['listAccount'])) {
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" type="checkbox" name="filter" value="1"
-                                            id="target" checked>
-                                        <label for="target" class="custom-control-label">Xoá tài khoản bao gồm tài khoản đã bán</label>
+                                            id="target2" checked>
+                                        <label for="target2" class="custom-control-label">Xoá tài khoản bao gồm tài khoản đã bán</label>
                                     </div>
                                 </div>
                             </div>
@@ -221,74 +250,69 @@ if (isset($_POST['RemoveAccounts']) && isset($_POST['listAccount'])) {
                         </form>
                     </div>
                 </section>
-                <section class="col-lg-12 connectedSortable">
-                    <div class="card card-primary card-outline">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-dolly-flatbed mr-1"></i>
-                                DANH SÁCH TÀI KHOẢN
-                            </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn bg-success btn-sm" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn bg-warning btn-sm" data-card-widget="maximize"><i
-                                        class="fas fa-expand"></i>
-                                </button>
-                                <button type="button" class="btn bg-danger btn-sm" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-2">
-                                <div class="col-sm-6">
-                                </div>
-                                <div class="col-sm-6">
-                                    <button class="float-right btn btn-danger btn-sm" type="button"
-                                        onclick="deleteConfirm()" name="btn_delete"><i
-                                            class="fas fa-trash mr-1"></i>Delete</button>
-                                </div>
-                            </div>
-                            <div class="table-responsive p-0">
-                                <table id="datatable1" class="table table-bordered table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="5px;"><input type="checkbox" name="check_all" id="check_all"
-                                                    value="option1"></th>
-                                            <th>Buyer</th>
-                                            <th>Account</th>
-                                            <th>Createdate</th>
-                                            <th>Updatedate</th>
-                                            <th>Status</th>
-                                            <th style="width: 20%">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($CMSNT->get_list("SELECT * FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `seller` = '".$getUser['id']."' ") as $row) {?>
-                                        <tr>
-                                            <td><input type="checkbox" data-id="<?=$row['id'];?>" name="checkbox"
-                                                    class="checkbox" value="<?=$row['id'];?>" /></td>
-                                            <td><a href="#"><?=getUser($row['buyer'], 'username');?></a></td>
-                                            <td><textarea class="form-control" readonly><?=$row['account'];?></textarea>
-                                            </td>
-                                            <td><?=$row['create_date'];?></td>
-                                            <td><?=$row['update_date'];?></td>
-                                            <td><?=display_live($row['status']);?></td>
-                                            <td>
-                                                <button style="color:white;" onclick="RemoveRow('<?=$row['id'];?>')"
-                                                    class="btn btn-danger btn-sm btn-icon-left m-b-10" type="button">
-                                                    <i class="fas fa-trash mr-1"></i><span class="">Delete</span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <?php }?>
-                                    </tbody>
-                                </table>
-                            </div>
+                <section class="col-lg-6 connectedSortable">
+                <div class="card card-success card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            LIST LIVE <span class="badge bg-success"><?=$CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$row['id']."'  AND `buyer` IS NULL AND `status` = 'LIVE' AND `seller` = '".$getUser['id']."' ")['COUNT(id)'];?></span>
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn bg-success btn-sm" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn bg-warning btn-sm" data-card-widget="maximize"><i
+                                    class="fas fa-expand"></i>
+                            </button>
+                            <button type="button" class="btn bg-danger btn-sm" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
-                </section>
+                    <div class="card-body">
+                        <textarea class="form-control" id="listLive" rows="10" readonly>
+<?php foreach ($CMSNT->get_list(" SELECT * FROM `accounts` WHERE `product_id` = '".$row['id']."'  AND `buyer` IS NULL AND `status` = 'LIVE' AND `seller` = '".$getUser['id']."' ORDER BY id DESC ") as $live) { ?>
+<?=$live['account'];?>
+
+<?php }?></textarea>
+                    </div>
+                    <div class="card-footer clearfix">
+                        <button type="button" onclick="copy()" class="btn btn-info copy" data-clipboard-target="#listLive">
+                            <span>COPY</span></button>
+                    </div>
+                </div>
+            </section>
+            <section class="col-lg-6 connectedSortable">
+                <div class="card card-danger card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            LIST DIE <span class="badge bg-danger"><?=$CMSNT->get_row("SELECT COUNT(id) FROM `accounts` WHERE `product_id` = '".$row['id']."'  AND `buyer` IS NULL AND `status` = 'DIE'")['COUNT(id)'];?></span>
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn bg-success btn-sm" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn bg-warning btn-sm" data-card-widget="maximize"><i
+                                    class="fas fa-expand"></i>
+                            </button>
+                            <button type="button" class="btn bg-danger btn-sm" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="form-control" id="listdie" rows="10" readonly>
+<?php foreach ($CMSNT->get_list(" SELECT * FROM `accounts` WHERE `product_id` = '".$row['id']."' AND `buyer` IS NULL AND `status` = 'DIE' AND `seller` = '".$getUser['id']."' ORDER BY id DESC ") as $die) { ?>
+<?=$die['account'];?>
+
+<?php }?></textarea>
+                    </div>
+                    <div class="card-footer clearfix">
+                        <button type="button" onclick="copy()" class="btn btn-info copy" data-clipboard-target="#listdie">
+                            <span>COPY</span></button>
+                    </div>
+                </div>
+            </section>
+                 <a type="button" href="<?=base_url('ctv/account-view/'.check_string($_GET['id']));?>" class="btn btn-primary btn-block mb-5">XEM DANH SÁCH TÀI KHOẢN CHI TIẾT</a>
             </div>
         </div>
     </div>
@@ -296,111 +320,15 @@ if (isset($_POST['RemoveAccounts']) && isset($_POST['listAccount'])) {
 <?php
 require_once(__DIR__.'/footer.php');
 ?>
-<script type="text/javascript">
-function RemoveRow(id) {
-    cuteAlert({
-        type: "question",
-        title: "Xác Nhận Xóa Tài Khoản",
-        message: "Bạn có chắc chắn muốn xóa tài khoản ID " + id + " không ?",
-        confirmText: "Đồng Ý",
-        cancelText: "Hủy"
-    }).then((e) => {
-        if (e) {
-            $.ajax({
-                url: "<?=BASE_URL("ajaxs/ctv/removeAccount.php");?>",
-                method: "POST",
-                dataType: "JSON",
-                data: {
-                    id: id
-                },
-                success: function(respone) {
-                    if (respone.status == 'success') {
-                        cuteToast({
-                            type: "success",
-                            message: respone.msg,
-                            timer: 5000
-                        });
-                        location.reload();
-                    } else {
-                        cuteAlert({
-                            type: "error",
-                            title: "Error",
-                            message: respone.msg,
-                            buttonText: "Okay"
-                        });
-                    }
-                },
-                error: function() {
-                    alert(html(response));
-                    location.reload();
-                }
-            });
-        }
-    })
-}
-</script>
-<script type="text/javascript">
-function postRemove(id) {
-    $.ajax({
-        url: "<?=BASE_URL('ajaxs/ctv/removeAccount.php');?>",
-        type: 'POST',
-        dataType: "JSON",
-        data: {
-            id: id
-        },
-        success: function(response) {
-            if (response.status == 'success') {
-                cuteToast({
-                    type: "success",
-                    message: "Đã xóa thành công item " + id,
-                    timer: 3000
-                });
-            } else {
-                cuteToast({
-                    type: "error",
-                    message: "Đã xảy ra lỗi khi xoá item " + id,
-                    timer: 5000
-                });
-            }
-        }
-    });
-}
-
-function deleteConfirm() {
-    var result = confirm("Bạn có thực sự muốn xóa các bản ghi đã chọn?");
-    if (result) {
-        var checkbox = document.getElementsByName('checkbox');
-        for (var i = 0; i < checkbox.length; i++) {
-            if (checkbox[i].checked === true) {
-                postRemove(checkbox[i].value);
-            }
-        }
-        location.reload();
-    }
-}
-$(document).ready(function() {
-    $('#check_all').on('click', function() {
-        if (this.checked) {
-            $('.checkbox').each(function() {
-                this.checked = true;
-            });
-        } else {
-            $('.checkbox').each(function() {
-                this.checked = false;
-            });
-        }
-    });
-    $('.checkbox').on('click', function() {
-        if ($('.checkbox:checked').length == $('.checkbox').length) {
-            $('#check_all').prop('checked', true);
-        } else {
-            $('#check_all').prop('checked', false);
-        }
-    });
-});
-</script>
+ 
 <script>
-$(function() {
-    $('#datatable1').DataTable({});
-});
+new ClipboardJS(".copy");
+
+function copy() {
+    cuteToast({
+        type: "success",
+        message: "<?=__('Đã sao chép vào bộ nhớ tạm');?>",
+        timer: 5000
+    });
+}
 </script>
